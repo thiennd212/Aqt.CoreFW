@@ -86,7 +86,7 @@ Thumbs.db
 .DS_Store
 
 # Ignore all files in the docs directory
-docs/*
+#docs/*
 
 # Ignore all files in the .git directory
 .git/*

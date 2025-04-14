@@ -28,7 +28,7 @@ The content is organized as follows:
 ## Notes
 - Some files may have been excluded based on .gitignore rules and Repomix's configuration
 - Binary files are not included in this packed representation. Please refer to the Repository Structure section for a complete list of file paths, including binary files
-- Files matching these patterns are excluded: README.md, **/Migrations/*, .gitattributes, .gitignore, .prettierrc
+- Files matching these patterns are excluded: README.md, **/Migrations/*, .cursor/**, docs/**, etc/**, **/*.abppkg*, **/abp.resourcemapping.js, .cursorignore, .editorconfig, .gitattributes, .gitignore, *.abpmdl, *.abpsln
 - Files matching patterns in .gitignore are excluded
 - Files matching default ignore patterns are excluded
 - Code comments have been removed from supported file types
@@ -64,12 +64,16 @@ src/
     Aqt.CoreFW.DbMigrator.csproj
     CoreFWDbMigratorModule.cs
     DbMigratorHostedService.cs
+    Dockerfile
+    Dockerfile.local
     Program.cs
   Aqt.CoreFW.Domain/
     Data/
       CoreFWDbMigrationService.cs
       ICoreFWDbSchemaMigrator.cs
       NullCoreFWDbSchemaMigrator.cs
+    Identity/
+      ChangeIdentityPasswordPolicySettingDefinitionProvider.cs
     OpenIddict/
       OpenIddictDataSeedContributor.cs
     Properties/
@@ -84,7 +88,6 @@ src/
     Localization/
       CoreFW/
         en.json
-        vi.json
       CoreFWResource.cs
     MultiTenancy/
       MultiTenancyConsts.cs
@@ -117,16 +120,19 @@ src/
   Aqt.CoreFW.Web/
     Components/
       _ViewImports.cshtml
+    HealthChecks/
+      CoreFWDatabaseCheck.cs
+      HealthChecksBuilderExtensions.cs
     Menus/
       CoreFWMenuContributor.cs
       CoreFWMenus.cs
+      CoreFWToolbarContributor.cs
     Pages/
       _ViewImports.cshtml
       CoreFWPageModel.cs
       Index.cshtml
       Index.cshtml.cs
       Index.css
-      Index.js
     Properties/
       AssemblyInfo.cs
       launchSettings.json
@@ -140,15 +146,16 @@ src/
           stack-overflow.svg
           x-white.svg
           youtube.svg
+      global-scripts.js
       global-styles.css
-    abp.resourcemapping.js
     appsettings.Development.json
     appsettings.json
-    appsettings.secrets.json
     Aqt.CoreFW.Web.csproj
     CoreFWBrandingProvider.cs
     CoreFWWebAutoMapperProfile.cs
     CoreFWWebModule.cs
+    Dockerfile
+    Dockerfile.local
     package.json
     Program.cs
     web.config
@@ -184,21 +191,23 @@ test/
     appsettings.secrets.json
     Aqt.CoreFW.HttpApi.Client.ConsoleTestApp.csproj
     ClientDemoService.cs
-    ConsoleTestAppHostedService.cs
     CoreFWConsoleApiClientModule.cs
     Program.cs
   Aqt.CoreFW.TestBase/
     Security/
       FakeCurrentPrincipalAccessor.cs
+    appsettings.json
+    appsettings.secrets.json
     Aqt.CoreFW.TestBase.csproj
     CoreFWTestBase.cs
     CoreFWTestBaseModule.cs
     CoreFWTestConsts.cs
-    CoreFWTestDataSeedContributor.cs
+    CoreFWTestDataBuilder.cs
   Aqt.CoreFW.Web.Tests/
     Pages/
       Index_Tests.cs
     Aqt.CoreFW.Web.Tests.csproj
+    CoreFWWebCollection.cs
     CoreFWWebTestBase.cs
     CoreFWWebTestModule.cs
     Program.cs
@@ -234,12 +243,12 @@ NuGet.Config
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Volo.Abp.Account.Application" Version="9.1.1" />
-    <PackageReference Include="Volo.Abp.Identity.Application" Version="9.1.1" />
-    <PackageReference Include="Volo.Abp.PermissionManagement.Application" Version="9.1.1" />
-    <PackageReference Include="Volo.Abp.TenantManagement.Application" Version="9.1.1" />
-    <PackageReference Include="Volo.Abp.FeatureManagement.Application" Version="9.1.1" />
-    <PackageReference Include="Volo.Abp.SettingManagement.Application" Version="9.1.1" />
+    <PackageReference Include="Volo.Abp.PermissionManagement.Application" Version="9.1.0" />
+    <PackageReference Include="Volo.Abp.FeatureManagement.Application" Version="9.1.0" />
+    <PackageReference Include="Volo.Abp.SettingManagement.Application" Version="9.1.0" />
+    <PackageReference Include="Volo.Abp.Account.Application" Version="9.1.0" />
+    <PackageReference Include="Volo.Abp.Identity.Application" Version="9.1.0" />
+    <PackageReference Include="Volo.Abp.TenantManagement.Application" Version="9.1.0" />
   </ItemGroup>
 
 </Project>
@@ -293,15 +302,14 @@ public static class CoreFWPermissions
   <ItemGroup>
     <ProjectReference Include="..\Aqt.CoreFW.Domain.Shared\Aqt.CoreFW.Domain.Shared.csproj" />
   </ItemGroup>
-
+  
   <ItemGroup>
-    <PackageReference Include="Volo.Abp.ObjectExtending" Version="9.1.1" />
-    <PackageReference Include="Volo.Abp.Account.Application.Contracts" Version="9.1.1" />
-    <PackageReference Include="Volo.Abp.Identity.Application.Contracts" Version="9.1.1" />
-    <PackageReference Include="Volo.Abp.PermissionManagement.Application.Contracts" Version="9.1.1" />
-    <PackageReference Include="Volo.Abp.TenantManagement.Application.Contracts" Version="9.1.1" />
-    <PackageReference Include="Volo.Abp.FeatureManagement.Application.Contracts" Version="9.1.1" />
-    <PackageReference Include="Volo.Abp.SettingManagement.Application.Contracts" Version="9.1.1" />
+    <PackageReference Include="Volo.Abp.PermissionManagement.Application.Contracts" Version="9.1.0" />
+    <PackageReference Include="Volo.Abp.FeatureManagement.Application.Contracts" Version="9.1.0" />
+    <PackageReference Include="Volo.Abp.SettingManagement.Application.Contracts" Version="9.1.0" />
+    <PackageReference Include="Volo.Abp.Identity.Application.Contracts" Version="9.1.0" />
+    <PackageReference Include="Volo.Abp.Account.Application.Contracts" Version="9.1.0" />
+    <PackageReference Include="Volo.Abp.TenantManagement.Application.Contracts" Version="9.1.0" />
   </ItemGroup>
 
 </Project>
@@ -334,14 +342,11 @@ OneTimeRunner.Run(() =>
   },
   "OpenIddict": {
     "Applications": {
-      "CoreFW_Web": {
-        "ClientId": "CoreFW_Web",
-        "ClientSecret": "1q2w3e*",
-        "RootUrl": "https://localhost:44395"
-      },
+      "CoreFW_App": {
+        "ClientId": "CoreFW_App"      },
       "CoreFW_Swagger": {
         "ClientId": "CoreFW_Swagger",
-        "RootUrl": "https://localhost:44363"
+        "RootUrl": "https://localhost:44340/"
       }
     }
   }
@@ -367,6 +372,28 @@ OneTimeRunner.Run(() =>
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="Serilog.Extensions.Logging" Version="9.0.0" />
+    <PackageReference Include="Serilog.Sinks.Async" Version="2.1.0" />
+    <PackageReference Include="Serilog.Sinks.File" Version="6.0.0" />
+    <PackageReference Include="Serilog.Sinks.Console" Version="6.0.0" />
+    <PackageReference Include="Microsoft.Extensions.Hosting" Version="9.0.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Volo.Abp.Autofac" Version="9.1.0" />
+    <ProjectReference Include="..\Aqt.CoreFW.EntityFrameworkCore\Aqt.CoreFW.EntityFrameworkCore.csproj" />
+    <ProjectReference Include="..\Aqt.CoreFW.Application.Contracts\Aqt.CoreFW.Application.Contracts.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Remove="Logs\**" />
+    <Content Remove="Logs\**" />
+
+    <EmbeddedResource Remove="Logs\**" />
+    <None Remove="Logs\**" />
+  </ItemGroup>
+
+  <ItemGroup>
     <None Remove="appsettings.json" />
     <Content Include="appsettings.json">
       <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
@@ -377,27 +404,6 @@ OneTimeRunner.Run(() =>
       <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-  </ItemGroup>
-
-  <ItemGroup>    
-    <PackageReference Include="Serilog.Extensions.Logging" Version="8.0.0" />
-    <PackageReference Include="Serilog.Sinks.Async" Version="2.0.0" />
-    <PackageReference Include="Serilog.Sinks.File" Version="6.0.0" />
-    <PackageReference Include="Serilog.Sinks.Console" Version="6.0.0" />
-    <PackageReference Include="Microsoft.Extensions.Hosting" Version="9.0.0" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <PackageReference Include="Volo.Abp.Autofac" Version="9.1.1" />
-    <ProjectReference Include="..\Aqt.CoreFW.Application.Contracts\Aqt.CoreFW.Application.Contracts.csproj" />
-    <ProjectReference Include="..\Aqt.CoreFW.EntityFrameworkCore\Aqt.CoreFW.EntityFrameworkCore.csproj" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Compile Remove="Logs\**" />
-    <Content Remove="Logs\**" />
-    <EmbeddedResource Remove="Logs\**" />
-    <None Remove="Logs\**" />
   </ItemGroup>
 
 </Project>
@@ -429,6 +435,23 @@ await application.ShutdownAsync();
 _hostApplicationLifetime.StopApplication();
 ⋮----
 public Task StopAsync(CancellationToken cancellationToken)
+```
+
+## File: src/Aqt.CoreFW.DbMigrator/Dockerfile
+```
+FROM mcr.microsoft.com/dotnet/aspnet:9.0
+COPY bin/Release/net9.0/publish/ app/
+WORKDIR /app
+ENV ASPNETCORE_URLS=http://+:80
+ENTRYPOINT ["dotnet", "Aqt.CoreFW.DbMigrator.dll"]
+```
+
+## File: src/Aqt.CoreFW.DbMigrator/Dockerfile.local
+```
+FROM mcr.microsoft.com/dotnet/aspnet:9.0
+  COPY bin/Release/net9.0/publish/ app/
+  WORKDIR /app
+  ENTRYPOINT ["dotnet", "Aqt.CoreFW.DbMigrator.dll"]
 ```
 
 ## File: src/Aqt.CoreFW.DbMigrator/Program.cs
@@ -473,6 +496,7 @@ public async Task MigrateAsync()
 Logger.LogInformation("Started database migrations...");
 ⋮----
 Logger.LogInformation($"Successfully completed host database migrations.");
+⋮----
 var tenants = await _tenantRepository.GetListAsync(includeDetails: true);
 ⋮----
 using (_currentTenant.Change(tenant.Id))
@@ -488,6 +512,7 @@ migratedDatabaseSchemas.AddIfNotContains(tenantConnectionStrings);
 Logger.LogInformation($"Successfully completed {tenant.Name} tenant database migrations.");
 ⋮----
 Logger.LogInformation("Successfully completed all database migrations.");
+⋮----
 Logger.LogInformation("You can safely end this process...");
 ⋮----
 private async Task MigrateDatabaseSchemaAsync(Tenant? tenant = null)
@@ -500,8 +525,9 @@ private async Task SeedDataAsync(Tenant? tenant = null)
 ⋮----
 Logger.LogInformation($"Executing {(tenant == null ? "host" : tenant.Name + " tenant")} database seed...");
 await _dataSeeder.SeedAsync(new DataSeedContext(tenant?.Id)
-.WithProperty(IdentityDataSeedContributor.AdminEmailPropertyName, IdentityDataSeedContributor.AdminEmailDefaultValue)
-.WithProperty(IdentityDataSeedContributor.AdminPasswordPropertyName, IdentityDataSeedContributor.AdminPasswordDefaultValue)
+.WithProperty(IdentityDataSeedContributor.AdminEmailPropertyName,
+⋮----
+.WithProperty(IdentityDataSeedContributor.AdminPasswordPropertyName,
 ⋮----
 private bool AddInitialMigrationIfNotExist()
 ⋮----
@@ -556,6 +582,29 @@ public class NullCoreFWDbSchemaMigrator : ICoreFWDbSchemaMigrator, ITransientDep
 public Task MigrateAsync()
 ```
 
+## File: src/Aqt.CoreFW.Domain/Identity/ChangeIdentityPasswordPolicySettingDefinitionProvider.cs
+```csharp
+public class ChangeIdentityPasswordPolicySettingDefinitionProvider : SettingDefinitionProvider
+⋮----
+public override void Define(ISettingDefinitionContext context)
+⋮----
+var requireNonAlphanumeric = context.GetOrNull(IdentitySettingNames.Password.RequireNonAlphanumeric);
+⋮----
+requireNonAlphanumeric.DefaultValue = false.ToString();
+⋮----
+var requireLowercase = context.GetOrNull(IdentitySettingNames.Password.RequireLowercase);
+⋮----
+requireLowercase.DefaultValue = false.ToString();
+⋮----
+var requireUppercase = context.GetOrNull(IdentitySettingNames.Password.RequireUppercase);
+⋮----
+requireUppercase.DefaultValue = false.ToString();
+⋮----
+var requireDigit = context.GetOrNull(IdentitySettingNames.Password.RequireDigit);
+⋮----
+requireDigit.DefaultValue = false.ToString();
+```
+
 ## File: src/Aqt.CoreFW.Domain/OpenIddict/OpenIddictDataSeedContributor.cs
 ```csharp
 public class OpenIddictDataSeedContributor : IDataSeedContributor, ITransientDependency
@@ -579,11 +628,11 @@ private async Task CreateApplicationsAsync()
 ⋮----
 var configurationSection = _configuration.GetSection("OpenIddict:Applications");
 ⋮----
-if (!webClientId.IsNullOrWhiteSpace())
-⋮----
-var webClientRootUrl = configurationSection["CoreFW_Web:RootUrl"]!.EnsureEndsWith('/');
+if (!consoleAndAngularClientId.IsNullOrWhiteSpace())
 ⋮----
 if (!swaggerClientId.IsNullOrWhiteSpace())
+⋮----
+clientUri: swaggerRootUrl.EnsureEndsWith('/') + "swagger",
 ⋮----
 private async Task CreateApplicationAsync(
 ⋮----
@@ -672,15 +721,15 @@ await _permissionDataSeeder.SeedAsync(
 ⋮----
 await _applicationManager.CreateAsync(application);
 ⋮----
-client.RedirectUris = JsonSerializer.Serialize(application.RedirectUris.Select(q => q.ToString().TrimEnd('/')));
-client.PostLogoutRedirectUris = JsonSerializer.Serialize(application.PostLogoutRedirectUris.Select(q => q.ToString().TrimEnd('/')));
+client.RedirectUris = JsonSerializer.Serialize(application.RedirectUris.Select(q => q.ToString().RemovePostFix("/")));
+client.PostLogoutRedirectUris = JsonSerializer.Serialize(application.PostLogoutRedirectUris.Select(q => q.ToString().RemovePostFix("/")));
 await _applicationManager.UpdateAsync(client.ToModel());
 ⋮----
 client.Permissions = JsonSerializer.Serialize(application.Permissions.Select(q => q.ToString()));
 ⋮----
 private bool HasSameRedirectUris(OpenIddictApplication existingClient, AbpApplicationDescriptor application)
 ⋮----
-return existingClient.RedirectUris == JsonSerializer.Serialize(application.RedirectUris.Select(q => q.ToString().TrimEnd('/')));
+return existingClient.RedirectUris == JsonSerializer.Serialize(application.RedirectUris.Select(q => q.ToString().RemovePostFix("/")));
 ⋮----
 private bool HasSameScopes(OpenIddictApplication existingClient, AbpApplicationDescriptor application)
 ⋮----
@@ -721,16 +770,21 @@ public static class CoreFWSettings
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Volo.Abp.Emailing" Version="9.1.1" />
-    <PackageReference Include="Volo.Abp.Identity.Domain" Version="9.1.1" />
-    <PackageReference Include="Volo.Abp.PermissionManagement.Domain.Identity" Version="9.1.1" />
-    <PackageReference Include="Volo.Abp.BackgroundJobs.Domain" Version="9.1.1" />
-    <PackageReference Include="Volo.Abp.AuditLogging.Domain" Version="9.1.1" />
-    <PackageReference Include="Volo.Abp.TenantManagement.Domain" Version="9.1.1" />
-    <PackageReference Include="Volo.Abp.FeatureManagement.Domain" Version="9.1.1" />
-    <PackageReference Include="Volo.Abp.SettingManagement.Domain" Version="9.1.1" />
-    <PackageReference Include="Volo.Abp.OpenIddict.Domain" Version="9.1.1" />
-    <PackageReference Include="Volo.Abp.PermissionManagement.Domain.OpenIddict" Version="9.1.1" />
+    <PackageReference Include="Volo.Abp.Emailing" Version="9.1.0" />
+    <PackageReference Include="Volo.Abp.Caching" Version="9.1.0" />
+    <PackageReference Include="Volo.Abp.PermissionManagement.Domain.Identity" Version="9.1.0" />
+    <PackageReference Include="Volo.Abp.PermissionManagement.Domain.OpenIddict" Version="9.1.0" />
+    <PackageReference Include="Volo.Abp.BackgroundJobs.Domain" Version="9.1.0" />
+    <PackageReference Include="Volo.Abp.AuditLogging.Domain" Version="9.1.0" />
+    <PackageReference Include="Volo.Abp.FeatureManagement.Domain" Version="9.1.0" />
+    <PackageReference Include="Volo.Abp.SettingManagement.Domain" Version="9.1.0" />
+    <PackageReference Include="Volo.Abp.BlobStoring.Database.Domain" Version="9.1.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Volo.Abp.OpenIddict.Domain" Version="9.1.0" />
+    <PackageReference Include="Volo.Abp.Identity.Domain" Version="9.1.0" />
+    <PackageReference Include="Volo.Abp.TenantManagement.Domain" Version="9.1.0" />
   </ItemGroup>
 
 </Project>
@@ -747,8 +801,7 @@ public class CoreFWDomainModule : AbpModule
 ⋮----
 public override void ConfigureServices(ServiceConfigurationContext context)
 ⋮----
-options.Languages.Add(new LanguageInfo("en", "en", "Tiếng Anh"));
-options.Languages.Add(new LanguageInfo("vi", "vi", "Tiếng Việt"));
+options.Languages.Add(new LanguageInfo("en", "en", "English"));
 ⋮----
 context.Services.Replace(ServiceDescriptor.Singleton<IEmailSender, NullEmailSender>());
 ```
@@ -756,25 +809,12 @@ context.Services.Replace(ServiceDescriptor.Singleton<IEmailSender, NullEmailSend
 ## File: src/Aqt.CoreFW.Domain.Shared/Localization/CoreFW/en.json
 ```json
 {
-  "culture": "en",
-  "texts": {
+  "Culture": "en",
+  "Texts": {
     "AppName": "CoreFW",
     "Menu:Home": "Home",
-    "Welcome": "Welcome",
-    "LongWelcomeMessage": "Welcome to the application. This is a startup project based on the ABP framework. For more information, visit abp.io."
-  }
-}
-```
-
-## File: src/Aqt.CoreFW.Domain.Shared/Localization/CoreFW/vi.json
-```json
-{
-  "culture": "vi",
-  "texts": {
-    "AppName": "CoreFW",
-    "Menu:Home": "Trang chủ",
-    "Welcome": "Chào mừng bạn",
-    "LongWelcomeMessage": "Chào mừng bạn đến ứng dụng. Đây là một dự án khởi nghiệp dựa trên khung ABP. Để biết thêm thông tin, hãy truy cập abp.io."
+    "LongWelcomeMessage": "Welcome to the application. This is a startup project based on the ABP framework. For more information visit",
+    "Welcome": "Welcome"
   }
 }
 ```
@@ -803,23 +843,28 @@ public static class MultiTenancyConsts
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Volo.Abp.Identity.Domain.Shared" Version="9.1.1" />
-    <PackageReference Include="Volo.Abp.BackgroundJobs.Domain.Shared" Version="9.1.1" />
-    <PackageReference Include="Volo.Abp.AuditLogging.Domain.Shared" Version="9.1.1" />
-    <PackageReference Include="Volo.Abp.TenantManagement.Domain.Shared" Version="9.1.1" />
-    <PackageReference Include="Volo.Abp.FeatureManagement.Domain.Shared" Version="9.1.1" />
-    <PackageReference Include="Volo.Abp.PermissionManagement.Domain.Shared" Version="9.1.1" />
-    <PackageReference Include="Volo.Abp.SettingManagement.Domain.Shared" Version="9.1.1" />
-    <PackageReference Include="Volo.Abp.OpenIddict.Domain.Shared" Version="9.1.1" />
+    <PackageReference Include="Volo.Abp.BackgroundJobs.Domain.Shared" Version="9.1.0" />
+    <PackageReference Include="Volo.Abp.AuditLogging.Domain.Shared" Version="9.1.0" />
+    <PackageReference Include="Volo.Abp.FeatureManagement.Domain.Shared" Version="9.1.0" />
+    <PackageReference Include="Volo.Abp.PermissionManagement.Domain.Shared" Version="9.1.0" />
+    <PackageReference Include="Volo.Abp.SettingManagement.Domain.Shared" Version="9.1.0" />
+    <PackageReference Include="Volo.Abp.BlobStoring.Database.Domain.Shared" Version="9.1.0" />
+    <PackageReference Include="Volo.Abp.GlobalFeatures" Version="9.1.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Volo.Abp.OpenIddict.Domain.Shared" Version="9.1.0" />
+    <PackageReference Include="Volo.Abp.Identity.Domain.Shared" Version="9.1.0" />
+    <PackageReference Include="Volo.Abp.TenantManagement.Domain.Shared" Version="9.1.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.Extensions.FileProviders.Embedded" Version="9.0.0" />
   </ItemGroup>
 
   <ItemGroup>
     <EmbeddedResource Include="Localization\CoreFW\*.json" />
     <Content Remove="Localization\CoreFW\*.json" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <PackageReference Include="Microsoft.Extensions.FileProviders.Embedded" Version="9.0.0" />
   </ItemGroup>
 
 </Project>
@@ -875,8 +920,8 @@ private static void ConfigureExtraProperties()
 ```csharp
 public class CoreFWDbContext :
 AbpDbContext<CoreFWDbContext>,
-IIdentityDbContext,
-ITenantManagementDbContext
+ITenantManagementDbContext,
+IIdentityDbContext
 ⋮----
 protected override void OnModelCreating(ModelBuilder builder)
 ⋮----
@@ -885,10 +930,11 @@ builder.ConfigurePermissionManagement();
 builder.ConfigureSettingManagement();
 builder.ConfigureBackgroundJobs();
 builder.ConfigureAuditLogging();
+builder.ConfigureFeatureManagement();
 builder.ConfigureIdentity();
 builder.ConfigureOpenIddict();
-builder.ConfigureFeatureManagement();
 builder.ConfigureTenantManagement();
+builder.ConfigureBlobStoring();
 ```
 
 ## File: src/Aqt.CoreFW.EntityFrameworkCore/EntityFrameworkCore/CoreFWDbContextFactory.cs
@@ -968,21 +1014,28 @@ public async Task MigrateAsync()
 
   <ItemGroup>
     <ProjectReference Include="..\Aqt.CoreFW.Domain\Aqt.CoreFW.Domain.csproj" />
-    <PackageReference Include="Volo.Abp.EntityFrameworkCore.Oracle" Version="9.1.1" />
-    <PackageReference Include="Volo.Abp.PermissionManagement.EntityFrameworkCore" Version="9.1.1" />
-    <PackageReference Include="Volo.Abp.SettingManagement.EntityFrameworkCore" Version="9.1.1" />
-    <PackageReference Include="Volo.Abp.Identity.EntityFrameworkCore" Version="9.1.1" />
-    <PackageReference Include="Volo.Abp.BackgroundJobs.EntityFrameworkCore" Version="9.1.1" />
-    <PackageReference Include="Volo.Abp.AuditLogging.EntityFrameworkCore" Version="9.1.1" />
-    <PackageReference Include="Volo.Abp.TenantManagement.EntityFrameworkCore" Version="9.1.1" />
-    <PackageReference Include="Volo.Abp.FeatureManagement.EntityFrameworkCore" Version="9.1.1" />
-    <PackageReference Include="Volo.Abp.OpenIddict.EntityFrameworkCore" Version="9.1.1" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Volo.Abp.EntityFrameworkCore.Oracle" Version="9.1.0" />
+    <PackageReference Include="Volo.Abp.PermissionManagement.EntityFrameworkCore" Version="9.1.0" />
+    <PackageReference Include="Volo.Abp.SettingManagement.EntityFrameworkCore" Version="9.1.0" />
+    <PackageReference Include="Volo.Abp.BackgroundJobs.EntityFrameworkCore" Version="9.1.0" />
+    <PackageReference Include="Volo.Abp.AuditLogging.EntityFrameworkCore" Version="9.1.0" />
+    <PackageReference Include="Volo.Abp.FeatureManagement.EntityFrameworkCore" Version="9.1.0" />
+    <PackageReference Include="Volo.Abp.BlobStoring.Database.EntityFrameworkCore" Version="9.1.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Volo.Abp.OpenIddict.EntityFrameworkCore" Version="9.1.0" />
+    <PackageReference Include="Volo.Abp.Identity.EntityFrameworkCore" Version="9.1.0" />
+    <PackageReference Include="Volo.Abp.TenantManagement.EntityFrameworkCore" Version="9.1.0" />
   </ItemGroup>
 
   <ItemGroup>
     <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="9.0.0">
-      <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers</IncludeAssets>
+      <PrivateAssets>compile; contentFiles; build; buildMultitargeting; buildTransitive; analyzers; native</PrivateAssets>
     </PackageReference>
   </ItemGroup>
 
@@ -1016,12 +1069,15 @@ public class TestModel
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Volo.Abp.Account.HttpApi" Version="9.1.1" />
-    <PackageReference Include="Volo.Abp.Identity.HttpApi" Version="9.1.1" />
-    <PackageReference Include="Volo.Abp.PermissionManagement.HttpApi" Version="9.1.1" />
-    <PackageReference Include="Volo.Abp.TenantManagement.HttpApi" Version="9.1.1" />
-    <PackageReference Include="Volo.Abp.FeatureManagement.HttpApi" Version="9.1.1" />
-    <PackageReference Include="Volo.Abp.SettingManagement.HttpApi" Version="9.1.1" />
+    <PackageReference Include="Volo.Abp.PermissionManagement.HttpApi" Version="9.1.0" />
+    <PackageReference Include="Volo.Abp.FeatureManagement.HttpApi" Version="9.1.0" />
+    <PackageReference Include="Volo.Abp.SettingManagement.HttpApi" Version="9.1.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Volo.Abp.Identity.HttpApi" Version="9.1.0" />
+    <PackageReference Include="Volo.Abp.Account.HttpApi" Version="9.1.0" />
+    <PackageReference Include="Volo.Abp.TenantManagement.HttpApi" Version="9.1.0" />
   </ItemGroup>
 
 </Project>
@@ -1055,12 +1111,15 @@ private void ConfigureLocalization()
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Volo.Abp.Account.HttpApi.Client" Version="9.1.1" />
-    <PackageReference Include="Volo.Abp.Identity.HttpApi.Client" Version="9.1.1" />
-    <PackageReference Include="Volo.Abp.PermissionManagement.HttpApi.Client" Version="9.1.1" />
-    <PackageReference Include="Volo.Abp.TenantManagement.HttpApi.Client" Version="9.1.1" />
-    <PackageReference Include="Volo.Abp.FeatureManagement.HttpApi.Client" Version="9.1.1" />
-    <PackageReference Include="Volo.Abp.SettingManagement.HttpApi.Client" Version="9.1.1" />
+    <PackageReference Include="Volo.Abp.PermissionManagement.HttpApi.Client" Version="9.1.0" />
+    <PackageReference Include="Volo.Abp.FeatureManagement.HttpApi.Client" Version="9.1.0" />
+    <PackageReference Include="Volo.Abp.SettingManagement.HttpApi.Client" Version="9.1.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Volo.Abp.Identity.HttpApi.Client" Version="9.1.0" />
+    <PackageReference Include="Volo.Abp.Account.HttpApi.Client" Version="9.1.0" />
+    <PackageReference Include="Volo.Abp.TenantManagement.HttpApi.Client" Version="9.1.0" />
   </ItemGroup>
 
   <ItemGroup>
@@ -1088,31 +1147,88 @@ context.Services.AddHttpClientProxies(
 @addTagHelper *, Volo.Abp.AspNetCore.Mvc.UI.Bundling
 ```
 
+## File: src/Aqt.CoreFW.Web/HealthChecks/CoreFWDatabaseCheck.cs
+```csharp
+public class CoreFWDatabaseCheck : IHealthCheck, ITransientDependency
+⋮----
+protected readonly IIdentityRoleRepository IdentityRoleRepository;
+⋮----
+public async Task<HealthCheckResult> CheckHealthAsync(HealthCheckContext context, CancellationToken cancellationToken = default)
+⋮----
+await IdentityRoleRepository.GetListAsync(sorting: nameof(IdentityRole.Id), maxResultCount: 1, cancellationToken: cancellationToken);
+return HealthCheckResult.Healthy($"Could connect to database and get record.");
+⋮----
+return HealthCheckResult.Unhealthy($"Error when trying to get database record. ", e);
+```
+
+## File: src/Aqt.CoreFW.Web/HealthChecks/HealthChecksBuilderExtensions.cs
+```csharp
+public static class HealthChecksBuilderExtensions
+⋮----
+public static void AddCoreFWHealthChecks(this IServiceCollection services)
+⋮----
+var healthChecksBuilder = services.AddHealthChecks();
+⋮----
+services.ConfigureHealthCheckEndpoint("/health-status");
+var configuration = services.GetConfiguration();
+⋮----
+if (string.IsNullOrEmpty(healthCheckUrl))
+⋮----
+var healthChecksUiBuilder = services.AddHealthChecksUI(settings =>
+⋮----
+settings.AddHealthCheckEndpoint("CoreFW Health Status", healthCheckUrl);
+⋮----
+healthChecksUiBuilder.AddInMemoryStorage();
+services.MapHealthChecksUiEndpoints(options =>
+⋮----
+private static IServiceCollection ConfigureHealthCheckEndpoint(this IServiceCollection services, string path)
+⋮----
+options.EndpointConfigureActions.Add(endpointContext =>
+⋮----
+endpointContext.Endpoints.MapHealthChecks(
+new PathString(path.EnsureStartsWith('/')),
+new HealthCheckOptions
+⋮----
+private static IServiceCollection MapHealthChecksUiEndpoints(this IServiceCollection services, Action<global::HealthChecks.UI.Configuration.Options>? setupOption = null)
+⋮----
+routerOptions.EndpointConfigureActions.Add(endpointContext =>
+⋮----
+endpointContext.Endpoints.MapHealthChecksUI(setupOption);
+```
+
 ## File: src/Aqt.CoreFW.Web/Menus/CoreFWMenuContributor.cs
 ```csharp
 public class CoreFWMenuContributor : IMenuContributor
 ⋮----
 public async Task ConfigureMenuAsync(MenuConfigurationContext context)
 ⋮----
-private Task ConfigureMainMenuAsync(MenuConfigurationContext context)
+private static Task ConfigureMainMenuAsync(MenuConfigurationContext context)
+⋮----
+context.Menu.AddItem(
+new ApplicationMenuItem(
 ⋮----
 var administration = context.Menu.GetAdministration();
 ⋮----
-context.Menu.Items.Insert(
-⋮----
-new ApplicationMenuItem(
+administration.SetSubItemOrder(IdentityMenuNames.GroupName, 1);
 ⋮----
 administration.SetSubItemOrder(TenantManagementMenuNames.GroupName, 1);
 ⋮----
 administration.TryRemoveMenuItem(TenantManagementMenuNames.GroupName);
 ⋮----
-administration.SetSubItemOrder(IdentityMenuNames.GroupName, 2);
 administration.SetSubItemOrder(SettingManagementMenuNames.GroupName, 3);
+administration.SetSubItemOrder(SettingManagementMenuNames.GroupName, 7);
 ```
 
 ## File: src/Aqt.CoreFW.Web/Menus/CoreFWMenus.cs
 ```csharp
 public class CoreFWMenus
+```
+
+## File: src/Aqt.CoreFW.Web/Menus/CoreFWToolbarContributor.cs
+```csharp
+public class CoreFWToolbarContributor : IToolbarContributor
+⋮----
+public virtual Task ConfigureToolbarAsync(IToolbarConfigurationContext context)
 ```
 
 ## File: src/Aqt.CoreFW.Web/Pages/_ViewImports.cshtml
@@ -1121,6 +1237,7 @@ public class CoreFWMenus
 @addTagHelper *, Volo.Abp.AspNetCore.Mvc.UI
 @addTagHelper *, Volo.Abp.AspNetCore.Mvc.UI.Bootstrap
 @addTagHelper *, Volo.Abp.AspNetCore.Mvc.UI.Bundling
+@addTagHelper *, Owl.reCAPTCHA
 ```
 
 ## File: src/Aqt.CoreFW.Web/Pages/CoreFWPageModel.cs
@@ -1131,62 +1248,305 @@ public abstract class CoreFWPageModel : AbpPageModel
 ## File: src/Aqt.CoreFW.Web/Pages/Index.cshtml
 ```
 @page
+@model Aqt.CoreFW.Web.Pages.IndexModel
+@using Aqt.CoreFW.Web.Menus
+@using Volo.Abp.AspNetCore.Mvc.UI.Layout
+@using Microsoft.AspNetCore.Mvc.Localization
+@using Aqt.CoreFW.Localization
+@using Volo.Abp.Users
+@inject IPageLayout PageLayout
+@inject IHtmlLocalizer<CoreFWResource> L
+@inject ICurrentUser CurrentUser
+@{
+    ViewBag.PageTitle = L["Home"];
+    PageLayout.Content.MenuItemName = CoreFWMenus.Home;
+}
+
+@section styles {
+    <abp-style src="/Pages/Index.css" />
+}
+
 <div class="row mb-3">
     <div class="col-xl-6 col-12 d-flex">
         <div class="card h-lg-100 w-100 overflow-hidden">
             <div class="card-body">
-                <div class="starting-content">
-                    <h3>Getting Started</h3>
-                    <p class="lead text-muted mb-2">Learn how to create and run a new web application using the application startup template.</p>
-                    <a href="https://docs.abp.io/en/commercial/latest/getting-started" class="btn btn-brand mb-4" target="_blank">Getting Started</a>
+                <div class="starting-content pe-5">
+                    @if (!CurrentUser.IsAuthenticated)
+                    {
+                        <h3>@L["Welcome"]</h3>
+                        <p class="lead text-muted mb-2">@L["LongWelcomeMessage"]</p>
+                        <a href="/Account/Login" class="btn btn-primary mb-4"><i class="fa-solid fa-right-to-bracket me-1"></i><span>@L["Login"]</span></a>
+                    }
+
+                    <h4>Getting Started</h4>
+                    <p class="text-muted mb-2">Learn how to create and run
+                        a
+                        new web application using the application startup
+                        template.</p>
+
+                    <a href="https://abp.io/docs/latest/getting-started" class="btn  btn-brand  mb-2" target="_blank">Getting Started</a>
 
                     <h4>Web Application Development Tutorial</h4>
-                    <p class="text-muted mb-2">Learn how to build an ABP based web application named Acme.BookStore.</p>
-                    <a href="https://docs.abp.io/en/commercial/latest/tutorials/book-store/part-1?UI=MVC&DB=EF" class="btn btn-primary soft mb-4" target="_blank">Explore Tutorial</a>
+                    <p class="text-muted mb-2">Learn how to build an ABP based
+                        web
+                        application named Acme.BookStore.</p>
+                    <a href="https://abp.io/docs/latest/tutorials/book-store/part-1?UI=MVC&DB=EF" class="btn btn-primary soft mb-2" target="_blank">Explore Tutorial</a>
 
                     <h4>Customize Lepton Theme</h4>
-                    <p class="text-muted mb-2">Learn how to customize LeptonX Theme as you wish.</p>
-                    <a href="https://docs.abp.io/en/commercial/latest/themes/lepton/customizing-lepton-theme" class="btn btn-primary soft mb-5 mb-xl-0" target="_blank">Customize Lepton</a>
+                    <p class="text-muted mb-2">Learn how to customize LeptonX
+                        Theme
+                        as you wish.</p>
+                    <a href="https://abp.io/docs/commercial/latest/themes/lepton-x/index" class="btn btn-primary soft mb-5 mb-xl-0" target="_blank">Customize Lepton</a>
                 </div>
                 <img class="card-bg-image" src="/images/getting-started/bg-01.png">
             </div>
         </div>
     </div>
-
     <div class="col-xl-3 col-md-6 d-flex">
         <div class="row">
             <div class="col-12 d-flex">
-                <div class="card overflow-hidden">
-                    <div class="card-body pb-0">
+                <div class="card overflow-hidden mb-3">
+                    <div class="card-body d-flex flex-column">
                         <div class="abp-support abp-logo mb-2"></div>
-                        <p class="text-muted mb-2">You can check for similar problems and solutions, or open a new topic to discuss your specific issue.</p>
-                        <a href="https://support.abp.io/QA/Questions" class="btn btn-brand soft" target="_blank">Visit Support</a>
-                        <img class="" src="/images/getting-started/img-support.png">
+                        <p class="text-muted mb-2">You can check for
+                            similar problems and solutions, or open a
+                            new topic to discuss your specific issue.</p>
+                        <a href="https://abp.io/support/questions" class="btn btn-brand soft" target="_blank">Visit Support</a>
+                        <img style="margin-bottom: -24px;" class="w-100 mt-auto" src="/images/getting-started/img-support.png">
                     </div>
                 </div>
             </div>
             <div class="col-12 d-flex">
                 <div class="card h-md-100 overflow-hidden">
-                    <div class="card-body pb-0">
+                    <div class="card-body d-flex flex-column">
                         <div class="abp-blog abp-logo mb-2"></div>
-                        <p class="text-muted mb-2">You can find content on .NET development, cross-platform, ASP.NET application templates, ABP-related news, and more.</p>
-                        <a href="https://blog.abp.io/abp" class="btn btn-brand soft" target="_blank">Visit Blog</a>
-                        <img style="margin-bottom: -24px;" src="/images/getting-started/img-blog.png">
+                        <p class="text-muted mb-2">You can find content
+                            on .NET development, cross-platform, ASP.NET
+                            application templates, ABP-related news, and
+                            more.</p>
+                        <a href="https://abp.io/blog" class="btn  btn-brand soft" target="_blank">Visit Blog</a>
+
+                        <img style="margin-bottom: -24px;" class="w-100 mt-auto" src="/images/getting-started/img-blog.png">
                     </div>
                 </div>
             </div>
         </div>
     </div>
-
     <div class="col-xl-3 col-md-6 d-flex">
         <div class="card h-100 overflow-hidden">
             <div class="card-body">
                 <div class="abp-community abp-logo mb-2"></div>
-                <p class="lead text-muted">A unique community platform for <span class="fw-bold">ABP Lovers!</span></p>
-                <p class="text-muted mb-2">Explore all ABP users' experiences with the ABP Framework, discover articles and videos on how to use ABP, and join raffles for a chance to win surprise gifts!</p>
-                <a class="btn btn-brand soft mb-3" href="https://community.abp.io/" target="_blank">Join ABP Community</a>
+                <p class="lead text-muted">A unique community platform
+                    for <span class="fw-bold">ABP Lovers!</span></p>
+                <p class="text-muted mb-2">Explore all ABP users'
+                    experiences with the ABP Framework, discover
+                    articles and videos on how to use ABP, and join
+                    raffles for a chance to win surprise gifts!</p>
+                <a class="btn btn-brand soft mb-3" href="https://abp.io/community/" target="_blank">Join ABP
+                    Community</a>
             </div>
-            <img class="mt-3" src="/images/getting-started/img-community.png">
+            <img class="mt-3 w-100" src="/images/getting-started/img-community.png">
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-xl-3 col-lg-4">
+        <div class="card">
+            <div class="card-header">
+                <div class="card-title text-body">More from ABP.IO</div>
+            </div>
+            <div class="card-body pt-0">
+
+                <div>
+                    <table class="table mb-0">
+                        <tbody>
+                            <tr>
+                                <td class="ps-0 d-flex">
+                                    <div class="rounded-circle me-2
+                                        flex-center bg-brand soft" style="width: 20px; height:
+                                        20px;"><i class="bi bi-check fs-4"></i></div>
+                                    <div> Latest Release Logs </div>
+                                </td>
+                                <td class="text-end pe-0 opacity-25">
+                                    <a href="https://github.com/abpframework/abp/releases" target="_blank">
+                                        <i class="bi
+                                            bi-box-arrow-up-right
+                                            text-dark"></i>
+                                    </a>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="ps-0 d-flex">
+                                    <div class="rounded-circle me-2
+                                        flex-center bg-brand soft" style="width: 20px; height:
+                                        20px;"><i class="bi bi-check fs-4"></i></div>
+                                    <div> Video Courses </div>
+                                </td>
+                                <td class="text-end pe-0 opacity-25">
+                                    <a href="https://abp.io/video-courses/essentials" target="_blank">
+                                        <i class="bi
+                                            bi-box-arrow-up-right
+                                            text-dark"></i>
+                                    </a>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="ps-0 d-flex">
+                                    <div class="rounded-circle me-2
+                                        flex-center bg-brand soft" style="width: 20px; height:
+                                        20px;"><i class="bi bi-check fs-4"></i></div>
+                                    <div> Samples </div>
+                                </td>
+                                <td class="text-end pe-0 opacity-25">
+                                    <a href="https://abp.io/docs/latest/Samples/Index" target="_blank">
+                                        <i class="bi
+                                            bi-box-arrow-up-right
+                                            text-dark"></i>
+                                    </a>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="ps-0 d-flex">
+                                    <div class="rounded-circle me-2
+                                        flex-center bg-brand soft" style="width: 20px; height:
+                                        20px;"><i class="bi bi-check fs-4"></i></div>
+                                    <div> Books </div>
+                                </td>
+                                <td class="text-end pe-0 opacity-25">
+                                    <a href="https://abp.io/books" target="_blank">
+                                        <i class="bi
+                                            bi-box-arrow-up-right
+                                            text-dark"></i>
+                                    </a>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="ps-0 d-flex border-bottom-0">
+                                    <div class="rounded-circle me-2
+                                        flex-center bg-brand soft" style="width: 20px; height:
+                                        20px;"><i class="bi bi-check fs-4"></i></div>
+                                    <div> FAQ </div>
+                                </td>
+                                <td class="text-end pe-0 opacity-25
+                                    border-bottom-0">
+                                    <a href="https://abp.io/faq" target="_blank">
+                                        <i class="bi
+                                            bi-box-arrow-up-right
+                                            text-dark"></i>
+                                    </a>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-xl-6 col-lg-8 d-flex">
+        <div class="card">
+            <div class="card-body d-flex">
+                <div class="row align-items-center">
+                    <div class="col-md-8">
+                        <p class="text-muted mb-0">THE OFFICIAL GUIDE</p>
+                        <h3>Mastering ABP Framework</h3>
+                        <p class="text-muted">Written by the creator of the ABP
+                            Framework, this book will help you gain a complete
+                            understanding of the framework
+                            and modern web application development techniques.</p>
+                        <div class="d-md-flex mb-2 mb-md-0">
+                            <a href="https://www.amazon.com/gp/product/B097Z2DM8Q" target="_blank" class="btn btn-primary soft
+                                me-md-2 mb-2 mb-md-0">
+                                Buy on Amazon US
+                            </a>
+                            <a href="https://www.packtpub.com/product/mastering-abp-framework/9781801079242" target="_blank" class="btn btn-primary soft mb-2
+                                mb-md-0">
+                                Buy on PACKT
+                            </a>
+                        </div>
+                    </div>
+                    <div class="col">
+                        <img class="w-100" src="/images/getting-started/book.png">
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+    <div class="col-xl-3 col-lg-4">
+        <div class="card">
+            <div class="card-header">
+                <div class="card-title text-body">Follow us on Social Media</div>
+            </div>
+            <div class="card-body pt-0">
+                <div>
+                    <table class="table mb-0">
+                        <tbody>
+                            <tr>
+                                <td class="ps-0 d-flex">
+                                    <img src="/images/getting-started/x-white.svg" class="me-2" style="background-color: black;">
+                                    <div>X.com</div>
+                                </td>
+                                <td class="text-end pe-0 opacity-25">
+                                    <a href="https://twitter.com/abpframework" target="_blank">
+                                        <i class="bi bi-box-arrow-up-right
+                                            text-dark"></i>
+                                    </a>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="ps-0 d-flex">
+                                    <img src="/images/getting-started/discord.svg" class="me-2">
+                                    <div>Discord</div>
+                                </td>
+                                <td class="text-end pe-0 opacity-25">
+                                    <a href="https://abp.io/community/discord" target="_blank">
+                                        <i class="bi bi-box-arrow-up-right
+                                            text-dark"></i>
+                                    </a>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="ps-0 d-flex">
+                                    <img src="/images/getting-started/stack-overflow.svg" class="me-2">
+                                    <div>Stack Overflow</div>
+                                </td>
+                                <td class="text-end pe-0 opacity-25">
+                                    <a href="https://stackoverflow.com/questions/tagged/abp" target="_blank">
+                                        <i class="bi bi-box-arrow-up-right
+                                            text-dark"></i>
+                                    </a>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="ps-0 d-flex">
+                                    <img src="/images/getting-started/youtube.svg" class="me-2">
+                                    <div>YouTube</div>
+                                </td>
+                                <td class="text-end pe-0 opacity-25">
+                                    <a href="https://www.youtube.com/@@Volosoft" target="_blank">
+                                        <i class="bi bi-box-arrow-up-right
+                                            text-dark"></i>
+                                    </a>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="ps-0 d-flex border-bottom-0">
+                                    <img src="/images/getting-started/instagram.svg" class="me-2">
+                                    <div>Instagram</div>
+                                </td>
+                                <td class="text-end pe-0 opacity-25
+                                    border-bottom-0">
+                                    <a href="https://www.instagram.com/abpframework/" target="_blank">
+                                        <i class="bi bi-box-arrow-up-right
+                                            text-dark"></i>
+                                    </a>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
         </div>
     </div>
 </div>
@@ -1195,20 +1555,12 @@ public abstract class CoreFWPageModel : AbpPageModel
 ## File: src/Aqt.CoreFW.Web/Pages/Index.cshtml.cs
 ```csharp
 public class IndexModel : CoreFWPageModel
-⋮----
-public void OnGet()
 ```
 
 ## File: src/Aqt.CoreFW.Web/Pages/Index.css
 ```css
-body {
+.starting-content {
 .card-bg-image {
-```
-
-## File: src/Aqt.CoreFW.Web/Pages/Index.js
-```javascript
-$(function () {
-abp.log.debug('Index.js initialized!');
 ```
 
 ## File: src/Aqt.CoreFW.Web/Properties/AssemblyInfo.cs
@@ -1223,8 +1575,8 @@ abp.log.debug('Index.js initialized!');
     "windowsAuthentication": false,
     "anonymousAuthentication": true,
     "iisExpress": {
-      "applicationUrl": "https://localhost:44395/",
-      "sslPort": 44395
+      "applicationUrl": "https://localhost:44340/",
+      "sslPort": 44340
     }
   },
   "profiles": {
@@ -1241,7 +1593,7 @@ abp.log.debug('Index.js initialized!');
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development"
       },
-      "applicationUrl": "https://localhost:44395/"
+      "applicationUrl": "https://localhost:44340/"
     }
   }
 }
@@ -1323,14 +1675,14 @@ abp.log.debug('Index.js initialized!');
 </svg>
 ```
 
+## File: src/Aqt.CoreFW.Web/wwwroot/global-scripts.js
+```javascript
+
+```
+
 ## File: src/Aqt.CoreFW.Web/wwwroot/global-styles.css
 ```css
 :root .lpx-brand-logo {
-```
-
-## File: src/Aqt.CoreFW.Web/abp.resourcemapping.js
-```javascript
-
 ```
 
 ## File: src/Aqt.CoreFW.Web/appsettings.Development.json
@@ -1343,20 +1695,20 @@ abp.log.debug('Index.js initialized!');
 ```json
 {
   "App": {
-    "SelfUrl": "https://localhost:44395"
+    "SelfUrl": "https://localhost:44340",
+    "HealthCheckUrl": "/health-status"
   },
   "ConnectionStrings": {
     "Default": "Data Source=(DESCRIPTION=(ADDRESS_LIST=(ADDRESS=(PROTOCOL=TCP)(HOST=localhost)(PORT=1521)))(CONNECT_DATA=(SERVER=DEDICATED)(SERVICE_NAME=FREEPDB1)));User Id=corefw_v2;Password=123456a@;"
   },
+  "AuthServer": {
+    "Authority": "https://localhost:44340",
+    "RequireHttpsMetadata": true,
+    "CertificatePassPhrase": "6d507a6c-edd9-4062-b351-2f088ca3c589"
+  },
   "StringEncryption": {
-    "DefaultPassPhrase": "9Nnk3hbQTd0h8i7Y"
+    "DefaultPassPhrase": "Dwo3dnXZI8AGXpcL"
   }
-}
-```
-
-## File: src/Aqt.CoreFW.Web/appsettings.secrets.json
-```json
-{
 }
 ```
 
@@ -1369,6 +1721,7 @@ abp.log.debug('Index.js initialized!');
   <PropertyGroup>
     <TargetFramework>net9.0</TargetFramework>
     <Nullable>enable</Nullable>
+    <AspNetCoreHostingModel>InProcess</AspNetCoreHostingModel>
     <RootNamespace>Aqt.CoreFW.Web</RootNamespace>
     <AssetTargetFallback>$(AssetTargetFallback);portable-net45+win8+wp8+wpa81;</AssetTargetFallback>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
@@ -1376,24 +1729,7 @@ abp.log.debug('Index.js initialized!');
     <GenerateRuntimeConfigurationFiles>true</GenerateRuntimeConfigurationFiles>
     <MvcRazorExcludeRefAssembliesFromPublish>false</MvcRazorExcludeRefAssembliesFromPublish>
     <PreserveCompilationReferences>true</PreserveCompilationReferences>
-    <UserSecretsId>Aqt.CoreFW-4681b4fd-151f-4221-84a4-929d86723e4c</UserSecretsId>
   </PropertyGroup>
-
-  <ItemGroup>
-    <Compile Remove="Logs\**" />
-    <Content Remove="Logs\**" />
-    <EmbeddedResource Remove="Logs\**" />
-    <None Remove="Logs\**" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <None Update="Pages\**\*.js">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Update="Pages\**\*.css">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-  </ItemGroup>
 
   <ItemGroup Condition="Exists('./openiddict.pfx')">
     <None Remove="openiddict.pfx" />
@@ -1403,25 +1739,56 @@ abp.log.debug('Index.js initialized!');
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Serilog.AspNetCore" Version="8.0.2" />
-    <PackageReference Include="Serilog.Sinks.Async" Version="2.0.0" />
+    <Compile Remove="Logs\**" />
+    <Content Remove="Logs\**" />
+    <EmbeddedResource Remove="Logs\**" />
+    <None Remove="Logs\**" />
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Volo.Abp.AspNetCore.Mvc.UI.Theme.LeptonXLite" Version="4.1.0-preview*" />
+    <Content Include="Pages\**\*.js">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Pages\**\*.css">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="AspNetCore.HealthChecks.UI" Version="9.0.0" />
+    <PackageReference Include="AspNetCore.HealthChecks.UI.Client" Version="9.0.0" />
+    <PackageReference Include="AspNetCore.HealthChecks.UI.InMemory.Storage" Version="9.0.0" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.InMemory" Version="9.0.0" />
+    <PackageReference Include="Serilog.AspNetCore" Version="9.0.0" />
+    <PackageReference Include="Serilog.Sinks.Async" Version="2.1.0" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\Aqt.CoreFW.Application\Aqt.CoreFW.Application.csproj" />
     <ProjectReference Include="..\Aqt.CoreFW.HttpApi\Aqt.CoreFW.HttpApi.csproj" />
     <ProjectReference Include="..\Aqt.CoreFW.EntityFrameworkCore\Aqt.CoreFW.EntityFrameworkCore.csproj" />
-    <PackageReference Include="Volo.Abp.Autofac" Version="9.1.1" />
-    <PackageReference Include="Volo.Abp.Swashbuckle" Version="9.1.1" />
-    <PackageReference Include="Volo.Abp.AspNetCore.Serilog" Version="9.1.1" />
-    <PackageReference Include="Volo.Abp.Identity.Web" Version="9.1.1" />
-    <PackageReference Include="Volo.Abp.Account.Web.OpenIddict" Version="9.1.1" />
-    <PackageReference Include="Volo.Abp.TenantManagement.Web" Version="9.1.1" />
-    <PackageReference Include="Volo.Abp.SettingManagement.Web" Version="9.1.1" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Volo.Abp.Autofac" Version="9.1.0" />
+    <PackageReference Include="Volo.Abp.AspNetCore.Serilog" Version="9.1.0" />
+    <PackageReference Include="Volo.Abp.AspNetCore.Authentication.JwtBearer" Version="9.1.0" />
+    <PackageReference Include="Volo.Abp.Swashbuckle" Version="9.1.0" />
+    <PackageReference Include="Volo.Abp.FeatureManagement.Web" Version="9.1.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Volo.Abp.AspNetCore.Mvc.UI.Theme.LeptonXLite" Version="4.1.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Volo.Abp.Account.Web.OpenIddict" Version="9.1.0" />
+    <PackageReference Include="Volo.Abp.Identity.Web" Version="9.1.0" />
+    <PackageReference Include="Volo.Abp.TenantManagement.Web" Version="9.1.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Volo.Abp.Studio.Client.AspNetCore" Version="0.9.25" />
   </ItemGroup>
 
 </Project>
@@ -1456,21 +1823,27 @@ options.UseAspNetCore();
 ⋮----
 if (!hostingEnvironment.IsDevelopment())
 ⋮----
-serverBuilder.AddProductionEncryptionAndSigningCertificate("openiddict.pfx", "2385ab06-d604-4a37-ba77-a27dcf46acca");
+serverBuilder.AddProductionEncryptionAndSigningCertificate("openiddict.pfx", configuration["AuthServer:CertificatePassPhrase"]!);
+serverBuilder.SetIssuer(new Uri(configuration["AuthServer:Authority"]!));
 ⋮----
 public override void ConfigureServices(ServiceConfigurationContext context)
 ⋮----
-private void ConfigureAuthentication(ServiceConfigurationContext context)
+private void ConfigureHealthChecks(ServiceConfigurationContext context)
 ⋮----
-context.Services.ForwardIdentityAuthenticationForBearer(OpenIddictValidationAspNetCoreDefaults.AuthenticationScheme);
-⋮----
-private void ConfigureUrls(IConfiguration configuration)
+context.Services.AddCoreFWHealthChecks();
 ⋮----
 private void ConfigureBundles()
 ⋮----
 options.StyleBundles.Configure(
 ⋮----
+bundle.AddFiles("/global-scripts.js");
 bundle.AddFiles("/global-styles.css");
+⋮----
+private void ConfigureUrls(IConfiguration configuration)
+⋮----
+private void ConfigureAuthentication(ServiceConfigurationContext context)
+⋮----
+context.Services.ForwardIdentityAuthenticationForBearer(OpenIddictValidationAspNetCoreDefaults.AuthenticationScheme);
 ⋮----
 private void ConfigureAutoMapper()
 ⋮----
@@ -1478,14 +1851,17 @@ private void ConfigureVirtualFileSystem(IWebHostEnvironment hostingEnvironment)
 ⋮----
 if (hostingEnvironment.IsDevelopment())
 ⋮----
-options.FileSets.ReplaceEmbeddedByPhysical<CoreFWDomainSharedModule>(Path.Combine(hostingEnvironment.ContentRootPath, $"..{Path.DirectorySeparatorChar}Aqt.CoreFW.Domain.Shared"));
-options.FileSets.ReplaceEmbeddedByPhysical<CoreFWDomainModule>(Path.Combine(hostingEnvironment.ContentRootPath, $"..{Path.DirectorySeparatorChar}Aqt.CoreFW.Domain"));
-options.FileSets.ReplaceEmbeddedByPhysical<CoreFWApplicationContractsModule>(Path.Combine(hostingEnvironment.ContentRootPath, $"..{Path.DirectorySeparatorChar}Aqt.CoreFW.Application.Contracts"));
-options.FileSets.ReplaceEmbeddedByPhysical<CoreFWApplicationModule>(Path.Combine(hostingEnvironment.ContentRootPath, $"..{Path.DirectorySeparatorChar}Aqt.CoreFW.Application"));
+options.FileSets.ReplaceEmbeddedByPhysical<CoreFWDomainSharedModule>(Path.Combine(hostingEnvironment.ContentRootPath, string.Format("..{0}Aqt.CoreFW.Domain.Shared", Path.DirectorySeparatorChar)));
+options.FileSets.ReplaceEmbeddedByPhysical<CoreFWDomainModule>(Path.Combine(hostingEnvironment.ContentRootPath, string.Format("..{0}Aqt.CoreFW.Domain", Path.DirectorySeparatorChar)));
+options.FileSets.ReplaceEmbeddedByPhysical<CoreFWApplicationContractsModule>(Path.Combine(hostingEnvironment.ContentRootPath, string.Format("..{0}Aqt.CoreFW.Application.Contracts", Path.DirectorySeparatorChar)));
+options.FileSets.ReplaceEmbeddedByPhysical<CoreFWApplicationModule>(Path.Combine(hostingEnvironment.ContentRootPath, string.Format("..{0}Aqt.CoreFW.Application", Path.DirectorySeparatorChar)));
+options.FileSets.ReplaceEmbeddedByPhysical<CoreFWHttpApiModule>(Path.Combine(hostingEnvironment.ContentRootPath, string.Format("..{0}..{0}src{0}Aqt.CoreFW.HttpApi", Path.DirectorySeparatorChar)));
 ⋮----
 private void ConfigureNavigationServices()
 ⋮----
 options.MenuContributors.Add(new CoreFWMenuContributor());
+⋮----
+options.Contributors.Add(new CoreFWToolbarContributor());
 ⋮----
 private void ConfigureAutoApiControllers()
 ⋮----
@@ -1503,6 +1879,7 @@ public override void OnApplicationInitialization(ApplicationInitializationContex
 ⋮----
 var app = context.GetApplicationBuilder();
 var env = context.GetEnvironment();
+app.UseForwardedHeaders();
 if (env.IsDevelopment())
 ⋮----
 app.UseDeveloperExceptionPage();
@@ -1511,10 +1888,13 @@ app.UseAbpRequestLocalization();
 if (!env.IsDevelopment())
 ⋮----
 app.UseErrorPage();
+app.UseHsts();
 ⋮----
 app.UseCorrelationId();
 app.MapAbpStaticAssets();
+app.UseAbpStudioLink();
 app.UseRouting();
+app.UseAbpSecurityHeaders();
 app.UseAuthentication();
 app.UseAbpOpenIddictValidation();
 ⋮----
@@ -1533,15 +1913,41 @@ app.UseAbpSerilogEnrichers();
 app.UseConfiguredEndpoints();
 ```
 
+## File: src/Aqt.CoreFW.Web/Dockerfile
+```
+FROM mcr.microsoft.com/dotnet/aspnet:9.0
+COPY bin/Release/net9.0/publish/ app/
+WORKDIR /app
+ENV ASPNETCORE_URLS=http://+:80
+ENTRYPOINT ["dotnet", "Aqt.CoreFW.Web.dll"]
+```
+
+## File: src/Aqt.CoreFW.Web/Dockerfile.local
+```
+FROM mcr.microsoft.com/dotnet/aspnet:9.0 AS base
+COPY bin/Release/net9.0/publish/ app/
+WORKDIR /app
+
+FROM mcr.microsoft.com/dotnet/sdk:9.0 AS build
+WORKDIR /src
+RUN dotnet dev-certs https -v -ep openiddict.pfx -p 6d507a6c-edd9-4062-b351-2f088ca3c589
+
+FROM base AS final
+WORKDIR /app
+COPY --from=build /src .
+
+ENTRYPOINT ["dotnet", "Aqt.CoreFW.Web.dll"]
+```
+
 ## File: src/Aqt.CoreFW.Web/package.json
 ```json
 {
-  "version": "1.0.0",
-  "name": "my-app",
-  "private": true,
-  "dependencies": {
-    "@abp/aspnetcore.mvc.ui.theme.leptonxlite": "~4.1.1"
-  }
+	"version": "1.0.0",
+	"name": "my-app",
+	"private": true,
+	"dependencies": {
+    "@abp/aspnetcore.mvc.ui.theme.leptonxlite": "~4.1.0"
+	}
 }
 ```
 
@@ -1552,6 +1958,16 @@ public class Program
 public async static Task<int> Main(string[] args)
 ⋮----
 Log.Logger = new LoggerConfiguration()
+.WriteTo.Async(c => c.File("Logs/logs.txt"))
+.WriteTo.Async(c => c.Console())
+.CreateBootstrapLogger();
+⋮----
+Log.Information("Starting web host.");
+var builder = WebApplication.CreateBuilder(args);
+⋮----
+.AddAppSettingsSecretsJson()
+.UseAutofac()
+.UseSerilog((context, services, loggerConfiguration) =>
 ⋮----
 .MinimumLevel.Debug()
 ⋮----
@@ -1560,15 +1976,8 @@ Log.Logger = new LoggerConfiguration()
 .MinimumLevel.Override("Microsoft", LogEventLevel.Information)
 .MinimumLevel.Override("Microsoft.EntityFrameworkCore", LogEventLevel.Warning)
 .Enrich.FromLogContext()
-.WriteTo.Async(c => c.File("Logs/logs.txt"))
-.WriteTo.Async(c => c.Console())
-.CreateLogger();
 ⋮----
-Log.Information("Starting web host.");
-var builder = WebApplication.CreateBuilder(args);
-builder.Host.AddAppSettingsSecretsJson()
-.UseAutofac()
-.UseSerilog();
+.WriteTo.Async(c => c.AbpStudio(services));
 ⋮----
 var app = builder.Build();
 await app.InitializeApplicationAsync();
@@ -1633,7 +2042,7 @@ result.Items.ShouldContain(u => u.UserName == "admin");
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.11.1.0" />
+    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.12.0" />
   </ItemGroup>
 
 </Project>
@@ -1683,12 +2092,12 @@ adminUser.Email.ShouldBe("newemail@abp.io");
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.11.1.0" />
+    <ProjectReference Include="..\..\src\Aqt.CoreFW.Domain\Aqt.CoreFW.Domain.csproj" />
+    <ProjectReference Include="..\Aqt.CoreFW.TestBase\Aqt.CoreFW.TestBase.csproj" />
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\src\Aqt.CoreFW.Domain\Aqt.CoreFW.Domain.csproj" />
-    <ProjectReference Include="..\Aqt.CoreFW.TestBase\Aqt.CoreFW.TestBase.csproj" />
+    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.12.0" />
   </ItemGroup>
 
 </Project>
@@ -1721,9 +2130,7 @@ public class SampleRepositoryTests : CoreFWEntityFrameworkCoreTestBase
 ⋮----
 public async Task Should_Query_AppUser()
 ⋮----
-var adminUser = await (await _appUserRepository.GetQueryableAsync())
-.Where(u => u.UserName == "admin")
-.FirstOrDefaultAsync();
+.FirstOrDefaultAsync(u => u.UserName == "admin");
 adminUser.ShouldNotBeNull();
 ```
 
@@ -1767,7 +2174,7 @@ public override void OnApplicationShutdown(ApplicationShutdownContext context)
 ⋮----
 private static SqliteConnection CreateDatabaseAndGetConnection()
 ⋮----
-var connection = new AbpUnitTestSqliteConnection("Data Source=:memory:");
+var connection = new SqliteConnection("Data Source=:memory:");
 connection.Open();
 ⋮----
 .UseSqlite(connection)
@@ -1792,11 +2199,11 @@ context.GetService<IRelationalDatabaseCreator>().CreateTables();
   <ItemGroup>
     <ProjectReference Include="..\..\src\Aqt.CoreFW.EntityFrameworkCore\Aqt.CoreFW.EntityFrameworkCore.csproj" />
     <ProjectReference Include="..\Aqt.CoreFW.Application.Tests\Aqt.CoreFW.Application.Tests.csproj" />
-    <PackageReference Include="Volo.Abp.EntityFrameworkCore.Sqlite" Version="9.1.1" />
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.11.1.0" />
+    <PackageReference Include="Volo.Abp.EntityFrameworkCore.Sqlite" Version="9.1.0" />
+    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.12.0" />
   </ItemGroup>
 
 </Project>
@@ -1807,7 +2214,7 @@ context.GetService<IRelationalDatabaseCreator>().CreateTables();
 {
   "RemoteServices": {
     "Default": {
-      "BaseUrl": "https://localhost:44395"
+      "BaseUrl": "https://localhost:44300/"
     }
   },
   "IdentityClients": {
@@ -1816,7 +2223,7 @@ context.GetService<IRelationalDatabaseCreator>().CreateTables();
       "ClientId": "CoreFW_App",
       "UserName": "admin",
       "UserPassword": "1q2w3E*",
-      "Authority": "https://localhost:44395",
+      "Authority": "https://localhost:44301",
       "Scope": "CoreFW"
     }
   }
@@ -1853,9 +2260,12 @@ context.GetService<IRelationalDatabaseCreator>().CreateTables();
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Volo.Abp.Http.Client.IdentityModel" Version="9.1.1" />
-    <PackageReference Include="Volo.Abp.Autofac" Version="9.1.1" />
     <ProjectReference Include="..\..\src\Aqt.CoreFW.HttpApi.Client\Aqt.CoreFW.HttpApi.Client.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Volo.Abp.Autofac" Version="9.1.0" />
+    <PackageReference Include="Volo.Abp.Http.Client.IdentityModel" Version="9.1.0" />
   </ItemGroup>
 
   <ItemGroup>
@@ -1871,33 +2281,20 @@ context.GetService<IRelationalDatabaseCreator>().CreateTables();
 public class ClientDemoService : ITransientDependency
 ⋮----
 private readonly IProfileAppService _profileAppService;
+private readonly IIdentityUserAppService _identityUserAppService;
 ⋮----
 public async Task RunAsync()
 ⋮----
-var output = await _profileAppService.GetAsync();
-Console.WriteLine($"UserName : {output.UserName}");
-Console.WriteLine($"Email    : {output.Email}");
-Console.WriteLine($"Name     : {output.Name}");
-Console.WriteLine($"Surname  : {output.Surname}");
-```
-
-## File: test/Aqt.CoreFW.HttpApi.Client.ConsoleTestApp/ConsoleTestAppHostedService.cs
-```csharp
-public class ConsoleTestAppHostedService : IHostedService
+var profileDto = await _profileAppService.GetAsync();
+Console.WriteLine($"UserName : {profileDto.UserName}");
+Console.WriteLine($"Email    : {profileDto.Email}");
+Console.WriteLine($"Name     : {profileDto.Name}");
+Console.WriteLine($"Surname  : {profileDto.Surname}");
+Console.WriteLine();
+var resultDto = await _identityUserAppService.GetListAsync(new GetIdentityUsersInput());
+Console.WriteLine($"Total users: {resultDto.TotalCount}");
 ⋮----
-private readonly IConfiguration _configuration;
-⋮----
-public async Task StartAsync(CancellationToken cancellationToken)
-⋮----
-options.Services.ReplaceConfiguration(_configuration);
-options.UseAutofac();
-⋮----
-await application.InitializeAsync();
-⋮----
-await demo.RunAsync();
-await application.ShutdownAsync();
-⋮----
-public Task StopAsync(CancellationToken cancellationToken)
+Console.WriteLine($"- [{identityUserDto.Id}] {identityUserDto.Name}");
 ```
 
 ## File: test/Aqt.CoreFW.HttpApi.Client.ConsoleTestApp/CoreFWConsoleApiClientModule.cs
@@ -1918,12 +2315,18 @@ class Program
 ⋮----
 static async Task Main(string[] args)
 ⋮----
-await CreateHostBuilder(args).RunConsoleAsync();
+var builder = new ConfigurationBuilder();
+builder.AddJsonFile("appsettings.json", false);
+builder.AddJsonFile("appsettings.secrets.json", true);
+options.Services.ReplaceConfiguration(builder.Build());
+options.UseAutofac();
 ⋮----
-public static IHostBuilder CreateHostBuilder(string[] args) =>
-Host.CreateDefaultBuilder(args)
-.AddAppSettingsSecretsJson()
-.ConfigureServices((hostContext, services) =>
+await application.InitializeAsync();
+⋮----
+await demo.RunAsync();
+Console.WriteLine("Press ENTER to stop application...");
+Console.ReadLine();
+await application.ShutdownAsync();
 ```
 
 ## File: test/Aqt.CoreFW.TestBase/Security/FakeCurrentPrincipalAccessor.cs
@@ -1941,6 +2344,19 @@ new Claim(AbpClaimTypes.UserName, "admin"),
 new Claim(AbpClaimTypes.Email, "admin@abp.io")
 ```
 
+## File: test/Aqt.CoreFW.TestBase/appsettings.json
+```json
+{
+
+}
+```
+
+## File: test/Aqt.CoreFW.TestBase/appsettings.secrets.json
+```json
+{
+}
+```
+
 ## File: test/Aqt.CoreFW.TestBase/Aqt.CoreFW.TestBase.csproj
 ```
 <Project Sdk="Microsoft.NET.Sdk">
@@ -1954,23 +2370,37 @@ new Claim(AbpClaimTypes.Email, "admin@abp.io")
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Volo.Abp.TestBase" Version="9.1.1" />
-    <PackageReference Include="Volo.Abp.Autofac" Version="9.1.1" />
-    <PackageReference Include="Volo.Abp.Authorization" Version="9.1.1" />
-    <PackageReference Include="Volo.Abp.BackgroundJobs.Abstractions" Version="9.1.1" />
+    <None Remove="appsettings.json" />
+    <Content Include="appsettings.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+    </Content>
+    <None Remove="appsettings.secrets.json" />
+    <Content Include="appsettings.secrets.json">
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.11.1.0" />
-    <PackageReference Include="NSubstitute" Version="5.1.0" />
-    <PackageReference Include="NSubstitute.Analyzers.CSharp" Version="1.0.17.0">
+    <PackageReference Include="Volo.Abp.Autofac" Version="9.1.0" />
+    <PackageReference Include="Volo.Abp.TestBase" Version="9.1.0" />
+    <PackageReference Include="Volo.Abp.Authorization" Version="9.1.0" />
+    <PackageReference Include="Volo.Abp.BackgroundJobs.Abstractions" Version="9.1.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.12.0" />
+    <PackageReference Include="NSubstitute" Version="5.3.0" />
+    <PackageReference Include="NSubstitute.Analyzers.CSharp" Version="1.0.17">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers</IncludeAssets>
     </PackageReference>
     <PackageReference Include="Shouldly" Version="4.2.1" />
-    <PackageReference Include="xunit" Version="2.9.2" />
-    <PackageReference Include="xunit.extensibility.execution" Version="2.9.2" />
-    <PackageReference Include="xunit.runner.visualstudio" Version="2.8.2" />
+    <PackageReference Include="xunit" Version="2.9.3" />
+    <PackageReference Include="xunit.extensibility.execution" Version="2.9.3" />
+    <PackageReference Include="xunit.runner.visualstudio" Version="3.0.1" />
   </ItemGroup>
 
 </Project>
@@ -1984,6 +2414,13 @@ where TStartupModule : IAbpModule
 protected override void SetAbpApplicationCreationOptions(AbpApplicationCreationOptions options)
 ⋮----
 options.UseAutofac();
+⋮----
+protected override void BeforeAddApplication(IServiceCollection services)
+⋮----
+var builder = new ConfigurationBuilder();
+builder.AddJsonFile("appsettings.json", false);
+builder.AddJsonFile("appsettings.secrets.json", true);
+services.ReplaceConfiguration(builder.Build());
 ⋮----
 protected virtual Task WithUnitOfWorkAsync(Func<Task> func)
 ⋮----
@@ -2026,11 +2463,15 @@ using (var scope = context.ServiceProvider.CreateScope())
 public static class CoreFWTestConsts
 ```
 
-## File: test/Aqt.CoreFW.TestBase/CoreFWTestDataSeedContributor.cs
+## File: test/Aqt.CoreFW.TestBase/CoreFWTestDataBuilder.cs
 ```csharp
 public class CoreFWTestDataSeedContributor : IDataSeedContributor, ITransientDependency
 ⋮----
+private readonly ICurrentTenant _currentTenant;
+⋮----
 public Task SeedAsync(DataSeedContext context)
+⋮----
+using (_currentTenant.Change(context?.TenantId))
 ```
 
 ## File: test/Aqt.CoreFW.Web.Tests/Pages/Index_Tests.cs
@@ -2051,14 +2492,20 @@ response.ShouldNotBeNull();
   <PropertyGroup>
     <TargetFramework>net9.0</TargetFramework>
     <Nullable>enable</Nullable>
+    <OutputType>Exe</OutputType>
+    <AssetTargetFallback>$(AssetTargetFallback);portable-net45+win8+wp8+wpa81;</AssetTargetFallback>
+    <RootNamespace>Aqt.CoreFW</RootNamespace>
+    <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
+    <GenerateBindingRedirectsOutputType>true</GenerateBindingRedirectsOutputType>
+    <GenerateRuntimeConfigurationFiles>true</GenerateRuntimeConfigurationFiles>
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.11.1.0" />
-    <PackageReference Include="HtmlAgilityPack" Version="1.11.67.0" />
+    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.12.0" />
+    <PackageReference Include="HtmlAgilityPack" Version="1.11.72" />
+    <PackageReference Include="Volo.Abp.AspNetCore.TestBase" Version="9.1.0" />
     <ProjectReference Include="..\Aqt.CoreFW.Application.Tests\Aqt.CoreFW.Application.Tests.csproj" />
     <ProjectReference Include="..\..\src\Aqt.CoreFW.Web\Aqt.CoreFW.Web.csproj" />
-    <PackageReference Include="Volo.Abp.AspNetCore.TestBase" Version="9.1.1" />
     <ProjectReference Include="..\Aqt.CoreFW.EntityFrameworkCore.Tests\Aqt.CoreFW.EntityFrameworkCore.Tests.csproj" />
   </ItemGroup>
 
@@ -2081,13 +2528,18 @@ response.ShouldNotBeNull();
 </Project>
 ```
 
+## File: test/Aqt.CoreFW.Web.Tests/CoreFWWebCollection.cs
+```csharp
+public class CoreFWWebCollection : CoreFWEntityFrameworkCoreCollectionFixtureBase
+```
+
 ## File: test/Aqt.CoreFW.Web.Tests/CoreFWWebTestBase.cs
 ```csharp
 public abstract class CoreFWWebTestBase : AbpWebApplicationFactoryIntegratedTest<Program>
 ⋮----
-protected virtual async Task<T?> GetResponseAsObjectAsync<T>(string url, HttpStatusCode expectedStatusCode = HttpStatusCode.OK)
+protected virtual async Task<T> GetResponseAsObjectAsync<T>(string url, HttpStatusCode expectedStatusCode = HttpStatusCode.OK)
 ⋮----
-return JsonSerializer.Deserialize<T>(strResponse, new JsonSerializerOptions(JsonSerializerDefaults.Web));
+return JsonSerializer.Deserialize<T>(strResponse, new JsonSerializerOptions(JsonSerializerDefaults.Web))!;
 ⋮----
 protected virtual async Task<string> GetResponseAsStringAsync(string url, HttpStatusCode expectedStatusCode = HttpStatusCode.OK)
 ⋮----
@@ -2105,6 +2557,11 @@ public class CoreFWWebTestModule : AbpModule
 ⋮----
 public override void PreConfigureServices(ServiceConfigurationContext context)
 ⋮----
+var builder = new ConfigurationBuilder();
+builder.AddJsonFile("appsettings.json", false);
+builder.AddJsonFile("appsettings.secrets.json", true);
+context.Services.ReplaceConfiguration(builder.Build());
+⋮----
 builder.PartManager.ApplicationParts.Add(new CompiledRazorAssemblyPart(typeof(CoreFWWebModule).Assembly));
 ⋮----
 context.Services.GetPreConfigureActions<OpenIddictServerBuilder>().Clear();
@@ -2116,8 +2573,6 @@ private static void ConfigureLocalizationServices(IServiceCollection services)
 var cultures = new List<CultureInfo> { new CultureInfo("en"), new CultureInfo("tr") };
 ⋮----
 options.DefaultRequestCulture = new RequestCulture("en");
-⋮----
-.AddBaseTypes(
 ⋮----
 private static void ConfigureNavigationServices(IServiceCollection services)
 ⋮----
@@ -2142,8 +2597,8 @@ public partial class Program
 ## File: Aqt.CoreFW.sln
 ```
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio Version 16
-VisualStudioVersion = 16.0.29020.237
+# Visual Studio Version 17
+VisualStudioVersion = 17.3.32611.2
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Aqt.CoreFW.Domain", "src\Aqt.CoreFW.Domain\Aqt.CoreFW.Domain.csproj", "{554AD327-6DBA-4F8F-96F8-81CE7A0C863F}"
 EndProject
@@ -2177,7 +2632,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Aqt.CoreFW.Domain.Tests", "
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Aqt.CoreFW.HttpApi.Client.ConsoleTestApp", "test\Aqt.CoreFW.HttpApi.Client.ConsoleTestApp\Aqt.CoreFW.HttpApi.Client.ConsoleTestApp.csproj", "{EF480016-9127-4916-8735-D2466BDBC582}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Aqt.CoreFW.DbMigrator", "src\Aqt.CoreFW.DbMigrator\Aqt.CoreFW.DbMigrator.csproj", "{AA94D832-1CCC-4715-95A9-A483F23A1A5D}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Aqt.CoreFW.DbMigrator", "src\Aqt.CoreFW.DbMigrator\Aqt.CoreFW.DbMigrator.csproj", "{70680696-BB1E-4383-BCB2-42C3767171FB}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -2241,10 +2696,10 @@ Global
 		{EF480016-9127-4916-8735-D2466BDBC582}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{EF480016-9127-4916-8735-D2466BDBC582}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{EF480016-9127-4916-8735-D2466BDBC582}.Release|Any CPU.Build.0 = Release|Any CPU
-		{AA94D832-1CCC-4715-95A9-A483F23A1A5D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{AA94D832-1CCC-4715-95A9-A483F23A1A5D}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{AA94D832-1CCC-4715-95A9-A483F23A1A5D}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{AA94D832-1CCC-4715-95A9-A483F23A1A5D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{70680696-BB1E-4383-BCB2-42C3767171FB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{70680696-BB1E-4383-BCB2-42C3767171FB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{70680696-BB1E-4383-BCB2-42C3767171FB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{70680696-BB1E-4383-BCB2-42C3767171FB}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -2264,7 +2719,7 @@ Global
 		{91853F21-9CD9-4132-BC29-A7D5D84FFFE7} = {04DBDB01-70F4-4E06-B468-8F87850B22BE}
 		{E512F4D9-9375-480F-A2F6-A46509F9D824} = {04DBDB01-70F4-4E06-B468-8F87850B22BE}
 		{EF480016-9127-4916-8735-D2466BDBC582} = {04DBDB01-70F4-4E06-B468-8F87850B22BE}
-		{AA94D832-1CCC-4715-95A9-A483F23A1A5D} = {CA9AC87F-097E-4F15-8393-4BC07735A5B0}
+		{70680696-BB1E-4383-BCB2-42C3767171FB} = {CA9AC87F-097E-4F15-8393-4BC07735A5B0}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {28315BFD-90E7-4E14-A2EA-F3D23AF4126F}
@@ -2327,6 +2782,14 @@ EndGlobal
 <?xml version="1.0" encoding="utf-8"?>
 <configuration>
   <packageSources>
+    <add key="nuget.org" value="https://api.nuget.org/v3/index.json" />
   </packageSources>
+  <packageSourceMapping>
+    <packageSource key="nuget.org">
+      <package pattern="*" />
+      <package pattern="Microsoft.*" />
+      <package pattern="Volo.*" />
+    </packageSource>
+  </packageSourceMapping>
 </configuration>
 ```
