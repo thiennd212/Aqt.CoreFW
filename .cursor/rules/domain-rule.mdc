@@ -29,12 +29,12 @@ Aqt.CoreFW.Domain/
 
 ### 📦 Namespace
 
-- ✅ Theo format: `Aqt.CoreFW.[Module].[Layer]`
+- ✅ Theo format: `Aqt.CoreFW.Domain.[Module].[Layer]`
 - ❌ Không dùng namespace lẫn `Application`, `Web`
 
 📌 Ví dụ chuẩn:
 ```csharp
-namespace Aqt.CoreFW.Orders.Entities;
+namespace Aqt.CoreFW.Domain.Orders.Entities;
 ```
 
 ### 🧬 Kế thừa base class
@@ -85,11 +85,16 @@ namespace Aqt.CoreFW.Orders.Entities;
 
 Repository Interface là hợp đồng truy cập dữ liệu cho các Aggregate hoặc Entity, và là phần quan trọng của tầng Domain.
 
-- ✅ Interface Repository tùy chỉnh phải đặt trong `Aqt.CoreFW.[Module].Repositories`
+- ✅ Interface Repository tùy chỉnh phải đặt trong `Aqt.CoreFW.Domain.[Module].Repositories`
 - ✅ Tên phải bắt đầu bằng `I` và kết thúc bằng `Repository` (VD: `IOrderRepository`)
 - ✅ Kế thừa từ `IRepository<TEntity, TKey>` của ABP Framework
 - ❌ Không được implement tại Domain
 - ❌ Không được chứa logic hoặc method có thân (`{}`)
+
+📌 Ví dụ chuẩn:
+```csharp
+namespace Aqt.CoreFW.Domain.Orders.Repositories;
+```
 
 #### ✔️ Nên tạo khi:
 - Cần bổ sung method query đặc thù cho một Entity
@@ -103,15 +108,15 @@ Repository Interface là hợp đồng truy cập dữ liệu cho các Aggregate
 
 Cần `using` đúng các namespace sau để truy cập Enum, Setting, Localization
 
-| Loại dữ liệu          | Namespace mẫu                                               |
-|-----------------------|-------------------------------------------------------------|
-| Enum                  | `Aqt.CoreFW.Domain.Shared.Enums`                        |
-| Setting name constant | `Aqt.CoreFW.Settings`                                   |
-| Localization Resource | `Aqt.CoreFW.Localization`                               |
+| Loại dữ liệu          | Namespace mẫu                             |
+|-----------------------|-------------------------------------------|
+| Enum                  | `Aqt.CoreFW.Domain.Shared.[Module].Enums` |
+| Setting name constant | `Aqt.CoreFW.Settings`                     |
+| Localization Resource | `Aqt.CoreFW.Localization`                 |
 
 📌 Ví dụ:
 ```csharp
-using Aqt.CoreFW.Domain.Shared.Enums;
+using Aqt.CoreFW.Domain.Shared.Orders.Enums;
 using Aqt.CoreFW.Settings;
 using Aqt.CoreFW.Localization;
 ```
@@ -120,7 +125,7 @@ using Aqt.CoreFW.Localization;
 <example>
 ```csharp
 // ✅ AggregateRoot
-namespace Aqt.CoreFW.Orders.Entities;
+namespace Aqt.CoreFW.Domain.Orders.Entities;
 
 public class Order : AggregateRoot<Guid>
 {
@@ -132,7 +137,7 @@ public class Order : AggregateRoot<Guid>
 }
 
 // ✅ DomainService
-namespace Aqt.CoreFW.Orders.Services;
+namespace Aqt.CoreFW.Domain.Orders.Services;
 
 public class PricingService
 {
@@ -140,7 +145,7 @@ public class PricingService
 }
 
 // ✅ DomainEvent
-namespace Aqt.CoreFW.Orders.Events;
+namespace Aqt.CoreFW.Domain.Orders.Events;
 
 public class OrderCompletedEvent : DomainEvent
 {
@@ -183,7 +188,7 @@ public class OrderAppService : ApplicationService
 <example>
 ```csharp
 // ✅ Interface Repository chuẩn
-namespace Aqt.CoreFW.Orders.Repositories;
+namespace Aqt.CoreFW.Domain.Orders.Repositories;
 
 public interface IOrderRepository : IRepository<Order, Guid>
 {

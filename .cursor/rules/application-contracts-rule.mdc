@@ -55,8 +55,8 @@ public interface IOrderAppService : IApplicationService
 
 ### 🔐 Permissions
 
-- ✅ Định nghĩa tại `Permissions/CoreOraclePermissions.cs`
-- ✅ Sử dụng format: `"CoreOracle.ModuleName.Action"`
+- ✅ Định nghĩa tại `Permissions/CoreFWPermissions.cs`
+- ✅ Sử dụng format: `"CoreFW.ModuleName.Action"`
 
 📌 Ví dụ:
 ```csharp
@@ -70,19 +70,19 @@ public static class OrderPermissions
 
 ### 🔐 Permission Definitions
 
-- ✅ Định nghĩa toàn bộ cây permission tại `CoreOraclePermissions.cs`
-- ✅ Dùng `GroupName = "CoreOracle"` làm prefix chung cho tất cả quyền
+- ✅ Định nghĩa toàn bộ cây permission tại `CoreFWPermissions.cs`
+- ✅ Dùng `GroupName = "CoreFW"` làm prefix chung cho tất cả quyền
 - ✅ Tổ chức permission theo module bằng nested static class (VD: `Orders`, `Settings`)
-- ✅ Dùng format chuẩn: `"CoreOracle.Module.Action"`
+- ✅ Dùng format chuẩn: `"CoreFW.Module.Action"`
 - ✅ Sử dụng `PermissionDefinitionProvider` để đăng ký quyền từ constants này
 - ❌ Không nên hardcode permission key trực tiếp trong AppService
 - ❌ Không nên viết logic trong file permission
 
 📌 Ví dụ:
 ```csharp
-public static class CoreOraclePermissions
+public static class CoreFWPermissions
 {
-    public const string GroupName = "CoreOracle";
+    public const string GroupName = "CoreFW";
 
     public static class Orders
     {
@@ -100,14 +100,14 @@ public static class CoreOraclePermissions
 
 📌 Sử dụng trong AppService:
 ```csharp
-[Authorize(CoreOraclePermissions.Orders.Create)]
+[Authorize(CoreFWPermissions.Orders.Create)]
 public async Task CreateAsync(...) { ... }
 ```
 
 📌 Sử dụng trong PermissionDefinitionProvider:
 ```csharp
-var group = context.AddGroup(CoreOraclePermissions.GroupName);
-group.AddPermission(CoreOraclePermissions.Orders.Create);
+var group = context.AddGroup(CoreFWPermissions.GroupName);
+group.AddPermission(CoreFWPermissions.Orders.Create);
 ```
 
 ### 🧩 Interface AppService
@@ -159,10 +159,10 @@ public class ProductAppService : CrudAppService<Product, ProductDto, Guid>, IPro
 
 Cần `using` đúng các namespace sau để truy cập Setting, Localization
 
-| Loại dữ liệu          | Namespace mẫu                                               |
-|-----------------------|-------------------------------------------------------------|
-| Setting name constant | `Aqt.CoreFW.Settings`                                   |
-| Localization Resource | `Aqt.CoreFW.Localization`                               |
+| Loại dữ liệu          | Namespace mẫu            |
+|-----------------------|--------------------------|
+| Setting name constant | `Aqt.CoreFW.Settings`    |
+| Localization Resource | `Aqt.CoreFW.Localization`|
 
 📌 Ví dụ:
 ```csharp
@@ -176,7 +176,7 @@ using Aqt.CoreFW.Localization;
 ### ✅ Ví dụ đúng
 
 // 📦 AppService interface
-namespace Aqt.CoreFW.Orders;
+namespace Aqt.CoreFW.Application.Contracts.Orders;
 
 public interface IOrderAppService : IApplicationService
 {
@@ -184,7 +184,7 @@ public interface IOrderAppService : IApplicationService
 }
 
 // 📑 DTO
-namespace Aqt.CoreFW.Orders.Dtos;
+namespace Aqt.CoreFW.Application.Contracts.Orders.Dtos;
 
 public class OrderDto
 {

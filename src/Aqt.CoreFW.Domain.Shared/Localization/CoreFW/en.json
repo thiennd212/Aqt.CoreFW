@@ -4,6 +4,24 @@
     "AppName": "CoreFW",
     "Menu:Home": "Home",
     "LongWelcomeMessage": "Welcome to the application. This is a startup project based on the ABP framework. For more information visit",
-    "Welcome": "Welcome"
+    "Welcome": "Welcome",
+    "Menu:Countries": "Countries",
+    "Countries": "Countries",
+    "NewCountry": "New Country",
+    "EditCountry": "Edit Country",
+    "CountryCode": "Code",
+    "CountryName": "Name",
+    "AreYouSureToDeleteCountry": "Are you sure you want to delete this country: {0}?",
+    "Permission:Countries": "Country Management",
+    "Permission:Countries.Create": "Create Country",
+    "Permission:Countries.Edit": "Edit Country",
+    "Permission:Countries.Delete": "Delete Country",
+    "CountryCodeAlreadyExists": "The country code '{0}' already exists.",
+    "CannotDeleteCountryWithProvinces": "Cannot delete the country '{0}' because it still has associated provinces/cities.",
+    "Search": "Search",
+    "Actions": "Actions",
+    "Edit": "Edit",
+    "Delete": "Delete",
+    "SuccessfullyDeleted": "Successfully deleted."
   }
 }

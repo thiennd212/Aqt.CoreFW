@@ -20,9 +20,9 @@ Nó là nơi khai báo các cấu trúc **tĩnh**, **bất biến**, và **hợp
 
 #### ✔️ Nên:
 - Sử dụng file:  
-  - `CoreOracleSettings.cs`
-  - `CoreOracleDomainErrorCodes.cs`
-  - `CoreOracleResource.cs`
+  - `CoreFWSettings.cs`
+  - `CoreFWDomainErrorCodes.cs`
+  - `CoreFWResource.cs`
 - Phân tách rõ `Localization`, `MultiTenancy`, `GlobalFeatures`
 
 #### ❌ Không nên:
@@ -31,12 +31,12 @@ Nó là nơi khai báo các cấu trúc **tĩnh**, **bất biến**, và **hợp
 
 ### 📦 Namespace chuẩn
 
-- ✅ Dùng namespace dạng: `Aqt.CoreFW.Domain.Shared.[Subfolder]`
+- ✅ Dùng namespace dạng: `Aqt.CoreFW.Domain.Shared.[Module].[Subfolder]`
 - ❌ Không dùng namespace lẫn `Domain`, `Application`, `Web`
 
 📌 Ví dụ chuẩn:
 ```csharp
-namespace Aqt.CoreFW.Domain.Shared.Enums
+namespace Aqt.CoreFW.Domain.Shared.Orders.Enums
 ```
 ### 📑 Enum
 
@@ -54,21 +54,21 @@ namespace Aqt.CoreFW.Domain.Shared.Enums
 
 ### ⚙️ Settings
 
-- ✅ Khai báo tại `CoreOracleSettings.cs`
+- ✅ Khai báo tại `CoreFWSettings.cs`
 - ✅ Dùng `const string` với prefix theo chuẩn module
 
 📌 Ví dụ:
 ```csharp
-public static class CoreOracleSettings
+public static class CoreFWSettings
 {
-    public const string MaxItemPerPage = "CoreOracle.MaxItemPerPage";
+    public const string MaxItemPerPage = "CoreFW.MaxItemPerPage";
 }
 ```
 
 ### 🌍 Localization
 
-- ✅ Dùng file JSON tại `Localization/CoreOracle`
-- ✅ Class anchor đặt tại `CoreOracleResource.cs`
+- ✅ Dùng file JSON tại `Localization/CoreFW`
+- ✅ Class anchor đặt tại `CoreFWResource.cs`
 - ✅ Luôn luôn cập nhật cho Tiếng Việt(vi.json) và Tiếng Anh(en.json)
 - ❌ Không xử lý logic trong file resource
 
@@ -76,14 +76,14 @@ public static class CoreOracleSettings
 
 ### 📛 Error Codes
 
-- ✅ Đặt tại `CoreOracleDomainErrorCodes.cs`
-- ✅ Format `"CoreOracle:{Code}"`
+- ✅ Đặt tại `CoreFWDomainErrorCodes.cs`
+- ✅ Format `"CoreFW:{Code}"`
 
 📌 Ví dụ:
 ```csharp
-public static class CoreOracleDomainErrorCodes
+public static class CoreFWDomainErrorCodes
 {
-    public const string InvalidRange = "CoreOracle:00001";
+    public const string InvalidRange = "CoreFW:00001";
 }
 ```
 
@@ -116,7 +116,7 @@ using Aqt.CoreFW.Localization;
 <example>
 ```csharp
 // ✅ Enum được dùng trong nhiều tầng
-namespace Aqt.CoreFW.Domain.Shared.Enums;
+namespace Aqt.CoreFW.Domain.Shared.Orders.Enums;
 
 public enum OracleStatus
 {
@@ -128,23 +128,23 @@ public enum OracleStatus
 // ✅ Setting name chuẩn
 namespace Aqt.CoreFW.Domain.Shared.Settings;
 
-public static class CoreOracleSettings
+public static class CoreFWSettings
 {
-    public const string MaxRetryCount = "CoreOracle.MaxRetry";
+    public const string MaxRetryCount = "CoreFW.MaxRetry";
 }
 
 // ✅ Error code định danh
 namespace Aqt.CoreFW.Domain.Shared;
 
-public static class CoreOracleDomainErrorCodes
+public static class CoreFWDomainErrorCodes
 {
-    public const string DuplicateEntry = "CoreOracle:00001";
+    public const string DuplicateEntry = "CoreFW:00001";
 }
 
 // ✅ Anchor class cho localization
 namespace Aqt.CoreFW.Domain.Shared.Localization;
 
-public class CoreOracleResource
+public class CoreFWResource
 {
 }
 ```

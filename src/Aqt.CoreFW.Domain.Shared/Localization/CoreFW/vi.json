@@ -1,0 +1,27 @@
+{
+  "Culture": "vi",
+  "Texts": {
+    "AppName": "CoreFW",
+    "Menu:Home": "Trang chủ",
+    "LongWelcomeMessage": "Chào mừng bạn đến với ứng dụng. Đây là một dự án khởi nghiệp dựa trên ABP framework. Để biết thêm thông tin, hãy truy cập",
+    "Welcome": "Chào mừng",
+    "Menu:Countries": "Quốc gia",
+    "Countries": "Quốc gia",
+    "NewCountry": "Thêm Quốc gia",
+    "EditCountry": "Sửa Quốc gia",
+    "CountryCode": "Mã",
+    "CountryName": "Tên Quốc gia",
+    "AreYouSureToDeleteCountry": "Bạn có chắc chắn muốn xóa quốc gia này: {0}?",
+    "Permission:Countries": "Quản lý Quốc gia",
+    "Permission:Countries.Create": "Tạo Quốc gia",
+    "Permission:Countries.Edit": "Sửa Quốc gia",
+    "Permission:Countries.Delete": "Xóa Quốc gia",
+    "CountryCodeAlreadyExists": "Mã quốc gia '{0}' đã tồn tại.",
+    "CannotDeleteCountryWithProvinces": "Không thể xóa quốc gia '{0}' vì vẫn còn tỉnh/thành phố liên kết.",
+    "Search": "Tìm kiếm",
+    "Actions": "Hành động",
+    "Edit": "Sửa",
+    "Delete": "Xóa",
+    "SuccessfullyDeleted": "Đã xóa thành công."
+  }
+} 

@@ -7,6 +7,7 @@ using Volo.Abp.Authorization.Permissions;
 using Volo.Abp.Identity.Web.Navigation;
 using Volo.Abp.UI.Navigation;
 using Volo.Abp.TenantManagement.Web.Navigation;
+using Microsoft.Extensions.Localization;
 
 namespace Aqt.CoreFW.Web.Menus;
 
@@ -20,7 +21,7 @@ public class CoreFWMenuContributor : IMenuContributor
         }
     }
 
-    private static Task ConfigureMainMenuAsync(MenuConfigurationContext context)
+    private async Task ConfigureMainMenuAsync(MenuConfigurationContext context)
     {
         var l = context.GetLocalizer<CoreFWResource>();
 
@@ -45,18 +46,27 @@ public class CoreFWMenuContributor : IMenuContributor
     
         if (MultiTenancyConsts.IsEnabled)
         {
-            administration.SetSubItemOrder(TenantManagementMenuNames.GroupName, 1);
+            administration.SetSubItemOrder(TenantManagementMenuNames.GroupName, 2);
         }
         else
         {
             administration.TryRemoveMenuItem(TenantManagementMenuNames.GroupName);
         }
         
-        administration.SetSubItemOrder(SettingManagementMenuNames.GroupName, 3);
+        // Add Countries menu item under Administration if user has permission
+        if (await context.IsGrantedAsync(CoreFWPermissions.Countries.Default))
+        {
+            administration.AddItem(new ApplicationMenuItem(
+                CoreFWMenus.Countries,
+                l["Menu:Countries"],
+                "/Countries",
+                icon: "fa fa-globe",
+                order: 3
+            ).RequirePermissions(CoreFWPermissions.Countries.Default));
+        }
 
-        //Administration->Settings
-        administration.SetSubItemOrder(SettingManagementMenuNames.GroupName, 7);
+        administration.SetSubItemOrder(SettingManagementMenuNames.GroupName, 4);
         
-        return Task.CompletedTask;
+        return;
     }
 }

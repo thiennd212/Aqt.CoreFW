@@ -1,3 +1,4 @@
+using Aqt.CoreFW.Domain.Countries.Entities;
 using Microsoft.EntityFrameworkCore;
 using Volo.Abp.AuditLogging.EntityFrameworkCore;
 using Volo.Abp.BackgroundJobs.EntityFrameworkCore;
@@ -14,6 +15,7 @@ using Volo.Abp.SettingManagement.EntityFrameworkCore;
 using Volo.Abp.OpenIddict.EntityFrameworkCore;
 using Volo.Abp.TenantManagement;
 using Volo.Abp.TenantManagement.EntityFrameworkCore;
+using System.Reflection; // Required for Assembly
 
 namespace Aqt.CoreFW.EntityFrameworkCore;
 
@@ -26,7 +28,8 @@ public class CoreFWDbContext :
     IIdentityDbContext
 {
     /* Add DbSet properties for your Aggregate Roots / Entities here. */
-
+    public DbSet<Country> Countries { get; set; }
+    // public DbSet<Province> Provinces { get; set; } // TODO: Uncomment when Province entity is created
 
     #region Entities from the modules
 
@@ -78,7 +81,7 @@ public class CoreFWDbContext :
         builder.ConfigureOpenIddict();
         builder.ConfigureTenantManagement();
         builder.ConfigureBlobStoring();
-        
+
         /* Configure your own tables/entities inside here */
 
         //builder.Entity<YourEntity>(b =>
@@ -87,5 +90,8 @@ public class CoreFWDbContext :
         //    b.ConfigureByConvention(); //auto configure for the base class props
         //    //...
         //});
+
+        // Apply all IEntityTypeConfiguration implementations from this assembly
+        builder.ApplyConfigurationsFromAssembly(Assembly.GetExecutingAssembly());
     }
 }

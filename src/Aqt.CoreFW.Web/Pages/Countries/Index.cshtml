@@ -1,0 +1,51 @@
+@page
+@using Aqt.CoreFW.Permissions
+@using Microsoft.AspNetCore.Authorization
+@using Volo.Abp.AspNetCore.Mvc.UI.Layout
+@using Aqt.CoreFW.Web.Pages.Countries
+@using Aqt.CoreFW.Localization
+@using Microsoft.Extensions.Localization
+@using Aqt.CoreFW.Web.Menus
+@model IndexModel
+@inject IStringLocalizer<CoreFWResource> L
+@inject IAuthorizationService AuthorizationService
+@inject IPageLayout PageLayout
+@{
+    PageLayout.Content.Title = L["Countries"].Value;
+    PageLayout.Content.BreadCrumb.Add(L["Menu:Countries"].Value);
+    PageLayout.Content.MenuItemName = CoreFWMenus.Countries;
+}
+
+@section scripts {
+    <abp-script src="/Pages/Countries/index.js" />
+}
+
+@section content_toolbar {
+    @if (await AuthorizationService.IsGrantedAsync(CoreFWPermissions.Countries.Create))
+    {
+        <abp-button id="NewCountryButton"
+                    text="@L["NewCountry"].Value"
+                    icon="plus"
+                    button-type="Primary" />
+    }
+}
+
+<abp-card>
+    <abp-card-body>
+        @* Search Filter Section *@
+        <abp-row class="mb-3">
+             <abp-column size-md="_6">
+                  <input type="text" id="SearchFilter" class="form-control" placeholder="@L["Search"]..." />
+             </abp-column>
+              <abp-column size-md="_6" class="text-end">
+                   <abp-button id="SearchButton"
+                             text="@L["Search"].Value"
+                             icon="search"
+                             button-type="Primary"/>
+              </abp-column>
+        </abp-row>
+
+        @* DataTable Section *@
+        <abp-table striped-rows="true" id="CountriesTable"></abp-table>
+    </abp-card-body>
+</abp-card> 

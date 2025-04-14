@@ -101,7 +101,7 @@ CreateMap<CreateUpdateOrderDto, Order>()
 - ✅ Kế thừa từ `Profile` (AutoMapper) hoặc `AutoMapperProfileBase` (nếu dùng base ABP)
 - ✅ Đăng ký trong `ApplicationModule` qua `AddAutoMapperObjectMapper`
 - ❌ Không khai báo mapping trong AppService trực tiếp
-- ❌ Không cập nhật mapping trong `CoreOracleApplicationAutoMapperProfile`
+- ❌ Không cập nhật mapping trong `CoreFWApplicationAutoMapperProfile`
 
 📌 Ví dụ:
 
@@ -116,12 +116,12 @@ public class OrderApplicationAutoMapperProfile : Profile
 }
 ```
 
-📌 Trong `AqtCoreOracleApplicationModule.cs`:
+📌 Trong `AqtCoreFWApplicationModule.cs`:
 ```csharp
-context.Services.AddAutoMapperObjectMapper<AqtCoreOracleApplicationModule>();
+context.Services.AddAutoMapperObjectMapper<AqtCoreFWApplicationModule>();
 Configure<AbpAutoMapperOptions>(options =>
 {
-    options.AddMaps<AqtCoreOracleApplicationModule>();
+    options.AddMaps<AqtCoreFWApplicationModule>();
 });
 ```
 
@@ -162,22 +162,23 @@ public async Task CreateAsync(CreateOrderDto input)
 
 Cần `using` đúng các namespace sau để truy cập  Repository interface, AppService interface, DTO, Permissions, Constants, Enum, v.v.
 
-| Loại dữ liệu          | Namespace mẫu                       |
-|-----------------------|-------------------------------------|
-| Repository interface  | `Aqt.CoreFW.[Module].Repositories`  |
-| AppService interface  | `Aqt.CoreFW.[Module]`               |
-| DTO                   | `Aqt.CoreFW.[Module].Dtos`          |
-| Enum                  | `Aqt.CoreFW.Domain.Shared.Enums`    |
-| Permission            | `Aqt.CoreFW.Permissions`            |
-| Setting name constant | `Aqt.CoreFW.Settings`               |
-| Localization Resource | `Aqt.CoreFW.Localization`           |
+| Loại dữ liệu          | Namespace mẫu                                   |
+|-----------------------|-------------------------------------------------|
+| AppService interface  | `Aqt.CoreFW.Application.Contracts.[Module]`     |
+| DTO                   | `Aqt.CoreFW.Application.Contracts.[Module].Dtos`|
+| Repository interface  | `Aqt.CoreFW.Domain.[Module].Repositories`       |
+| Enum                  | `Aqt.CoreFW.Domain.Shared.[Module].Enums`       |
+| Permission            | `Aqt.CoreFW.Permissions`                        |
+| Setting name constant | `Aqt.CoreFW.Settings`                           |
+| Localization Resource | `Aqt.CoreFW.Localization`                       |
+| For Error Codes       | `Aqt.CoreFW`                                    |
 
 📌 Ví dụ:
 ```csharp
-using Aqt.CoreFW.Orders;
-using Aqt.CoreFW.Orders.Dtos;
-using Aqt.CoreFW.Domain.Shared.Enums;
-using Aqt.CoreFW.Orders.Repositories;
+using Aqt.CoreFW.Application.Contracts.Orders;
+using Aqt.CoreFW.Application.Contracts.Orders.Dtos;
+using Aqt.CoreFW.Domain.Shared.Orders.Enums;
+using Aqt.CoreFW.Domain.Orders.Repositories;
 using Aqt.CoreFW.Permissions;
 using Aqt.CoreFW.Settings;
 using Aqt.CoreFW.Localization;
@@ -188,7 +189,7 @@ using Aqt.CoreFW.Localization;
 ### ✅ Ví dụ đúng
 
 // 🔧 AppService kế thừa ApplicationService
-namespace Aqt.CoreFW.Orders;
+namespace Aqt.CoreFW.Application.Orders;
 
 public class OrderAppService : ApplicationService, IOrderAppService
 {

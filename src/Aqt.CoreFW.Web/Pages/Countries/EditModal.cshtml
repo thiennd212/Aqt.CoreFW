@@ -1,0 +1,21 @@
+@page "/Countries/EditModal"
+@using Microsoft.AspNetCore.Mvc.Localization
+@using Volo.Abp.AspNetCore.Mvc.UI.Bootstrap.TagHelpers.Modal
+@using Aqt.CoreFW.Localization
+@using Aqt.CoreFW.Web.Pages.Countries
+@using Volo.Abp.AspNetCore.Mvc.UI.Bootstrap.TagHelpers.Form
+@model EditModalModel
+@inject IHtmlLocalizer<CoreFWResource> L
+@{
+    Layout = null; // Modals don't use the main layout
+}
+<abp-dynamic-form abp-model="CountryViewModel" asp-page="/Countries/EditModal">
+    <abp-modal>
+        <abp-modal-header title="@L["EditCountry"].Value"></abp-modal-header>
+        <abp-modal-body>
+            @* Id is included as a hidden field within the ViewModel properties *@
+            <abp-form-content />
+        </abp-modal-body>
+        <abp-modal-footer buttons="@(AbpModalButtons.Cancel | AbpModalButtons.Save)"></abp-modal-footer>
+    </abp-modal>
+</abp-dynamic-form> 

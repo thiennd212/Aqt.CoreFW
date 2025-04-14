@@ -640,7 +640,7 @@ Việc quyết định sử dụng DTO trực tiếp hay tạo ViewModel riêng 
                    <abp-button id="SearchButton"
                              text="@L["Search"].Value"
                              icon="search"
-                             button-type="Submit"
+                             button-type="Primary"
                              class="mt-4"/>
               </abp-column>
           </abp-row>

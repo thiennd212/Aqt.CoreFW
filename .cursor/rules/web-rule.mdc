@@ -37,7 +37,7 @@ Tầng này có thể dùng để giao tiếp với Application layer hoặc Htt
 
 ### 🧩 Menu & Navigation
 
-- ✅ Tạo và cấu hình menu trong `Menus/CoreOracleMenus.cs` và `Menus/CoreOracleMenuContributor.cs`
+- ✅ Tạo và cấu hình menu trong `Menus/CoreFWMenus.cs` và `Menus/CoreFWMenuContributor.cs`
 - ✅ Sử dụng `IMenuContributor` để thêm mục menu
 - ✅ Sử dụng localization cho label menu (`L["Orders"]`)
 - ✅ Group menu theo module
@@ -51,20 +51,20 @@ Tầng này có thể dùng để giao tiếp với Application layer hoặc Htt
 
 Trong Razor Page và các class ở tầng Web, cần `using` đúng các namespace sau để truy cập AppService, DTO, Permissions, Constants, Enum, v.v.
 
-| Loại dữ liệu          | Namespace mẫu                     |
-|-----------------------|-----------------------------------|
-| AppService interface  | `Aqt.CoreFW.[Module]`             |
-| DTO                   | `Aqt.CoreFW.[Module].Dtos`        |
-| Enum (dùng trong UI)  | `Aqt.CoreFW.Domain.Shared.Enums`  |
-| Permission            | `Aqt.CoreFW.Permissions`          |
-| Setting name constant | `Aqt.CoreFW.Settings`             |
-| Localization Resource | `Aqt.CoreFW.Localization`         |
+| Loại dữ liệu          | Namespace mẫu                                   |
+|-----------------------|-------------------------------------------------|
+| AppService interface  | `Aqt.CoreFW.Application.Contracts.[Module]`     |
+| DTO                   | `Aqt.CoreFW.Application.Contracts.[Module].Dtos`|
+| Enum (dùng trong UI)  | `Aqt.CoreFW.Domain.Shared.[Module].Enums`       |
+| Permission            | `Aqt.CoreFW.Permissions`                        |
+| Setting name constant | `Aqt.CoreFW.Settings`                           |
+| Localization Resource | `Aqt.CoreFW.Localization`                       |
 
 📌 Ví dụ:
 ```csharp
-using Aqt.CoreFW.Orders;
-using Aqt.CoreFW.Orders.Dtos;
-using Aqt.CoreFW.Domain.Shared.Enums;
+using Aqt.CoreFW.Application.Contracts.Orders;
+using Aqt.CoreFW.Application.Contracts.Orders.Dtos;
+using Aqt.CoreFW.Domain.Shared.Orders.Enums;
 using Aqt.CoreFW.Permissions;
 using Aqt.CoreFW.Settings;
 using Aqt.CoreFW.Localization;
@@ -155,7 +155,7 @@ public class CreateUpdateOrderDto
 
 > 🧠 Dynamic form giúp giảm lặp lại, nhưng không thay thế được form viết tay trong các case đặc biệt.
 
-#### 6Khi nào sử dụng ViewModel và khi nào dùng DTO trực tiếp?
+#### Khi nào sử dụng ViewModel và khi nào dùng DTO trực tiếp?
 
 Việc quyết định sử dụng DTO trực tiếp hay tạo ViewModel riêng trong PageModel phụ thuộc vào độ phức tạp của giao diện và sự khác biệt giữa dữ liệu UI cần và DTO ở tầng Contracts.
 
@@ -232,7 +232,7 @@ public class OrderViewModel
 ```
 
 ```csharp
-public class EditModel : CoreOraclePageModel
+public class EditModel : CoreFWPageModel
 {
     public OrderViewModel Order { get; set; }
 
@@ -258,7 +258,7 @@ public class EditModel : CoreOraclePageModel
 // ✅ Razor Page gọi AppService
 namespace Aqt.CoreFW.Web.Pages.Orders;
 
-public class IndexModel : CoreOraclePageModel
+public class IndexModel : CoreFWPageModel
 {
     private readonly IOrderAppService _orderAppService;
 
@@ -276,11 +276,11 @@ public class IndexModel : CoreOraclePageModel
 }
 
 // ✅ Menu contributor
-public class CoreOracleMenuContributor : IMenuContributor
+public class CoreFWMenuContributor : IMenuContributor
 {
     public Task ConfigureMenuAsync(MenuConfigurationContext context)
     {
-        var l = context.GetLocalizer<CoreOracleResource>();
+        var l = context.GetLocalizer<CoreFWResource>();
         var menu = context.Menu;
 
         menu.AddItem(new ApplicationMenuItem("Orders", l["Orders"], "/Orders"));

@@ -25,23 +25,23 @@ Tầng `EntityFrameworkCore` là nơi định nghĩa DbContext, cấu hình mapp
 
 ### 🧩 DbContext
 
-- ✅ DbContext kế thừa từ `AbpDbContext<CoreOracleDbContext>`
+- ✅ DbContext kế thừa từ `AbpDbContext<CoreFWDbContext>`
 - ✅ Khai báo `DbSet<T>` theo từng Entity
 - ✅ Override `OnModelCreating` để configure entity nếu cần
 
 📌 Ví dụ:
 ```csharp
-public class CoreOracleDbContext : AbpDbContext<CoreOracleDbContext>
+public class CoreFWDbContext : AbpDbContext<CoreFWDbContext>
 {
     public DbSet<Order> Orders { get; set; }
 
-    public CoreOracleDbContext(DbContextOptions<CoreOracleDbContext> options)
+    public CoreFWDbContext(DbContextOptions<CoreFWDbContext> options)
         : base(options) {}
 
     protected override void OnModelCreating(ModelBuilder builder)
     {
         base.OnModelCreating(builder);
-        builder.ConfigureCoreOracle(); // Extension method cho module này
+        builder.ConfigureCoreFW(); // Extension method cho module này
     }
 }
 ```
@@ -54,9 +54,9 @@ public class CoreOracleDbContext : AbpDbContext<CoreOracleDbContext>
 
 📌 Ví dụ:
 ```csharp
-public class OrderRepository : EfCoreRepository<CoreOracleDbContext, Order, Guid>, IOrderRepository
+public class OrderRepository : EfCoreRepository<CoreFWDbContext, Order, Guid>, IOrderRepository
 {
-    public OrderRepository(IDbContextProvider<CoreOracleDbContext> dbContextProvider)
+    public OrderRepository(IDbContextProvider<CoreFWDbContext> dbContextProvider)
         : base(dbContextProvider)
     {
     }
@@ -78,13 +78,13 @@ public class OrderRepository : EfCoreRepository<CoreOracleDbContext, Order, Guid
 
 ABP cho phép bạn cấu hình entity bằng Fluent API theo 2 cách:
 
-1. Cấu hình trực tiếp trong `CoreOracleDbContextModelCreatingExtensions` (chỉ nên dùng cho cấu hình chung, đơn giản)
+1. Cấu hình trực tiếp trong `CoreFWDbContextModelCreatingExtensions` (chỉ nên dùng cho cấu hình chung, đơn giản)
 2. ✅ **Khuyến nghị:** tạo class riêng implement `IEntityTypeConfiguration<TEntity>` cho từng entity → tách biệt, dễ maintain, rõ vai trò.
 
 #### ✅ Quy tắc:
 - ✅ Mỗi entity nên có một file riêng kế thừa `IEntityTypeConfiguration<T>`
 - ✅ Đặt trong thư mục `EntityFrameworkCore/Configurations/`
-- ✅ Đăng ký bằng `builder.ApplyConfiguration(new OrderConfiguration());` trong `CoreOracleDbContextModelCreatingExtensions`
+- ✅ Đăng ký bằng `builder.ApplyConfiguration(new OrderConfiguration());` trong `CoreFWDbContextModelCreatingExtensions`
 
 📌 Ví dụ:
 
@@ -100,7 +100,7 @@ public class OrderConfiguration : IEntityTypeConfiguration<Order>
 }
 ```
 
-📌 Trong `CoreOracleDbContextModelCreatingExtensions.cs`:
+📌 Trong `CoreFWDbContextModelCreatingExtensions.cs`:
 ```csharp
 builder.ApplyConfiguration(new OrderConfiguration());
 ```
@@ -110,13 +110,13 @@ builder.ApplyConfiguration(new OrderConfiguration());
 
 - ✅ Tách riêng file mapping nếu entity có cấu hình phức tạp
 - ✅ Dùng Fluent API trong `Configure<Entity>(...)`
-- ✅ Extension method `ModelBuilder.ConfigureCoreOracle()` nên gọi tại `OnModelCreating`
+- ✅ Extension method `ModelBuilder.ConfigureCoreFW()` nên gọi tại `OnModelCreating`
 
 📌 Ví dụ:
 ```csharp
-public static class CoreOracleDbContextModelCreatingExtensions
+public static class CoreFWDbContextModelCreatingExtensions
 {
-    public static void ConfigureCoreOracle(this ModelBuilder builder)
+    public static void ConfigureCoreFW(this ModelBuilder builder)
     {
         builder.Entity<Order>(b =>
         {
@@ -130,24 +130,24 @@ public static class CoreOracleDbContextModelCreatingExtensions
 
 ### 🧾 Using đúng namespace
 
-Cần `using` đúng các namespace sau để truy cập Setting, Localization
+Cần `using` đúng các namespace sau để truy cập Setting, Localization, Repository interface, Entities, Enum
 
-| Loại dữ liệu          | Namespace mẫu                     |
-|-----------------------|-----------------------------------|
-| Repository interface  | `Aqt.CoreFW.[Module].Repositories`|
-| Entities              | `Aqt.CoreFW.[Module].Entities`    |
-| Enum                  | `Aqt.CoreFW.Domain.Shared.Enums`  |
-| Setting name constant | `Aqt.CoreFW.Settings`             |
-| Localization Resource | `Aqt.CoreFW.Localization`         |
+| Loại dữ liệu          | Namespace mẫu                            |
+|-----------------------|------------------------------------------|
+| Repository interface  | `Aqt.CoreFW.Domain.[Module].Repositories`|
+| Entities              | `Aqt.CoreFW.Domain.[Module].Entities`    |
+| Enum                  | `Aqt.CoreFW.Domain.Shared.[Module].Enums`|
+| Setting name constant | `Aqt.CoreFW.Settings`                    |
+| Localization Resource | `Aqt.CoreFW.Localization`                |
 
 📌 Ví dụ:
 ```csharp
 using Aqt.CoreFW.Permissions;
 using Aqt.CoreFW.Settings;
 using Aqt.CoreFW.Localization;
-using Aqt.CoreFW.Domain.Shared.Enums;
-using Aqt.CoreFW.Orders.Repositories;
-using Aqt.CoreFW.Orders.Entities;
+using Aqt.CoreFW.Domain.Shared.Orders.Enums;
+using Aqt.CoreFW.Domain.Orders.Repositories;
+using Aqt.CoreFW.Domain.Orders.Entities;
 ```
 
 ## Examples
@@ -156,26 +156,26 @@ using Aqt.CoreFW.Orders.Entities;
 
 ```csharp
 // 🧩 DbContext đúng chuẩn ABP
-public class CoreOracleDbContext : AbpDbContext<CoreOracleDbContext>
+public class CoreFWDbContext : AbpDbContext<CoreFWDbContext>
 {
     public DbSet<Order> Orders { get; set; }
 
-    public CoreOracleDbContext(DbContextOptions<CoreOracleDbContext> options)
+    public CoreFWDbContext(DbContextOptions<CoreFWDbContext> options)
         : base(options) {}
 
     protected override void OnModelCreating(ModelBuilder builder)
     {
         base.OnModelCreating(builder);
-        builder.ConfigureCoreOracle();
+        builder.ConfigureCoreFW();
     }
 }
 ```
 
 ```csharp
 // 🗃️ Repository implement đúng chuẩn
-public class OrderRepository : EfCoreRepository<CoreOracleDbContext, Order, Guid>, IOrderRepository
+public class OrderRepository : EfCoreRepository<CoreFWDbContext, Order, Guid>, IOrderRepository
 {
-    public OrderRepository(IDbContextProvider<CoreOracleDbContext> provider) : base(provider) { }
+    public OrderRepository(IDbContextProvider<CoreFWDbContext> provider) : base(provider) { }
 }
 ```
 
