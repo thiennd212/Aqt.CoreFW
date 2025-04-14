@@ -1,0 +1,289 @@
+---
+description: 
+globs: **/Aqt.CoreFW.Web/**/*.cs
+alwaysApply: false
+---
+# Rule: Chuẩn hóa tầng Aqt.CoreFW.Web
+
+## Context
+
+Tầng `Web` là nơi triển khai UI, xử lý Razor Page, MVC Controller, JavaScript interop hoặc layout, menu,...  
+Tầng này có thể dùng để giao tiếp với Application layer hoặc HttpApi layer để hiển thị dữ liệu.
+
+## Requirements
+
+### 📁 Cấu trúc thư mục
+
+- ✅ Phân chia theo module: `Pages/Orders`, `Views/Shared`
+- ✅ Có thể chứa Razor Pages (`.cshtml`) và code-behind (`.cshtml.cs`)
+- ❌ Không nên chứa logic nghiệp vụ
+- ❌ Không nên xử lý database, repository tại đây
+
+### 📦 Namespace
+
+- ✅ Dạng: `Aqt.CoreFW.Web.Pages.[Module]`
+- ❌ Không lẫn với `Application`, `Domain`
+
+### 🧭 Giao diện người dùng (UI)
+
+- ✅ Sử dụng Razor Pages (không dùng MVC Controller trong dự án này)
+- ✅ Sử dụng `PageModel` hoặc `ViewModel` rõ ràng
+- ✅ Dùng service được inject (`AppService`) để gọi dữ liệu
+- ❌ Không gọi trực tiếp `DbContext` hoặc `Repository`
+
+### Tag Helpers
+- ✅ Sử dụng các Tag Helper có sẵn của ABP (như `<abp-button>`, `<abp-table>`, `<abp-modal>`, `<abp-dynamic-form>`, etc.) để xây dựng UI nhanh chóng và nhất quán.
+- **Lưu ý `<abp-button>`:** Thuộc tính `button-type` dùng để chỉ định *kiểu dáng* (Primary, Secondary, Success, Danger, etc.), không phải hành động. Hành động "submit" (như tìm kiếm, lưu form) thường được xử lý bằng JavaScript riêng hoặc là hành vi mặc định của form. **Không sử dụng `button-type="Submit"`**. Thay vào đó, hãy dùng các giá trị như `Primary` và xử lý logic submit trong code JavaScript hoặc để form tự xử lý.
+
+### 🧩 Menu & Navigation
+
+- ✅ Tạo và cấu hình menu trong `Menus/CoreOracleMenus.cs` và `Menus/CoreOracleMenuContributor.cs`
+- ✅ Sử dụng `IMenuContributor` để thêm mục menu
+- ✅ Sử dụng localization cho label menu (`L["Orders"]`)
+- ✅ Group menu theo module
+
+### 💬 Localization & Resources
+
+- ✅ Sử dụng `L["Key"]` cho tất cả nội dung hiển thị
+- ✅ Không hardcode chuỗi trong giao diện Razor
+
+### 🧾 Using đúng namespace
+
+Trong Razor Page và các class ở tầng Web, cần `using` đúng các namespace sau để truy cập AppService, DTO, Permissions, Constants, Enum, v.v.
+
+| Loại dữ liệu          | Namespace mẫu                     |
+|-----------------------|-----------------------------------|
+| AppService interface  | `Aqt.CoreFW.[Module]`             |
+| DTO                   | `Aqt.CoreFW.[Module].Dtos`        |
+| Enum (dùng trong UI)  | `Aqt.CoreFW.Domain.Shared.Enums`  |
+| Permission            | `Aqt.CoreFW.Permissions`          |
+| Setting name constant | `Aqt.CoreFW.Settings`             |
+| Localization Resource | `Aqt.CoreFW.Localization`         |
+
+📌 Ví dụ:
+```csharp
+using Aqt.CoreFW.Orders;
+using Aqt.CoreFW.Orders.Dtos;
+using Aqt.CoreFW.Domain.Shared.Enums;
+using Aqt.CoreFW.Permissions;
+using Aqt.CoreFW.Settings;
+using Aqt.CoreFW.Localization;
+```
+
+> ❌ Không using trực tiếp các class tầng `Domain`, `Repository`, `DbContext` từ Web
+
+
+### ⚠️ Ghi chú kiến trúc Razor Pages
+
+Dự án này **chỉ sử dụng Razor Pages 100% cho tầng Web**.  
+- ❌ Không sử dụng MVC Controller trong `Aqt.CoreFW.Web`
+- ✅ Mọi UI đều phải dùng Razor Page (`.cshtml` + `PageModel`)
+- ✅ Cấu trúc module UI theo `Pages/[Module]`
+- ✅ Điều hướng, hiển thị, tương tác dữ liệu đều phải thông qua Razor Page
+
+📌 Điều này phù hợp với:
+- LeptonX Razor Theme (UI Razor Pages)
+- Kiến trúc hướng UI server-side
+- Dễ maintain và cấu hình routing tự động
+
+> Nếu cần expose REST API → hãy dùng tầng `HttpApi`, không viết controller trong Web.
+
+
+### 🎨 Quản lý JS/CSS trong Razor Pages
+
+Tầng Web sử dụng Razor Pages có thể khai báo và sử dụng JS/CSS theo module.  
+✅ Mỗi module có thể có tệp riêng trong `wwwroot/js/` và `wwwroot/css/`.
+
+#### ✅ Quy tắc:
+- ✅ Tạo thư mục con theo module trong `wwwroot`
+- ✅ Đặt tên file rõ ràng theo tính năng hoặc page (VD: `orders-list.js`, `products-form.js`)
+- ✅ Dùng `abpBundlingOptions` để đăng ký bundle
+- ✅ Dùng tag `<abp-script>` và `<abp-style>` trong `.cshtml`
+
+#### 📁 Cấu trúc ví dụ:
+```
+wwwroot/
+├── js/
+│   ├── orders/
+│   │   └── orders-list.js
+├── css/
+│   ├── orders/
+│   │   └── orders-style.css
+```
+
+📌 Sử dụng trong Razor Page:
+```html
+<abp-style src="/css/orders/orders-style.css" />
+<abp-script src="/js/orders/orders-list.js" />
+```
+
+> ❌ Không nhúng trực tiếp script vào giữa `.cshtml`  
+> ❌ Không dùng inline `<script>` và `<style>` nếu có thể tránh
+
+### 🧾 Sử dụng ABP Dynamic Form
+
+ABP cung cấp thành phần `abp-dynamic-form` để tự động render form từ DTO mà không cần viết thủ công từng input.  
+Phù hợp khi dùng với các `CreateUpdateDto` hoặc input model có nhiều field lặp lại.
+
+#### ✅ Cách sử dụng:
+- ✅ DTO phải có `DataAnnotations` như `[Required]`, `[StringLength]`, v.v.
+- ✅ Trong `.cshtml`, dùng `<abp-dynamic-form model="Model.XXX" />`
+- ✅ Có thể kết hợp `abp-button`, `abp-modal`, `abp-input`, v.v.
+
+#### 📌 Ví dụ:
+```html
+<abp-dynamic-form model="Model.Order">
+    <abp-button type="submit" text="@L["Save"]" />
+</abp-dynamic-form>
+```
+
+```csharp
+public class CreateUpdateOrderDto
+{
+    [Required]
+    [StringLength(64)]
+    public string Code { get; set; }
+
+    [Required]
+    public DateTime Date { get; set; }
+}
+```
+
+#### ❌ Không nên:
+- ❌ Dùng dynamic form nếu form cần layout phức tạp, custom nhiều
+- ❌ Dùng nếu không có DTO chuẩn hóa bằng annotation
+
+> 🧠 Dynamic form giúp giảm lặp lại, nhưng không thay thế được form viết tay trong các case đặc biệt.
+
+#### 6Khi nào sử dụng ViewModel và khi nào dùng DTO trực tiếp?
+
+Việc quyết định sử dụng DTO trực tiếp hay tạo ViewModel riêng trong PageModel phụ thuộc vào độ phức tạp của giao diện và sự khác biệt giữa dữ liệu UI cần và DTO ở tầng Contracts.
+
+**Khi nào nên dùng trực tiếp DTO:**
+- Form đơn giản, ánh xạ 1:1 với DTO.
+- Chỉ hiển thị dữ liệu DTO, không cần định dạng/tính toán phức tạp.
+- Không cần các cấu hình UI đặc thù (như `[SelectItems]`, `[TextArea]`) đặt trên thuộc tính của Model.
+- Ít logic hiển thị.
+
+**Khi nào nên tạo ViewModel (trong tầng Web):**
+- **Cần cấu hình UI trên Model:** Khi cần dùng các attribute như `[SelectItems]`, `[TextArea]`, `[DatePickerOptions]` để `<abp-form-content />` tự động render đúng control. ViewModel cho phép đặt các attribute này mà không vi phạm kiến trúc tầng (vì ViewModel và PageModel cùng ở tầng Web).
+- **Dữ liệu hiển thị khác biệt:** Cần kết hợp dữ liệu từ nhiều nguồn, cần định dạng/tính toán riêng cho UI, cấu trúc dữ liệu View cần khác DTO.
+- **Cần cấu trúc dữ liệu hỗ trợ UI:** ViewModel có thể chứa các `List<SelectListItem>` hoặc cấu trúc khác cho dropdown, radio list...
+- **Form phức tạp:** Nhiều logic, validation phức tạp, hoặc các trường không ánh xạ 1:1 với DTO.
+
+### 🧩 Partial / Tag Helpers tùy chỉnh
+
+- ✅ Tạo `_*.cshtml` để làm layout nhỏ tái sử dụng (VD: `_StatusBadge.cshtml`)
+- ✅ Đặt ở `Pages/Shared` hoặc `Pages/[Module]/Partials`
+- ✅ Dùng `@await Html.PartialAsync("_StatusBadge", model.Status)` để gọi
+
+### ✅ Validation UI
+
+- ✅ Sử dụng `[Required]`, `[StringLength]`, ... trong DTO để ABP auto validation
+- ✅ Razor Page cần `@Html.ValidationSummary()` hoặc `abp-validation-summary`
+- ❌ Không custom JS validator trừ khi thật sự cần
+
+📌 Ví dụ:
+```html
+<abp-dynamic-form model="Model.Order" />
+<abp-validation-summary />
+```
+
+### 🔔 Toast / Notification UI
+
+- ✅ Dùng `abp.notify.success("Saved successfully")` hoặc `abp.message.confirm(...)`
+- ✅ Viết JS gọi `abp.notify` sau submit thành công
+- ✅ Có thể cấu hình `abp.ui.setBusy()` khi submit
+
+📌 Ví dụ:
+```javascript
+abp.notify.success("Lưu thành công");
+abp.message.success("Xoá thành công");
+```
+
+> 📢 Những tính năng này giúp nâng cao trải nghiệm người dùng nhưng vẫn tuân theo chuẩn ABP.
+
+
+### 🔁 Sử dụng AutoMapper giữa ViewModel và DTO
+
+Trong Razor Page, bạn nên sử dụng `ObjectMapper.Map<>()` để chuyển đổi giữa `DTO` và `ViewModel`.
+
+#### ✅ Quy tắc:
+- ✅ Không truyền DTO trực tiếp sang UI nếu không cần tất cả trường
+- ✅ Tạo `ViewModel` riêng khi form phức tạp hoặc muốn phân tách logic UI
+- ✅ Dùng `ObjectMapper.Map<DTO, ViewModel>()` để map sang giao diện
+- ✅ Dùng `ObjectMapper.Map<ViewModel, DTO>()` để map lại trước khi gọi AppService
+- ❌ Không map thủ công bằng cách gán từng property nếu có thể tránh
+
+📌 Ví dụ:
+
+```csharp
+public class OrderDto
+{
+    public Guid Id { get; set; }
+    public string Code { get; set; }
+    public decimal Total { get; set; }
+}
+
+public class OrderViewModel
+{
+    public string Code { get; set; }
+}
+```
+
+```csharp
+public class EditModel : CoreOraclePageModel
+{
+    public OrderViewModel Order { get; set; }
+
+    public async Task OnGetAsync(Guid id)
+    {
+        var dto = await _orderAppService.GetAsync(id);
+        Order = ObjectMapper.Map<OrderDto, OrderViewModel>(dto);
+    }
+
+    public async Task<IActionResult> OnPostAsync()
+    {
+        var dto = ObjectMapper.Map<OrderViewModel, CreateUpdateOrderDto>(Order);
+        await _orderAppService.UpdateAsync(dto);
+        return NoContent();
+    }
+}
+```
+
+## Examples
+
+### ✅ Ví dụ đúng
+
+// ✅ Razor Page gọi AppService
+namespace Aqt.CoreFW.Web.Pages.Orders;
+
+public class IndexModel : CoreOraclePageModel
+{
+    private readonly IOrderAppService _orderAppService;
+
+    public List<OrderDto> Orders { get; set; }
+
+    public IndexModel(IOrderAppService orderAppService)
+    {
+        _orderAppService = orderAppService;
+    }
+
+    public async Task OnGetAsync()
+    {
+        Orders = await _orderAppService.GetListAsync();
+    }
+}
+
+// ✅ Menu contributor
+public class CoreOracleMenuContributor : IMenuContributor
+{
+    public Task ConfigureMenuAsync(MenuConfigurationContext context)
+    {
+        var l = context.GetLocalizer<CoreOracleResource>();
+        var menu = context.Menu;
+
+        menu.AddItem(new ApplicationMenuItem("Orders", l["Orders"], "/Orders"));
+        return Task.CompletedTask;
+    }
+}

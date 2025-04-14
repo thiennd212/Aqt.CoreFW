@@ -1,0 +1,105 @@
+{
+  "template": "app",
+  "imports": {
+    "Volo.Abp.LeptonXLiteTheme": {
+      "version": "4.1.0",
+      "isInstalled": true
+    },
+    "Volo.Abp.Account": {
+      "version": "9.1.0",
+      "isInstalled": true
+    },
+    "Volo.Abp.OpenIddict": {
+      "version": "9.1.0",
+      "isInstalled": true
+    },
+    "Volo.Abp.Identity": {
+      "version": "9.1.0",
+      "isInstalled": true
+    },
+    "Volo.Abp.TenantManagement": {
+      "version": "9.1.0",
+      "isInstalled": true
+    },
+    "Volo.Abp.SettingManagement": {
+      "version": "9.1.0",
+      "isInstalled": true
+    },
+    "Volo.Abp.PermissionManagement": {
+      "version": "9.1.0",
+      "isInstalled": true
+    },
+    "Volo.Abp.FeatureManagement": {
+      "version": "9.1.0",
+      "isInstalled": true
+    }
+  },
+  "folders": {
+    "items": {
+      "src": {},
+      "test": {}
+    }
+  },
+  "packages": {
+    "Aqt.CoreFW.Application": {
+      "path": "src/Aqt.CoreFW.Application/Aqt.CoreFW.Application.abppkg",
+      "folder": "src"
+    },
+    "Aqt.CoreFW.Application.Tests": {
+      "path": "test/Aqt.CoreFW.Application.Tests/Aqt.CoreFW.Application.Tests.abppkg",
+      "folder": "test"
+    },
+    "Aqt.CoreFW.Domain.Shared": {
+      "path": "src/Aqt.CoreFW.Domain.Shared/Aqt.CoreFW.Domain.Shared.abppkg",
+      "folder": "src"
+    },
+    "Aqt.CoreFW.Application.Contracts": {
+      "path": "src/Aqt.CoreFW.Application.Contracts/Aqt.CoreFW.Application.Contracts.abppkg",
+      "folder": "src"
+    },
+    "Aqt.CoreFW.HttpApi": {
+      "path": "src/Aqt.CoreFW.HttpApi/Aqt.CoreFW.HttpApi.abppkg",
+      "folder": "src"
+    },
+    "Aqt.CoreFW.HttpApi.Client": {
+      "path": "src/Aqt.CoreFW.HttpApi.Client/Aqt.CoreFW.HttpApi.Client.abppkg",
+      "folder": "src"
+    },
+    "Aqt.CoreFW.Web": {
+      "path": "src/Aqt.CoreFW.Web/Aqt.CoreFW.Web.abppkg",
+      "folder": "src"
+    },
+    "Aqt.CoreFW.Web.Tests": {
+      "path": "test/Aqt.CoreFW.Web.Tests/Aqt.CoreFW.Web.Tests.abppkg",
+      "folder": "test"
+    },
+    "Aqt.CoreFW.EntityFrameworkCore.Tests": {
+      "path": "test/Aqt.CoreFW.EntityFrameworkCore.Tests/Aqt.CoreFW.EntityFrameworkCore.Tests.abppkg",
+      "folder": "test"
+    },
+    "Aqt.CoreFW.EntityFrameworkCore": {
+      "path": "src/Aqt.CoreFW.EntityFrameworkCore/Aqt.CoreFW.EntityFrameworkCore.abppkg",
+      "folder": "src"
+    },
+    "Aqt.CoreFW.TestBase": {
+      "path": "test/Aqt.CoreFW.TestBase/Aqt.CoreFW.TestBase.abppkg",
+      "folder": "test"
+    },
+    "Aqt.CoreFW.Domain.Tests": {
+      "path": "test/Aqt.CoreFW.Domain.Tests/Aqt.CoreFW.Domain.Tests.abppkg",
+      "folder": "test"
+    },
+    "Aqt.CoreFW.HttpApi.Client.ConsoleTestApp": {
+      "path": "test/Aqt.CoreFW.HttpApi.Client.ConsoleTestApp/Aqt.CoreFW.HttpApi.Client.ConsoleTestApp.abppkg",
+      "folder": "test"
+    },
+    "Aqt.CoreFW.DbMigrator": {
+      "path": "src/Aqt.CoreFW.DbMigrator/Aqt.CoreFW.DbMigrator.abppkg",
+      "folder": "src"
+    },
+    "Aqt.CoreFW.Domain": {
+      "path": "src/Aqt.CoreFW.Domain/Aqt.CoreFW.Domain.abppkg",
+      "folder": "src"
+    }
+  }
+}

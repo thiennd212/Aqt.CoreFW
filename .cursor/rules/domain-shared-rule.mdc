@@ -1,0 +1,173 @@
+---
+description: 
+globs: **/Aqt.CoreFW.Domain.Shared/**/*.cs
+alwaysApply: false
+---
+# Rule: Chuẩn hóa tầng Aqt.CoreFW.Domain.Shared (ABP Framework + DDD)
+
+## Context
+
+Tầng `Aqt.CoreFW.Domain.Shared` là nơi định nghĩa các thành phần dùng chung giữa nhiều tầng trong hệ thống như `Application`, `HttpApi`, `Web`, `EntityFrameworkCore`.  
+Tầng này **không chứa nghiệp vụ**, **không chứa logic xử lý**, và **không chứa Entity hay Repository**.  
+Nó là nơi khai báo các cấu trúc **tĩnh**, **bất biến**, và **hợp đồng (contract)** có thể dùng chung.
+
+## Requirements
+
+### 📁 Cấu trúc thư mục
+
+- ✅ Thư mục `Enums/`, `Settings/`, `MultiTenancy/`, `Localization/`, `Constants/`
+- ❌ Không có `Entities/`, `Repositories/`, `Services/`, `Events/`
+
+#### ✔️ Nên:
+- Sử dụng file:  
+  - `CoreOracleSettings.cs`
+  - `CoreOracleDomainErrorCodes.cs`
+  - `CoreOracleResource.cs`
+- Phân tách rõ `Localization`, `MultiTenancy`, `GlobalFeatures`
+
+#### ❌ Không nên:
+- Gộp mọi file vào thư mục gốc
+- Tạo class xử lý logic
+
+### 📦 Namespace chuẩn
+
+- ✅ Dùng namespace dạng: `Aqt.CoreFW.Domain.Shared.[Subfolder]`
+- ❌ Không dùng namespace lẫn `Domain`, `Application`, `Web`
+
+📌 Ví dụ chuẩn:
+```csharp
+namespace Aqt.CoreFW.Domain.Shared.Enums
+```
+### 📑 Enum
+
+- ✅ Dùng để định nghĩa trạng thái, loại (ví dụ: `OrderStatus`, `TransactionType`)
+- ✅ Được sử dụng tại DTO, AppService, HttpApi, Razor Pages
+- ❌ Không thêm method hoặc switch logic trong enum
+
+#### ✔️ Nên dùng khi:
+- Enum có giá trị cố định, ít thay đổi
+- Cần chia sẻ cho nhiều tầng
+
+#### ❌ Không nên dùng khi:
+- Dữ liệu thay đổi theo runtime
+- Enum có hành vi logic phức tạp
+
+### ⚙️ Settings
+
+- ✅ Khai báo tại `CoreOracleSettings.cs`
+- ✅ Dùng `const string` với prefix theo chuẩn module
+
+📌 Ví dụ:
+```csharp
+public static class CoreOracleSettings
+{
+    public const string MaxItemPerPage = "CoreOracle.MaxItemPerPage";
+}
+```
+
+### 🌍 Localization
+
+- ✅ Dùng file JSON tại `Localization/CoreOracle`
+- ✅ Class anchor đặt tại `CoreOracleResource.cs`
+- ✅ Luôn luôn cập nhật cho Tiếng Việt(vi.json) và Tiếng Anh(en.json)
+- ❌ Không xử lý logic trong file resource
+
+---
+
+### 📛 Error Codes
+
+- ✅ Đặt tại `CoreOracleDomainErrorCodes.cs`
+- ✅ Format `"CoreOracle:{Code}"`
+
+📌 Ví dụ:
+```csharp
+public static class CoreOracleDomainErrorCodes
+{
+    public const string InvalidRange = "CoreOracle:00001";
+}
+```
+
+### ❌ KHÔNG ĐƯỢC chứa:
+
+| Thành phần                     | Vì sao không?                                  |
+|--------------------------------|------------------------------------------------|
+| `Entity`, `AggregateRoot`      | Thuộc về tầng `Domain`, không phải Shared      |
+| `Repository`                   | Là hợp đồng truy cập dữ liệu, không dùng chung |
+| `PermissionDefinitionProvider` | Đặt tại `Application.Contracts` theo chuẩn ABP |
+| Class chứa logic               | Vi phạm nguyên tắc bất biến, dễ gây rối        |
+
+### 🧾 Using đúng namespace
+
+Cần `using` đúng các namespace sau để truy cập Setting, Localization
+
+| Loại dữ liệu          | Namespace mẫu            |
+|-----------------------|--------------------------|
+| Setting name constant | `Aqt.CoreFW.Settings`    |
+| Localization Resource | `Aqt.CoreFW.Localization`|
+
+📌 Ví dụ:
+```csharp
+using Aqt.CoreFW.Settings;
+using Aqt.CoreFW.Localization;
+```
+
+## Examples
+
+<example>
+```csharp
+// ✅ Enum được dùng trong nhiều tầng
+namespace Aqt.CoreFW.Domain.Shared.Enums;
+
+public enum OracleStatus
+{
+    Draft,
+    Approved,
+    Cancelled
+}
+
+// ✅ Setting name chuẩn
+namespace Aqt.CoreFW.Domain.Shared.Settings;
+
+public static class CoreOracleSettings
+{
+    public const string MaxRetryCount = "CoreOracle.MaxRetry";
+}
+
+// ✅ Error code định danh
+namespace Aqt.CoreFW.Domain.Shared;
+
+public static class CoreOracleDomainErrorCodes
+{
+    public const string DuplicateEntry = "CoreOracle:00001";
+}
+
+// ✅ Anchor class cho localization
+namespace Aqt.CoreFW.Domain.Shared.Localization;
+
+public class CoreOracleResource
+{
+}
+```
+</example>
+
+<example type="invalid">
+```csharp
+// ❌ Không nên có logic xử lý
+public static class StatusHelper
+{
+    public static string GetLabel(OracleStatus status) => status.ToString(); // ❌ Vi phạm
+}
+
+// ❌ Không nên đặt Entity ở đây
+public class OracleEntry
+{
+    public Guid Id { get; set; } // ❌ Đặt ở Domain
+}
+
+// ❌ Không nên định nghĩa repository
+public interface IOracleRepository
+{
+    Task<OracleEntry> GetAsync(Guid id); // ❌ Repository để ở Domain
+}
+```
+</example>

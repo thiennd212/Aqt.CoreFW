@@ -1,0 +1,207 @@
+---
+description: 
+globs: **/Aqt.CoreFW.Application.Contracts/**/*.cs
+alwaysApply: false
+---
+# Rule: Chuẩn hóa tầng Aqt.CoreFW.Application.Contracts
+
+## Context
+
+Tầng `Application.Contracts` định nghĩa **hợp đồng giao tiếp (contract)** giữa các tầng `Application`, `HttpApi`, `Client`, và cả `Web`.  
+Đây là nơi khai báo **DTO**, **interface AppService**, **permission names**, **API contracts**, **validation input**, và **hằng số định danh**.
+
+**Tầng này không chứa logic xử lý.** Chỉ dùng để chia sẻ hợp đồng và dữ liệu.
+
+## Requirements
+
+### 📁 Cấu trúc thư mục
+
+- ✅ Phân tách rõ: `Dtos/`, `Permissions/`, `Requests/`, `Responses/`, `Services/`
+- ❌ Không có Entity, Repository, hoặc xử lý logic
+
+#### ✔️ Nên:
+- Dùng hậu tố `Dto`, `Input`, `Output` cho DTO
+- Đặt Permission tại `Permissions/ModulePermissions.cs`
+
+### 📦 Namespace chuẩn
+
+- ✅ Dạng: `Aqt.CoreFW.[Module].[Role]`
+- ❌ Không dùng `Domain`, `Shared`, hoặc namespace khác lệch tầng
+
+📌 Ví dụ:
+```csharp
+namespace Aqt.CoreFW.Orders.Dtos;
+```
+
+### 📦 AppService Interface
+
+- ✅ Interface kế thừa từ `IApplicationService`
+- ✅ Nằm trong Contracts, không có implement
+- ❌ Không khai báo logic hoặc method nội bộ
+
+📌 Ví dụ:
+```csharp
+public interface IOrderAppService : IApplicationService
+{
+    Task<OrderDto> GetAsync(Guid id);
+}
+```
+
+### 📑 DTO
+
+- ✅ Dùng hậu tố: `Dto`, `CreateUpdateDto`, `Input`, `Output`
+- ✅ Chứa dữ liệu và DataAnnotations (VD: `[Required]`)
+- ❌ Không chứa xử lý logic hoặc gọi service
+
+### 🔐 Permissions
+
+- ✅ Định nghĩa tại `Permissions/CoreOraclePermissions.cs`
+- ✅ Sử dụng format: `"CoreOracle.ModuleName.Action"`
+
+📌 Ví dụ:
+```csharp
+public static class OrderPermissions
+{
+    public const string GroupName = "Orders";
+    public const string Default = GroupName;
+    public const string Create = GroupName + ".Create";
+}
+```
+
+### 🔐 Permission Definitions
+
+- ✅ Định nghĩa toàn bộ cây permission tại `CoreOraclePermissions.cs`
+- ✅ Dùng `GroupName = "CoreOracle"` làm prefix chung cho tất cả quyền
+- ✅ Tổ chức permission theo module bằng nested static class (VD: `Orders`, `Settings`)
+- ✅ Dùng format chuẩn: `"CoreOracle.Module.Action"`
+- ✅ Sử dụng `PermissionDefinitionProvider` để đăng ký quyền từ constants này
+- ❌ Không nên hardcode permission key trực tiếp trong AppService
+- ❌ Không nên viết logic trong file permission
+
+📌 Ví dụ:
+```csharp
+public static class CoreOraclePermissions
+{
+    public const string GroupName = "CoreOracle";
+
+    public static class Orders
+    {
+        public const string Default = GroupName + ".Orders";
+        public const string Create = Default + ".Create";
+        public const string Delete = Default + ".Delete";
+    }
+
+    public static class Settings
+    {
+        public const string Manage = GroupName + ".Settings.Manage";
+    }
+}
+```
+
+📌 Sử dụng trong AppService:
+```csharp
+[Authorize(CoreOraclePermissions.Orders.Create)]
+public async Task CreateAsync(...) { ... }
+```
+
+📌 Sử dụng trong PermissionDefinitionProvider:
+```csharp
+var group = context.AddGroup(CoreOraclePermissions.GroupName);
+group.AddPermission(CoreOraclePermissions.Orders.Create);
+```
+
+### 🧩 Interface AppService
+
+Interface trong `Application.Contracts` là hợp đồng mà tầng `Application` sẽ implement.  
+Tùy mục tiêu sử dụng, interface có thể kế thừa từ:
+
+| Base Interface                  | Khi nào nên dùng?                          |
+|---------------------------------|--------------------------------------------|
+| `IApplicationService`           | Khi logic đa dạng, không chỉ CRUD          |
+| `ICrudAppService<TDto, TKey>`   | Khi chỉ cần hỗ trợ CRUD theo kiểu mặc định |
+
+#### ✅ Quy tắc:
+- ✅ Interface nên kế thừa `IApplicationService` hoặc `ICrudAppService` tùy trường hợp
+- ✅ Tên chuẩn: `I[Entity]AppService`
+- ✅ Không khai báo body (không có `{}`), không xử lý logic
+- ❌ Không tạo interface chỉ để định danh, không có method nào
+
+📌 Ví dụ:
+
+```csharp
+// Dùng IApplicationService nếu cần logic tùy chỉnh
+public interface IOrderAppService : IApplicationService
+{
+    Task<OrderDto> GetAsync(Guid id);
+}
+
+// Dùng ICrudAppService nếu chỉ cần CRUD
+public interface IProductAppService : ICrudAppService<ProductDto, Guid>
+{
+}
+```
+
+📌 Được implement tại tầng Application:
+
+```csharp
+public class OrderAppService : ApplicationService, IOrderAppService
+{
+    public async Task<OrderDto> GetAsync(Guid id) => ...;
+}
+
+public class ProductAppService : CrudAppService<Product, ProductDto, Guid>, IProductAppService
+{
+    public ProductAppService(IRepository<Product, Guid> repo) : base(repo) { }
+}
+```
+
+### 🧾 Using đúng namespace
+
+Cần `using` đúng các namespace sau để truy cập Setting, Localization
+
+| Loại dữ liệu          | Namespace mẫu                                               |
+|-----------------------|-------------------------------------------------------------|
+| Setting name constant | `Aqt.CoreFW.Settings`                                   |
+| Localization Resource | `Aqt.CoreFW.Localization`                               |
+
+📌 Ví dụ:
+```csharp
+using Aqt.CoreFW.Permissions;
+using Aqt.CoreFW.Settings;
+using Aqt.CoreFW.Localization;
+```
+
+## Examples
+
+### ✅ Ví dụ đúng
+
+// 📦 AppService interface
+namespace Aqt.CoreFW.Orders;
+
+public interface IOrderAppService : IApplicationService
+{
+    Task<OrderDto> GetAsync(Guid id);
+}
+
+// 📑 DTO
+namespace Aqt.CoreFW.Orders.Dtos;
+
+public class OrderDto
+{
+    public Guid Id { get; set; }
+    public string Code { get; set; }
+}
+
+### ❌ Ví dụ sai
+
+// ❌ DTO không có hậu tố
+public class Order { public Guid Id { get; set; } }
+
+// ❌ Interface chứa logic
+public interface ICustomerAppService
+{
+    string GetDefaultName() => "Unknown"; // ❌ Không được implement tại đây
+}
+
+// ❌ Repository trong Contracts
+public interface IOrderRepository { } // ❌ Nên đặt trong Domain

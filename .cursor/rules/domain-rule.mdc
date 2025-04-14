@@ -1,0 +1,208 @@
+---
+description: 
+globs: **/Aqt.CoreFW.Domain/**/*.cs
+alwaysApply: false
+---
+# Rule: Chuẩn hóa tầng Aqt.CoreFW.Domain theo ABP Framework + DDD
+
+## Context
+
+Tầng `Aqt.CoreFW.Domain` là trung tâm nghiệp vụ của hệ thống, nơi định nghĩa các `Entity`, `AggregateRoot`, `DomainService`, `DomainEvent`, và logic xử lý nghiệp vụ cốt lõi.  
+Tuân thủ đúng chuẩn giúp dễ bảo trì, kiểm thử, mở rộng, và kết nối hiệu quả với tầng hạ tầng (EF Core) và Application.
+
+## Requirements
+
+### 📁 Cấu trúc thư mục
+
+- ✅ Tách rõ thư mục `Entities/`, `Events/`, `Services/`, `Enums/`
+- ❌ Không gộp chung toàn bộ class vào thư mục gốc
+
+📌 Gợi ý cấu trúc:
+```
+Aqt.CoreFW.Domain/
+├── Orders/
+│   ├── Entities/
+│   ├── Services/
+│   ├── Events/
+│   └── Enums/
+```
+
+### 📦 Namespace
+
+- ✅ Theo format: `Aqt.CoreFW.[Module].[Layer]`
+- ❌ Không dùng namespace lẫn `Application`, `Web`
+
+📌 Ví dụ chuẩn:
+```csharp
+namespace Aqt.CoreFW.Orders.Entities;
+```
+
+### 🧬 Kế thừa base class
+
+- ✅ Dùng `AggregateRoot<TKey>` cho root
+- ✅ Dùng `Entity<TKey>` cho sub-entity
+- ✅ Dùng `AuditedEntity<TKey>`, `FullAuditedEntity<TKey>` nếu cần tracking
+- ✅ Dùng `ValueObject` cho dữ liệu bất biến
+- ✅ Ưu tiên sử dụng FullAudited
+- ❌ Không viết POCO không kế thừa gì
+
+#### ✔️ Nên dùng:
+
+| Trường hợp              | Base class              |
+|-------------------------|-------------------------|
+| Đối tượng root (Order)  | AggregateRoot<Guid>     |
+| Sub-entity (OrderLine)  | Entity<Guid>            |
+| Cần audit + soft-delete | FullAuditedEntity<Guid> |
+| Không cần tracking      | Entity<Guid>            |
+| Giá trị bất biến        | ValueObject             |
+
+### 🧠 Domain Service
+
+- ✅ Tên class kết thúc bằng `Service`
+- ✅ Không có field (stateless)
+- ❌ Không dùng tên như `Helper`, `Manager`
+- ❌ Không inject `DbContext`, `AppService`
+
+#### ✔️ Nên tạo khi:
+- Xử lý logic nhiều entity (cross-entity)
+- Không biết nên đặt logic vào Entity nào
+
+#### ❌ Không nên tạo khi:
+- Logic chỉ liên quan đến 1 Entity → nên đưa vào Entity
+
+### 📢 Domain Event
+
+- ✅ Tên class kết thúc bằng `Event`
+- ✅ Kế thừa `DomainEvent`
+- ✅ Gọi `AddDomainEvent(...)` trong `AggregateRoot`
+- ❌ Không raise từ `AppService`
+
+#### ✔️ Nên dùng khi:
+- Cần trigger tác vụ phụ như gửi email, ghi log
+- Cần theo dõi hành vi nghiệp vụ
+
+### 🗃️ Repository Interface
+
+Repository Interface là hợp đồng truy cập dữ liệu cho các Aggregate hoặc Entity, và là phần quan trọng của tầng Domain.
+
+- ✅ Interface Repository tùy chỉnh phải đặt trong `Aqt.CoreFW.[Module].Repositories`
+- ✅ Tên phải bắt đầu bằng `I` và kết thúc bằng `Repository` (VD: `IOrderRepository`)
+- ✅ Kế thừa từ `IRepository<TEntity, TKey>` của ABP Framework
+- ❌ Không được implement tại Domain
+- ❌ Không được chứa logic hoặc method có thân (`{}`)
+
+#### ✔️ Nên tạo khi:
+- Cần bổ sung method query đặc thù cho một Entity
+- Domain cần định nghĩa rõ yêu cầu truy cập dữ liệu
+
+#### ❌ Không nên tạo khi:
+- Chưa rõ Aggregate hoặc yêu cầu dữ liệu chưa ổn định
+- Dùng để viết xử lý logic → sai vai trò
+
+### 🧾 Using đúng namespace
+
+Cần `using` đúng các namespace sau để truy cập Enum, Setting, Localization
+
+| Loại dữ liệu          | Namespace mẫu                                               |
+|-----------------------|-------------------------------------------------------------|
+| Enum                  | `Aqt.CoreFW.Domain.Shared.Enums`                        |
+| Setting name constant | `Aqt.CoreFW.Settings`                                   |
+| Localization Resource | `Aqt.CoreFW.Localization`                               |
+
+📌 Ví dụ:
+```csharp
+using Aqt.CoreFW.Domain.Shared.Enums;
+using Aqt.CoreFW.Settings;
+using Aqt.CoreFW.Localization;
+```
+
+## Examples
+<example>
+```csharp
+// ✅ AggregateRoot
+namespace Aqt.CoreFW.Orders.Entities;
+
+public class Order : AggregateRoot<Guid>
+{
+    public void Complete()
+    {
+        Status = OrderStatus.Completed;
+        AddDomainEvent(new OrderCompletedEvent(Id));
+    }
+}
+
+// ✅ DomainService
+namespace Aqt.CoreFW.Orders.Services;
+
+public class PricingService
+{
+    public decimal Calculate(Order order) => order.Total * 0.9m;
+}
+
+// ✅ DomainEvent
+namespace Aqt.CoreFW.Orders.Events;
+
+public class OrderCompletedEvent : DomainEvent
+{
+    public Guid OrderId { get; }
+    public OrderCompletedEvent(Guid orderId) => OrderId = orderId;
+}
+```
+</example>
+
+<example type="invalid">
+```csharp
+// ❌ Không kế thừa base class
+public class Order { public Guid Id { get; set; } }
+
+// ❌ Public setter
+public class Product : AggregateRoot<Guid>
+{
+    public string Name { get; set; } // ❌ Nên dùng private set
+}
+
+// ❌ DomainService có state
+public class DiscountService
+{
+    private decimal _rate = 0.1m;
+    public decimal Calc(Order order) => order.Total * (1 + _rate);
+}
+
+// ❌ Raise event từ AppService
+public class OrderAppService : ApplicationService
+{
+    public void Complete(Guid id)
+    {
+        var order = _repo.Get(id);
+        AddDomainEvent(new OrderCompletedEvent(id));
+    }
+}
+```
+</example>
+
+<example>
+```csharp
+// ✅ Interface Repository chuẩn
+namespace Aqt.CoreFW.Orders.Repositories;
+
+public interface IOrderRepository : IRepository<Order, Guid>
+{
+    Task<List<Order>> GetRecentAsync(int count);
+}
+```
+</example>
+
+<example type="invalid">
+```csharp
+// ❌ Repository đặt sai tầng
+namespace Aqt.CoreFW.Domain.Shared.Repositories;
+
+public interface IOrderRepository { } // ❌ Nên đặt ở Domain/Orders
+
+// ❌ Interface có logic xử lý
+public interface IOrderRepository
+{
+    List<Order> GetAll() => new(); // ❌ Không được viết thân hàm
+}
+```
+</example>

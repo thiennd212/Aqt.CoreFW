@@ -1,0 +1,86 @@
+---
+description: 
+globs: 
+alwaysApply: true
+---
+# Rule: Tối ưu hiệu năng toàn dự án ABP Framework
+
+## Context
+
+Hiệu năng là yếu tố sống còn của hệ thống ở môi trường production.  
+ABP Framework hỗ trợ nhiều công cụ mạnh như EF Core, async/await, caching – nhưng cần tuân thủ các nguyên tắc đúng để đảm bảo không gây bottleneck, leak hoặc chậm không đáng có.
+
+## Requirements
+
+### ⚡ EF Core / Repository
+
+- ✅ Luôn sử dụng `AsNoTracking()` nếu không cần update dữ liệu
+- ✅ Dùng `GetDbSetAsync()` thay vì `DbContext.Entities`
+- ✅ Tránh `.ToList()` trước `.Where()` (phải filter trước rồi mới load)
+- ✅ Luôn giới hạn `.Take(...)` khi truy xuất danh sách
+- ✅ Tách nhỏ `.Include()` nếu có nhiều tầng (tránh Include sâu + N+1 query)
+- ❌ Không viết truy vấn SQL raw inline (dễ leak, khó test, khó caching)
+
+### 🧠 Application / AppService
+
+- ✅ Dùng DTO để return thay vì return entity trực tiếp
+- ✅ Dùng `ObjectMapper.Map<T>` thay vì tự map
+- ✅ Dùng `ICurrentUser` để lấy thông tin user
+- ❌ Không gọi lồng nhiều AppService
+- ❌ Không load toàn bộ entity rồi filter bằng LINQ
+
+### 🧵 Async/Await
+
+- ✅ Ưu tiên `Task.WhenAll()` khi gọi nhiều service độc lập
+- ✅ Luôn `await` đúng context – không dùng `.Result` hoặc `.Wait()`
+- ❌ Không dùng async void trừ sự kiện UI
+
+### 💾 Caching
+
+- ✅ Sử dụng `ICacheManager` hoặc `IDistributedCache` nếu dữ liệu ít thay đổi
+- ✅ Có invalidate cache rõ ràng khi cập nhật
+- ❌ Không lạm dụng cache trong transaction logic
+
+### 🔐 Security & Logging
+
+- ✅ Không log `InnerException` ra response người dùng
+- ✅ Không log `AccessToken`, `Password`, `ConnectionString`
+- ✅ Gắn `[DisableAuditing]` vào action thao tác lớn hoặc upload file
+
+## Examples
+
+### ✅ Ví dụ tốt
+
+```csharp
+var orders = (await GetDbSetAsync())
+    .AsNoTracking()
+    .Where(x => x.Status == OrderStatus.Active)
+    .OrderByDescending(x => x.CreationTime)
+    .Take(100)
+    .ToList();
+```
+
+```csharp
+public async Task<List<UserDto>> LoadAsync()
+{
+    var users = await _userRepo.GetListAsync();
+    return ObjectMapper.Map<List<AppUser>, List<UserDto>>(users);
+}
+```
+
+### ❌ Ví dụ sai
+
+```csharp
+// ❌ Không dùng AsNoTracking, load cả bảng rồi filter
+var all = await _context.Orders.ToListAsync();
+return all.Where(x => x.Status == OrderStatus.Active).ToList();
+
+// ❌ Gọi AppService trong AppService
+await _customerAppService.CreateAsync(customer); // Không nên gọi như vậy
+
+// ❌ Không giới hạn Take
+return await _repo.GetListAsync(); // Dữ liệu lớn gây quá tải
+
+// ❌ Map tay thủ công
+var dto = new UserDto { Name = entity.Name, Age = entity.Age }; // dễ thiếu field
+```

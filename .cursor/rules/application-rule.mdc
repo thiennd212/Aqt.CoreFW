@@ -1,0 +1,228 @@
+---
+description: 
+globs: **/Aqt.CoreFW.Application/**/*.cs
+alwaysApply: false
+---
+# Rule: Chuẩn hóa tầng Aqt.CoreFW.Application
+
+## Context
+
+Tầng `Application` chứa toàn bộ **xử lý nghiệp vụ ứng dụng**, được tổ chức theo `AppService`, sử dụng DTO từ `Application.Contracts`, tương tác với `Domain` và `Repository`.  
+Đây là nơi triển khai các phương thức được expose ra ngoài qua API, UI hoặc Client.
+
+## Requirements
+
+### 📁 Cấu trúc thư mục
+
+- ✅ Tổ chức theo module: `Orders/OrderAppService.cs`, `Customers/CustomerAppService.cs`
+- ✅ Phân tách rõ các `Managers/`, `Services/`, `AppServices/`
+- ❌ Không chứa DTO, Permission constant → nằm trong Application.Contracts
+
+### 📦 Namespace
+
+- ✅ Format: `Aqt.CoreFW.[Module]`
+- ❌ Không dùng lẫn với `Contracts`, `Domain`, `HttpApi`
+
+📌 Ví dụ:
+```csharp
+namespace Aqt.CoreFW.Orders;
+```
+
+### 🔧 AppService
+
+Trong ABP Framework, AppService có thể kế thừa từ:
+
+| Base Class                     | Khi nào dùng?                                    |
+|--------------------------------|--------------------------------------------------|
+| `ApplicationService`           | Dùng khi cần viết logic tùy chỉnh                |
+| `CrudAppService<TEntity, Dto>` | Dùng khi muốn CRUD nhanh gọn theo convention ABP |
+
+Ngoài ra, **mọi AppService phải implement interface được định nghĩa trong Application.Contracts**.
+
+#### ✅ Quy tắc:
+
+- ✅ AppService **phải kế thừa** từ `ApplicationService` hoặc `CrudAppService`
+- ✅ AppService **phải implement interface** tương ứng trong `Application.Contracts`
+- ✅ Interface phải kế thừa `IApplicationService` hoặc `ICrudAppService`
+- ❌ Không nên viết AppService mà không có interface
+- ❌ Không nên kế thừa cả `ApplicationService` và `CrudAppService` cùng lúc
+
+📌 Ví dụ:
+
+```csharp
+// Dùng ApplicationService khi cần custom logic
+public interface IOrderAppService : IApplicationService
+{
+    Task<OrderDto> GetAsync(Guid id);
+}
+
+public class OrderAppService : ApplicationService, IOrderAppService
+{
+    public async Task<OrderDto> GetAsync(Guid id) => ...;
+}
+
+// Dùng CrudAppService khi CRUD đơn giản
+public interface IProductAppService : ICrudAppService<ProductDto, Guid> { }
+
+public class ProductAppService : CrudAppService<Product, ProductDto, Guid>, IProductAppService
+{
+    public ProductAppService(IRepository<Product, Guid> repo) : base(repo) { }
+}
+```
+
+### 🧠 Business Logic
+
+- ✅ Có thể xử lý tính toán nghiệp vụ, orchestrate domain, validate dữ liệu
+- ❌ Không thao tác trực tiếp với DbContext
+- ❌ Không raise Domain Event (phải raise từ Entity hoặc Domain)
+
+### 🧭 Cấu hình AutoMapper Profile
+#### 🛠️ Sử dụng `.ForMember(...)` nếu cần ánh xạ đặc biệt
+
+Nếu field trong DTO và Entity không trùng tên, hoặc cần xử lý tùy biến khi map, dùng `.ForMember(...)` để định nghĩa rõ.
+
+📌 Ví dụ:
+```csharp
+CreateMap<Order, OrderDto>()
+    .ForMember(dest => dest.TotalText, opt => opt.MapFrom(src => src.Total.ToString("C0")));
+
+CreateMap<CreateUpdateOrderDto, Order>()
+    .ForMember(dest => dest.Status, opt => opt.Ignore()); // bỏ qua trường không cần map
+```
+
+> ✅ `.ForMember` là cách tốt nhất để custom mapping chính xác trong AutoMapper profile.
+
+
+Để ánh xạ DTO ↔ Entity một cách tự động, bạn nên tạo class cấu hình AutoMapper profile riêng cho từng module.
+
+#### ✅ Quy tắc:
+- ✅ Mỗi module nên có một profile riêng: `OrderApplicationAutoMapperProfile`
+- ✅ Using `Volo.Abp.AutoMapper` cho `OrderApplicationAutoMapperProfile` 
+- ✅ Kế thừa từ `Profile` (AutoMapper) hoặc `AutoMapperProfileBase` (nếu dùng base ABP)
+- ✅ Đăng ký trong `ApplicationModule` qua `AddAutoMapperObjectMapper`
+- ❌ Không khai báo mapping trong AppService trực tiếp
+- ❌ Không cập nhật mapping trong `CoreOracleApplicationAutoMapperProfile`
+
+📌 Ví dụ:
+
+```csharp
+public class OrderApplicationAutoMapperProfile : Profile
+{
+    public OrderApplicationAutoMapperProfile()
+    {
+        CreateMap<Order, OrderDto>();
+        CreateMap<CreateUpdateOrderDto, Order>();
+    }
+}
+```
+
+📌 Trong `AqtCoreOracleApplicationModule.cs`:
+```csharp
+context.Services.AddAutoMapperObjectMapper<AqtCoreOracleApplicationModule>();
+Configure<AbpAutoMapperOptions>(options =>
+{
+    options.AddMaps<AqtCoreOracleApplicationModule>();
+});
+```
+
+### 📤 Kết nối tầng ngoài
+
+- ✅ Dùng AutoMapper để map DTO <-> Entity
+- ✅ Gọi repository, domain service, setting provider, permission checker nếu cần
+
+### 🔁 Sử dụng AutoMapper trong Application
+
+AppService nên sử dụng `ObjectMapper.Map<>()` để ánh xạ DTO ↔ Entity.
+
+#### ✅ Quy tắc:
+- ✅ Dùng `ObjectMapper.Map<DTO, Entity>()` khi tạo mới entity từ dữ liệu đầu vào
+- ✅ Sử dụng phương thức ConstructUsing trong cấu hình AutoMapper để khởi tạo Id trong quá trình ánh xạ với CreateDto
+- ✅ Dùng `ObjectMapper.Map<Entity, DTO>()` khi trả kết quả ra ngoài
+- ✅ Dùng `MapList<>()` để map danh sách nếu cần
+- ❌ Không ánh xạ thủ công nếu DTO/Entity có nhiều trường
+
+📌 Ví dụ:
+
+```csharp
+public async Task<OrderDto> GetAsync(Guid id)
+{
+    var entity = await _orderRepository.GetAsync(id);
+    return ObjectMapper.Map<Order, OrderDto>(entity);
+}
+
+public async Task CreateAsync(CreateOrderDto input)
+{
+	input.
+    var entity = ObjectMapper.Map<CreateOrderDto, Order>(input);
+    await _orderRepository.InsertAsync(entity);
+}
+```
+
+### 🧾 Using đúng namespace
+
+Cần `using` đúng các namespace sau để truy cập  Repository interface, AppService interface, DTO, Permissions, Constants, Enum, v.v.
+
+| Loại dữ liệu          | Namespace mẫu                       |
+|-----------------------|-------------------------------------|
+| Repository interface  | `Aqt.CoreFW.[Module].Repositories`  |
+| AppService interface  | `Aqt.CoreFW.[Module]`               |
+| DTO                   | `Aqt.CoreFW.[Module].Dtos`          |
+| Enum                  | `Aqt.CoreFW.Domain.Shared.Enums`    |
+| Permission            | `Aqt.CoreFW.Permissions`            |
+| Setting name constant | `Aqt.CoreFW.Settings`               |
+| Localization Resource | `Aqt.CoreFW.Localization`           |
+
+📌 Ví dụ:
+```csharp
+using Aqt.CoreFW.Orders;
+using Aqt.CoreFW.Orders.Dtos;
+using Aqt.CoreFW.Domain.Shared.Enums;
+using Aqt.CoreFW.Orders.Repositories;
+using Aqt.CoreFW.Permissions;
+using Aqt.CoreFW.Settings;
+using Aqt.CoreFW.Localization;
+```
+
+## Examples
+
+### ✅ Ví dụ đúng
+
+// 🔧 AppService kế thừa ApplicationService
+namespace Aqt.CoreFW.Orders;
+
+public class OrderAppService : ApplicationService, IOrderAppService
+{
+    private readonly IOrderRepository _orderRepository;
+
+    public OrderAppService(IOrderRepository orderRepository)
+    {
+        _orderRepository = orderRepository;
+    }
+
+    public async Task<OrderDto> GetAsync(Guid id)
+    {
+        var order = await _orderRepository.GetAsync(id);
+        return ObjectMapper.Map<Order, OrderDto>(order);
+    }
+}
+
+### ❌ Ví dụ sai
+
+// ❌ AppService gọi trực tiếp DbContext
+public class BadAppService : ApplicationService
+{
+    private readonly MyDbContext _context;
+    public BadAppService(MyDbContext context) => _context = context;
+
+    public async Task<List<Order>> GetAll() => await _context.Orders.ToListAsync(); // ❌
+}
+
+// ❌ AppService raise event (sai tầng)
+public class BadOrderAppService : ApplicationService
+{
+    public void Complete(Guid id)
+    {
+        var order = new Order();
+        AddDomainEvent(new OrderCompletedEvent(order.Id)); // ❌ sai
+    }
+}
