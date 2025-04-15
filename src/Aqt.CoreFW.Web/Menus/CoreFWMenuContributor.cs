@@ -66,7 +66,5 @@ public class CoreFWMenuContributor : IMenuContributor
         }
 
         administration.SetSubItemOrder(SettingManagementMenuNames.GroupName, 4);
-        
-        return;
     }
 }
