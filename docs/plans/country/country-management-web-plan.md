@@ -228,6 +228,7 @@ Phần này mô tả các thành phần cần tạo hoặc cập nhật trong t�
   using Aqt.CoreFW.Application.Contracts.Countries;
   using Aqt.CoreFW.Application.Contracts.Countries.Dtos;
   using Aqt.CoreFW.Web.Pages;
+  using Aqt.CoreFW.Web.Pages.Countries.ViewModels;
   using Microsoft.AspNetCore.Mvc;
   using Volo.Abp.ObjectMapping;
 
@@ -293,6 +294,7 @@ Phần này mô tả các thành phần cần tạo hoặc cập nhật trong t�
   using Aqt.CoreFW.Application.Contracts.Countries;
   using Aqt.CoreFW.Application.Contracts.Countries.Dtos;
   using Aqt.CoreFW.Web.Pages;
+  using Aqt.CoreFW.Web.Pages.Countries.ViewModels;
   using Microsoft.AspNetCore.Mvc;
   using Volo.Abp.ObjectMapping;
 
@@ -343,7 +345,7 @@ Phần này mô tả các thành phần cần tạo hoặc cập nhật trong t�
 - **Nội dung:**
   ```csharp
   using Aqt.CoreFW.Application.Contracts.Countries.Dtos;
-  using Aqt.CoreFW.Web.Pages.Countries;
+  using Aqt.CoreFW.Web.Pages.Countries.ViewModels;
   using AutoMapper;
 
   namespace Aqt.CoreFW.Web.Mappings;
@@ -373,7 +375,7 @@ Phần này mô tả các thành phần cần tạo hoặc cập nhật trong t�
   ```javascript
   $(function () {
       var l = abp.localization.getResource('CoreFW');
-      var countryAppService = window.aqt.coreFW.application.contracts.countries.country; // Proxy service
+      var countryAppService = window.aqt.coreFW.application.countries.country; // Proxy service
       var createModal = new abp.ModalManager({
           viewUrl: '/Countries/CreateModal',
           scriptUrl: '/Pages/Countries/createModal.js', // Có thể không cần nếu logic đơn giản
@@ -403,14 +405,14 @@ Phần này mô tả các thành phần cần tạo hoặc cập nhật trong t�
                           items: [
                               {
                                   text: l('Edit'),
-                                  visible: abp.auth.isGranted('CoreFW.Countries.Edit'), // Kiểm tra quyền
+                                  visible: permissions.canEdit, // Kiểm tra quyền
                                   action: function (data) {
                                       editModal.open({ id: data.record.id });
                                   }
                               },
                               {
                                   text: l('Delete'),
-                                  visible: abp.auth.isGranted('CoreFW.Countries.Delete'),
+                                  visible: permissions.canDelete,
                                   confirmMessage: function (data) {
                                       return l('AreYouSureToDelete', data.record.name);
                                   },
@@ -473,10 +475,10 @@ Phần này mô tả các thành phần cần tạo hoặc cập nhật trong t�
 - **Cơ chế đồng bộ và xử lý quyền (Quan trọng):**
     - **Backend (`Index.cshtml.cs`):**
         - Trong phương thức `OnGetAsync`, `IAuthorizationService` được sử dụng để kiểm tra các quyền `CoreFWPermissions.Countries.Edit` và `CoreFWPermissions.Countries.Delete`.
-        - Kết quả (boolean `true`/`false`) được lưu trữ vào `ViewData["CanEdit"]` và `ViewData["CanDelete"]`.
+        - Kết quả (boolean `true`/`false`) được chuyển đổi `ToString().ToLower()` và lưu trữ vào `ViewData["CanEdit"]` và `ViewData["CanDelete"]`.
     - **Truyền xuống Frontend (`Index.cshtml`):**
         - Trang Razor đọc các giá trị từ `ViewData`.
-        - Các giá trị này được nhúng vào trang dưới dạng một đối tượng JavaScript `permissions` (ví dụ: `const permissions = { canEdit: @ViewData["CanEdit"].ToString().ToLower(), canDelete: @ViewData["CanDelete"].ToString().ToLower() };`). Điều này làm cho thông tin quyền có sẵn cho mã JavaScript phía client.
+        - Các giá trị này được nhúng vào trang dưới dạng một đối tượng JavaScript `permissions` (ví dụ: `const permissions = { canEdit: @ViewData["CanEdit"], canDelete: @ViewData["CanDelete"] };`). Điều này làm cho thông tin quyền có sẵn cho mã JavaScript phía client.
         - Riêng quyền `CoreFWPermissions.Countries.Create` được kiểm tra trực tiếp trong mã Razor (`@if (await AuthorizationService.IsGrantedAsync(...))`) để quyết định có hiển thị nút "New Country" hay không.
     - **Frontend (`index.js`):**
         - Mã JavaScript (cụ thể là trong cấu hình DataTable) sử dụng đối tượng `permissions` (`permissions.canEdit`, `permissions.canDelete`).
