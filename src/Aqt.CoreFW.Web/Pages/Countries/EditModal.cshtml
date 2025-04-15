@@ -13,7 +13,7 @@
     <abp-modal>
         <abp-modal-header title="@L["EditCountry"].Value"></abp-modal-header>
         <abp-modal-body>
-            @* Id is included as a hidden field within the ViewModel properties *@
+            <abp-input asp-for="Id" type="hidden" />
             <abp-form-content />
         </abp-modal-body>
         <abp-modal-footer buttons="@(AbpModalButtons.Cancel | AbpModalButtons.Save)"></abp-modal-footer>

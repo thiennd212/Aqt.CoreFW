@@ -20,7 +20,8 @@ public class CreateModalModel : CoreFWPageModel
 
     private readonly ICountryAppService _countryAppService;
 
-    public CreateModalModel(ICountryAppService countryAppService)
+    public CreateModalModel(
+        ICountryAppService countryAppService)
     {
         _countryAppService = countryAppService;
         CountryViewModel = new CountryViewModel(); // Initialize the ViewModel

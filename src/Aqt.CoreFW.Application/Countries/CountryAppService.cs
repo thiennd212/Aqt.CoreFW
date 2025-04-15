@@ -6,7 +6,7 @@ using Aqt.CoreFW.Application.Contracts.Countries;
 using Aqt.CoreFW.Application.Contracts.Countries.Dtos;
 using Aqt.CoreFW.Domain.Countries.Repositories;
 using Aqt.CoreFW.Domain.Countries.Entities;
-using Aqt.CoreFW.Domain.Shared; // For Error Codes
+using Aqt.CoreFW; // For Error Codes
 using Aqt.CoreFW.Localization; // For Localization
 using Aqt.CoreFW.Permissions; // For Permissions
 using Microsoft.AspNetCore.Authorization;
@@ -16,6 +16,7 @@ using Volo.Abp.Application.Services;
 using Volo.Abp.Domain.Repositories;
 using System.Linq.Dynamic.Core; // For LINQ extensions like WhereIf
 using Volo.Abp.ObjectMapping; // Required for ObjectMapper
+using Volo.Abp.Guids; // Added for IGuidGenerator
 
 namespace Aqt.CoreFW.Application.Countries;
 
@@ -33,13 +34,16 @@ public class CountryAppService :
     ICountryAppService            // Implements the custom Country AppService interface
 {
     private readonly ICountryRepository _countryRepository; // Custom repository for specific queries
+    private readonly IGuidGenerator _guidGenerator; // Added Guid generator
 
     public CountryAppService(
         IRepository<Country, Guid> repository, // Standard repository from base CrudAppService
-        ICountryRepository countryRepository)  // Injected custom repository
+        ICountryRepository countryRepository,  // Injected custom repository
+        IGuidGenerator guidGenerator)          // Injected Guid generator
         : base(repository)
     {
         _countryRepository = countryRepository;
+        _guidGenerator = guidGenerator; // Store injected Guid generator
         LocalizationResource = typeof(CoreFWResource); // Set the localization resource
         // Set CRUD operation policy names based on defined permissions
         GetPolicyName = CoreFWPermissions.Countries.Default;
@@ -50,7 +54,7 @@ public class CountryAppService :
     }
 
     /// <summary>
-    /// Creates a new country after checking for duplicate codes.
+    /// Creates a new country after checking for duplicate codes and generating a new Guid.
     /// </summary>
     [Authorize(CoreFWPermissions.Countries.Create)] // Authorize based on the Create permission
     public override async Task<CountryDto> CreateAsync(CreateUpdateCountryDto input)
@@ -61,8 +65,19 @@ public class CountryAppService :
             throw new UserFriendlyException(L[CoreFWDomainErrorCodes.CountryCodeAlreadyExists, input.Code]);
         }
 
-        // Let the base CrudAppService handle the standard mapping and insertion
-        return await base.CreateAsync(input);
+        // Create entity using its constructor
+        var entity = new Country(
+            _guidGenerator.Create(),
+            input.Code,
+            input.Name
+        );
+
+        // Insert the entity directly using the repository
+        await Repository.InsertAsync(entity, autoSave: true);
+
+        // Map the newly created entity back to the DTO for the response
+        // Mapping from Entity to Dto is still allowed and useful
+        return ObjectMapper.Map<Country, CountryDto>(entity);
     }
 
     /// <summary>
@@ -79,14 +94,19 @@ public class CountryAppService :
             throw new UserFriendlyException(L[CoreFWDomainErrorCodes.CountryCodeAlreadyExists, input.Code]);
         }
 
-        // Use the protected MapToEntity method from CrudAppService to map input DTO to the existing entity
-        MapToEntity(input, entity);
+        // Update entity properties directly
+        // This respects the entity's encapsulation if setters have logic
+        entity.SetCode(input.Code); // Assuming a method to set code if needed
+        entity.SetName(input.Name); // Assuming a method to set name if needed
+        // If no specific setters, update directly:
+        // entity.Code = input.Code;
+        // entity.Name = input.Name;
 
         // Update the entity in the repository
         await Repository.UpdateAsync(entity, autoSave: true);
 
-        // Map the updated entity back to the DTO using the protected MapToGetOutputDto method
-        return MapToGetOutputDto(entity);
+        // Mapping from Entity to Dto is still allowed and useful
+        return ObjectMapper.Map<Country, CountryDto>(entity);
     }
 
     /// <summary>

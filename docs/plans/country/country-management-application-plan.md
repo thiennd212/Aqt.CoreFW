@@ -6,42 +6,33 @@ Phần này mô tả các thành phần cần tạo hoặc cập nhật trong t�
 
 - **Vị trí:** Tạo thư mục `src/Aqt.CoreFW.Application/Countries`
 - **Tệp:** Tạo file `CountryApplicationAutoMapperProfile.cs`
-- **Nội dung:**
+- **Nội dung (Đã cập nhật):**
   ```csharp
   using Aqt.CoreFW.Application.Contracts.Countries.Dtos;
   using Aqt.CoreFW.Domain.Countries.Entities;
   using AutoMapper;
-  using Volo.Abp.ObjectExtending; // Required for IgnoreAuditedObjectProperties
+  using Volo.Abp.ObjectExtending;
   using Volo.Abp.AutoMapper;
-  using Volo.Abp.DependencyInjection; // Required for GuidGenerator
-  using Volo.Abp.Guids; // Required for GuidGenerator
+  using Volo.Abp.DependencyInjection;
 
   namespace Aqt.CoreFW.Application.Countries;
 
   public class CountryApplicationAutoMapperProfile : Profile
   {
-      // Inject IGuidGenerator để tạo Guid khi mapping
-      private readonly IGuidGenerator _guidGenerator;
-
-      public CountryApplicationAutoMapperProfile(IGuidGenerator guidGenerator)
+      public CountryApplicationAutoMapperProfile()
       {
-          _guidGenerator = guidGenerator;
-
-          // Mapping từ Entity sang DTO hiển thị
+          // Mapping từ Entity sang DTO hiển thị (VẪN CẦN THIẾT)
           CreateMap<Country, CountryDto>();
 
-          // Mapping từ DTO tạo/sửa sang Entity
-          // Bỏ qua các thuộc tính audit và Id vì chúng được quản lý bởi ABP/EF Core
-          CreateMap<CreateUpdateCountryDto, Country>()
-              .IgnoreAuditedObjectProperties() // Bỏ qua các thuộc tính audit base
-              .Ignore(x => x.Id)               // Id sẽ được tạo mới hoặc lấy từ existing entity
-              // Dùng ConstructUsing để đảm bảo Id mới được tạo khi Create
-              .ConstructUsing(dto => new Country(_guidGenerator.Create(), dto.Code, dto.Name));
+          // --- ĐÃ LOẠI BỎ mapping từ CreateUpdateCountryDto sang Country ---
+          // Việc tạo/cập nhật Entity sẽ được thực hiện thủ công trong AppService
+          // sử dụng constructor và các phương thức của Entity.
+          // CreateMap<CreateUpdateCountryDto, Country>()...;
 
           // Mapping từ DTO hiển thị sang DTO tạo/sửa (dùng cho Edit modal)
           CreateMap<CountryDto, CreateUpdateCountryDto>();
 
-          // Mapping cho Lookup DTO
+          // Mapping cho Lookup DTO (VẪN CẦN THIẾT)
           CreateMap<Country, CountryLookupDto>();
       }
   }
@@ -51,7 +42,7 @@ Phần này mô tả các thành phần cần tạo hoặc cập nhật trong t�
 
 - **Vị trí:** Tạo thư mục `src/Aqt.CoreFW.Application/Countries`
 - **Tệp:** Tạo file `CountryAppService.cs`
-- **Nội dung:**
+- **Nội dung (Đã cập nhật):**
   ```csharp
   using System;
   using System.Collections.Generic;
@@ -61,7 +52,7 @@ Phần này mô tả các thành phần cần tạo hoặc cập nhật trong t�
   using Aqt.CoreFW.Application.Contracts.Countries.Dtos;
   using Aqt.CoreFW.Domain.Countries.Repositories;
   using Aqt.CoreFW.Domain.Countries.Entities;
-  using Aqt.CoreFW.Domain.Shared; // For Error Codes
+  using Aqt.CoreFW; // For Error Codes
   using Aqt.CoreFW.Localization; // For Localization
   using Aqt.CoreFW.Permissions; // For Permissions
   using Microsoft.AspNetCore.Authorization;
@@ -70,27 +61,32 @@ Phần này mô tả các thành phần cần tạo hoặc cập nhật trong t�
   using Volo.Abp.Application.Services;
   using Volo.Abp.Domain.Repositories;
   using System.Linq.Dynamic.Core; // For WhereIf
+  using Volo.Abp.ObjectMapping;
+  using Volo.Abp.Guids;
 
   namespace Aqt.CoreFW.Application.Countries;
 
-  [Authorize(CoreFWPermissions.Countries.Default)] // Quyền mặc định để truy cập
+  [Authorize(CoreFWPermissions.Countries.Default)]
   public class CountryAppService :
-      CrudAppService<               // Kế thừa CrudAppService
-          Country,                  // Entity
-          CountryDto,               // DTO đọc
-          Guid,                     // Kiểu khóa chính
-          GetCountriesInput,        // Input cho GetList
-          CreateUpdateCountryDto>,  // Input cho Create/Update
-      ICountryAppService            // Implement interface
+      CrudAppService<
+          Country,
+          CountryDto,
+          Guid,
+          GetCountriesInput,
+          CreateUpdateCountryDto>,
+      ICountryAppService
   {
       private readonly ICountryRepository _countryRepository;
+      private readonly IGuidGenerator _guidGenerator;
 
       public CountryAppService(
-          IRepository<Country, Guid> repository, // Standard repository for base CrudAppService
-          ICountryRepository countryRepository) // Custom repository
+          IRepository<Country, Guid> repository,
+          ICountryRepository countryRepository,
+          IGuidGenerator guidGenerator)
           : base(repository)
       {
           _countryRepository = countryRepository;
+          _guidGenerator = guidGenerator;
           LocalizationResource = typeof(CoreFWResource); // Set localization resource
           // Set các policy name cho CRUD operations
           GetPolicyName = CoreFWPermissions.Countries.Default;
@@ -100,59 +96,65 @@ Phần này mô tả các thành phần cần tạo hoặc cập nhật trong t�
           DeletePolicyName = CoreFWPermissions.Countries.Delete;
       }
 
-      // Ghi đè phương thức Create để thêm kiểm tra unique code
       [Authorize(CoreFWPermissions.Countries.Create)]
       public override async Task<CountryDto> CreateAsync(CreateUpdateCountryDto input)
       {
-          // Kiểm tra trùng mã trước khi tạo
+          // Kiểm tra trùng mã
           if (await _countryRepository.CodeExistsAsync(input.Code))
           {
               throw new UserFriendlyException(L[CoreFWDomainErrorCodes.CountryCodeAlreadyExists, input.Code]);
           }
 
-          // Sử dụng base.CreateAsync để thực hiện mapping và insert chuẩn
-          return await base.CreateAsync(input);
+          // Tạo Entity bằng constructor, không dùng ObjectMapper
+          var entity = new Country(
+              _guidGenerator.Create(),
+              input.Code,
+              input.Name
+          );
+
+          await Repository.InsertAsync(entity, autoSave: true);
+
+          // Map Entity sang DTO để trả về (VẪN DÙNG ObjectMapper)
+          return ObjectMapper.Map<Country, CountryDto>(entity);
       }
 
-      // Ghi đè phương thức Update để thêm kiểm tra unique code (loại trừ chính nó)
       [Authorize(CoreFWPermissions.Countries.Edit)]
       public override async Task<CountryDto> UpdateAsync(Guid id, CreateUpdateCountryDto input)
       {
-          // Lấy entity hiện tại
           var entity = await GetEntityByIdAsync(id);
 
-          // Kiểm tra trùng mã (loại trừ Id hiện tại)
+          // Kiểm tra trùng mã
           if (entity.Code != input.Code && await _countryRepository.CodeExistsAsync(input.Code, id))
           {
               throw new UserFriendlyException(L[CoreFWDomainErrorCodes.CountryCodeAlreadyExists, input.Code]);
           }
 
-          // Map dữ liệu từ input DTO vào entity đã tồn tại
-          // MapToEntity là phương thức được bảo vệ (protected) của CrudAppService
-          MapToEntity(input, entity);
+          // Cập nhật Entity bằng các phương thức của nó, không dùng MapToEntity/ObjectMapper
+          entity.SetCode(input.Code);
+          entity.SetName(input.Name);
 
-          // Cập nhật entity
           await Repository.UpdateAsync(entity, autoSave: true);
 
-          // Map lại entity đã cập nhật sang DTO để trả về
-          // MapToGetOutputDto là phương thức được bảo vệ (protected) của CrudAppService
-          return MapToGetOutputDto(entity);
+          // Map Entity sang DTO để trả về (VẪN DÙNG ObjectMapper)
+          return ObjectMapper.Map<Country, CountryDto>(entity);
       }
 
-       // Ghi đè phương thức Delete để kiểm tra ràng buộc Province/City
-       [Authorize(CoreFWPermissions.Countries.Delete)]
-       public override async Task DeleteAsync(Guid id)
-       {
-           // Kiểm tra xem quốc gia có tỉnh/thành nào không
-           if (await _countryRepository.HasProvincesAsync(id))
-           {
-               var entity = await GetEntityByIdAsync(id); // Lấy tên để hiển thị lỗi
-               throw new UserFriendlyException(L[CoreFWDomainErrorCodes.CountryHasProvincesCannotDelete, entity.Name ?? entity.Code]);
-           }
-
-           // Nếu không có ràng buộc, gọi phương thức xóa của base (thực hiện soft delete)
-           await base.DeleteAsync(id);
-       }
+      // Ghi đè phương thức Delete để kiểm tra ràng buộc Province/City
+      [Authorize(CoreFWPermissions.Countries.Delete)]
+      public override async Task DeleteAsync(Guid id)
+      {
+          // TODO: Bỏ comment khi có Province
+          /*
+          // Kiểm tra xem quốc gia có tỉnh/thành nào không
+          if (await _countryRepository.HasProvincesAsync(id))
+          {
+              var entity = await GetEntityByIdAsync(id); // Lấy tên để hiển thị lỗi
+              throw new UserFriendlyException(L[CoreFWDomainErrorCodes.CountryHasProvincesCannotDelete, entity.Name ?? entity.Code]);
+          }
+          */
+          // Nếu không có ràng buộc, gọi phương thức xóa của base (thực hiện soft delete)
+          await base.DeleteAsync(id);
+      }
 
       // Implement phương thức GetLookupAsync
       [AllowAnonymous] // Cho phép truy cập không cần đăng nhập (tùy yêu cầu)
@@ -190,6 +192,8 @@ Phần này mô tả các thành phần cần tạo hoặc cập nhật trong t�
 
       // Phương thức này được CrudAppService gọi để áp dụng filter mặc định.
       // Ghi đè nó để sử dụng logic lọc từ repository tùy chỉnh hoặc thêm bộ lọc phức tạp hơn.
+      // Nếu GetListAsync đã được ghi đè hoàn toàn (như ở trên), phương thức này có thể không cần thiết.
+      /*
       protected override async Task<IQueryable<Country>> CreateFilteredQueryAsync(GetCountriesInput input)
       {
           var queryable = await Repository.GetQueryableAsync();
@@ -197,9 +201,19 @@ Phần này mô tả các thành phần cần tạo hoặc cập nhật trong t�
               .WhereIf(!input.Filter.IsNullOrWhiteSpace(),
                   c => c.Code.Contains(input.Filter) || c.Name.Contains(input.Filter));
           // Lưu ý: ABP CrudAppService sẽ tự động áp dụng Paging và Sorting sau bước này
-          // Nếu GetListAsync đã được ghi đè hoàn toàn (như ở trên), phương thức này có thể không cần thiết.
       }
+      */
   }
   ```
+
+## 3. Ghi chú thay đổi về tạo/cập nhật Entity (Cập nhật)
+
+- **Nguyên tắc cốt lõi: Không AutoMap DTO -> Entity:**
+  - **Tạo mới:** Luôn sử dụng **constructor** của Entity trong `AppService`. Truyền `Guid` mới (từ `IGuidGenerator`) và dữ liệu từ `CreateUpdateDto`.
+  - **Cập nhật:** Luôn gọi các **phương thức setter công khai** (ví dụ: `SetCode`, `SetName`) trên Entity instance được lấy từ Repository. Truyền dữ liệu từ `CreateUpdateDto`.
+  - **Cấm:** Không sử dụng `ObjectMapper.Map<CreateUpdateDto, Entity>` hoặc `MapToEntity` cho việc tạo/cập nhật.
+  - **Lý do:** Đảm bảo Entity luôn hợp lệ, tuân thủ đóng gói và bất biến (DDD).
+
+- **Loại bỏ AutoMapper DTO -> Entity:** Cấu hình `CreateMap<CreateUpdateCountryDto, Country>()` đã bị xóa khỏi `CountryApplicationAutoMapperProfile`.
 
 </rewritten_file> 

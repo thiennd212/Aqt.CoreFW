@@ -12,7 +12,7 @@
 @inject IPageLayout PageLayout
 @{
     PageLayout.Content.Title = L["Countries"].Value;
-    PageLayout.Content.BreadCrumb.Add(L["Menu:Countries"].Value);
+    //PageLayout.Content.BreadCrumb.Add(L["Menu:Countries"].Value);
     PageLayout.Content.MenuItemName = CoreFWMenus.Countries;
 }
 
@@ -26,7 +26,7 @@
         <abp-button id="NewCountryButton"
                     text="@L["NewCountry"].Value"
                     icon="plus"
-                    button-type="Primary" />
+                    button-type="Primary" size="Small" />
     }
 }
 
@@ -41,7 +41,7 @@
                    <abp-button id="SearchButton"
                              text="@L["Search"].Value"
                              icon="search"
-                             button-type="Primary"/>
+                            button-type="Primary" size="Small" />
               </abp-column>
         </abp-row>
 

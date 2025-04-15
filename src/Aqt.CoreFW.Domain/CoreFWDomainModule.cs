@@ -44,10 +44,10 @@ public class CoreFWDomainModule : AbpModule
             options.IsEnabled = MultiTenancyConsts.IsEnabled;
         });
 
-        Configure<AbpLocalizationOptions>(options =>
-        {
-            options.Languages.Add(new LanguageInfo("en", "en", "English"));
-        });
+        //Configure<AbpLocalizationOptions>(options =>
+        //{
+        //    options.Languages.Add(new LanguageInfo("en", "en", "English"));
+        //});
         
 
 #if DEBUG

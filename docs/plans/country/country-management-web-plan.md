@@ -116,7 +116,7 @@ Phần này mô tả các thành phần cần tạo hoặc cập nhật trong t�
   @inject IPageLayout PageLayout
   @{
       PageLayout.Content.Title = L["Countries"].Value;
-      PageLayout.Content.BreadCrumb.Add(L["Menu:Countries"].Value);
+      //PageLayout.Content.BreadCrumb.Add(L["Menu:Countries"].Value);
       PageLayout.Content.MenuItemName = CoreFWMenus.Countries;
   }
 
@@ -130,7 +130,7 @@ Phần này mô tả các thành phần cần tạo hoặc cập nhật trong t�
           <abp-button id="NewCountryButton"
                       text="@L["NewCountry"].Value"
                       icon="plus"
-                      button-type="Primary" />
+                      button-type="Primary" size="Small"/>
       }
   }
 
@@ -145,7 +145,7 @@ Phần này mô tả các thành phần cần tạo hoặc cập nhật trong t�
                      <abp-button id="SearchButton"
                                text="@L["Search"].Value"
                                icon="search"
-                               button-type="Primary"/>
+                               button-type="Primary" size="Small"/>
                 </abp-column>
           </abp-row>
 
@@ -168,7 +168,7 @@ Phần này mô tả các thành phần cần tạo hoặc cập nhật trong t�
   }
   ```
 
-- **Tệp 4: Modal Thêm mới:** Tạo file `CreateModal.cshtml`
+- **Tệp 4: Modal Thêm mới:** `CreateModal.cshtml`
   ```cshtml
   @page "/Countries/CreateModal"
   @using Microsoft.AspNetCore.Mvc.Localization
@@ -181,12 +181,11 @@ Phần này mô tả các thành phần cần tạo hoặc cập nhật trong t�
   @{
       Layout = null;
   }
-  @* Sử dụng abp-dynamic-form với ViewModel *@
-  <abp-dynamic-form abp-model="CountryViewModel" asp-page="/Countries/CreateModal">
+  @* Sử dụng abp-dynamic-form nhưng submit sẽ được xử lý bởi JS *@
+  <abp-dynamic-form abp-model="CountryViewModel" id="CreateCountryForm">
       <abp-modal>
           <abp-modal-header title="@L["NewCountry"].Value"></abp-modal-header>
           <abp-modal-body>
-              @* Tự động render input dựa trên thuộc tính của CountryViewModel *@
               <abp-form-content />
           </abp-modal-body>
           <abp-modal-footer buttons="@(AbpModalButtons.Cancel | AbpModalButtons.Save)"></abp-modal-footer>
@@ -194,7 +193,7 @@ Phần này mô tả các thành phần cần tạo hoặc cập nhật trong t�
   </abp-dynamic-form>
   ```
 
-- **Tệp 5: PageModel Thêm mới:** Tạo file `CreateModal.cshtml.cs`
+- **Tệp 5: PageModel Thêm mới:** `CreateModal.cshtml.cs` (**Đã cập nhật**) - Chỉ xử lý logic khi POST bị gọi (nhưng JS sẽ ngăn chặn), không còn gọi NotificationService.
   ```csharp
   using System.Threading.Tasks;
   using Aqt.CoreFW.Application.Contracts.Countries;
@@ -218,22 +217,21 @@ Phần này mô tả các thành phần cần tạo hoặc cập nhật trong t�
           CountryViewModel = new CountryViewModel();
       }
 
-      public void OnGet()
-      {
-          // Không cần logic gì khi GET modal trống
-      }
+      public void OnGet() { }
 
+      // OnPostAsync vẫn tồn tại nhưng sẽ không được gọi trực tiếp
+      // nếu JS chặn submit và thực hiện AJAX
       public async Task<IActionResult> OnPostAsync()
       {
-          // Map từ ViewModel sang DTO trước khi gọi service
           var dto = ObjectMapper.Map<CountryViewModel, CreateUpdateCountryDto>(CountryViewModel);
           await _countryAppService.CreateAsync(dto);
+          // Thông báo sẽ được xử lý bởi JavaScript sau khi gọi AJAX thành công
           return NoContent();
       }
   }
   ```
 
-- **Tệp 6: Modal Sửa:** Tạo file `EditModal.cshtml`
+- **Tệp 6: Modal Sửa:** `EditModal.cshtml`
   ```cshtml
   @page "/Countries/EditModal"
   @using Microsoft.AspNetCore.Mvc.Localization
@@ -246,21 +244,20 @@ Phần này mô tả các thành phần cần tạo hoặc cập nhật trong t�
   @{
       Layout = null;
   }
-  @* Sử dụng abp-dynamic-form với ViewModel *@
-  <abp-dynamic-form abp-model="CountryViewModel" asp-page="/Countries/EditModal">
+  @* Sử dụng abp-dynamic-form nhưng submit sẽ được xử lý bởi JS *@
+  <abp-dynamic-form abp-model="CountryViewModel" id="EditCountryForm">
       <abp-modal>
           <abp-modal-header title="@L["EditCountry"].Value"></abp-modal-header>
           <abp-modal-body>
-              @* Input ẩn cho Id đã có trong ViewModel *@
-              @* Tự động render input dựa trên thuộc tính của CountryViewModel *@
-              <abp-form-content />
+            <abp-input asp-for="Id" type="hidden" />
+            <abp-form-content />
           </abp-modal-body>
           <abp-modal-footer buttons="@(AbpModalButtons.Cancel | AbpModalButtons.Save)"></abp-modal-footer>
       </abp-modal>
   </abp-dynamic-form>
   ```
 
-- **Tệp 7: PageModel Sửa:** Tạo file `EditModal.cshtml.cs`
+- **Tệp 7: PageModel Sửa:** `EditModal.cshtml.cs` (**Đã cập nhật**) - Chỉ xử lý `OnGetAsync` để load dữ liệu. `OnPostAsync` không còn gọi NotificationService.
   ```csharp
   using System;
   using System.Threading.Tasks;
@@ -290,17 +287,21 @@ Phần này mô tả các thành phần cần tạo hoặc cập nhật trong t�
 
       public async Task OnGetAsync()
       {
-          // Lấy dữ liệu DTO từ service
           var dto = await _countryAppService.GetAsync(Id);
-          // Map sang ViewModel để bind vào form
+          // Cần map từ CountryDto (AppService trả về) sang CountryViewModel (Web)
+          // Đảm bảo có cấu hình map này trong CoreFWWebAutoMapperProfile
           CountryViewModel = ObjectMapper.Map<CountryDto, CountryViewModel>(dto);
+          // Gán Id cho ViewModel nếu cần thiết để form có giá trị Id
+          CountryViewModel.Id = Id;
       }
 
+      // OnPostAsync vẫn tồn tại nhưng sẽ không được gọi trực tiếp
+      // nếu JS chặn submit và thực hiện AJAX
       public async Task<IActionResult> OnPostAsync()
       {
-          // Map từ ViewModel sang DTO trước khi gọi service
           var dto = ObjectMapper.Map<CountryViewModel, CreateUpdateCountryDto>(CountryViewModel);
-          await _countryAppService.UpdateAsync(CountryViewModel.Id, dto);
+          await _countryAppService.UpdateAsync(Id, dto);
+          // Thông báo sẽ được xử lý bởi JavaScript sau khi gọi AJAX thành công
           return NoContent();
       }
   }
@@ -342,115 +343,101 @@ Phần này mô tả các thành phần cần tạo hoặc cập nhật trong t�
 - **Nội dung:**
   ```javascript
   $(function () {
-      // Lấy resource localization
       var l = abp.localization.getResource('CoreFW');
+      var countryAppService = window.aqt.coreFW.application.contracts.countries.country; // Proxy service
+      var createModal = new abp.ModalManager({
+          viewUrl: '/Countries/CreateModal',
+          scriptUrl: '/Pages/Countries/createModal.js', // Có thể không cần nếu logic đơn giản
+          modalClass: 'createCountryModal'
+      });
+      var editModal = new abp.ModalManager({
+          viewUrl: '/Countries/EditModal',
+          scriptUrl: '/Pages/Countries/editModal.js', // Có thể không cần nếu logic đơn giản
+          modalClass: 'editCountryModal'
+      });
 
-      // Lấy service proxy (Kiểm tra namespace chính xác sau khi generate proxy)
-      var countryService = aqt.coreFW.application.contracts.countries.country;
-
-      // Khởi tạo ModalManager
-      var createModal = new abp.ModalManager(abp.appPath + 'Countries/CreateModal');
-      var editModal = new abp.ModalManager(abp.appPath + 'Countries/EditModal');
-      var dataTable = null;
-
-      // Hàm lấy bộ lọc
-       var getFilters = function() {
-           return {
-               filter: $('#SearchFilter').val()
-           };
-       }
-
-      // Khởi tạo DataTable
-       function initializeDataTable() {
-           if (dataTable) {
-                dataTable.destroy();
-           }
-           dataTable = $('#CountriesTable').DataTable(
-              abp.libs.datatables.normalizeConfiguration({
-                  serverSide: true,
-                  paging: true,
-                  order: [[1, "asc"]], // Sắp xếp mặc định theo cột thứ 2 (Code)
-                  searching: false,
-                  scrollX: true,
-                  ajax: abp.libs.datatables.createAjax(countryService.getList, getFilters),
-                  columnDefs: [
-                      {
-                          title: l('Actions'),
-                          rowAction: {
-                              items: [
-                                  { // Nút Sửa
-                                      text: l('Edit'),
-                                      icon: "fa fa-pencil-alt",
-                                      visible: abp.auth.isGranted('CoreFW.Countries.Edit'),
-                                      action: function (data) {
-                                          editModal.open({ id: data.record.id });
-                                      }
-                                  },
-                                  { // Nút Xóa
-                                      text: l('Delete'),
-                                      icon: "fa fa-trash",
-                                      visible: abp.auth.isGranted('CoreFW.Countries.Delete'),
-                                      confirmMessage: function (data) {
-                                          return l('AreYouSureToDeleteCountry', data.record.name || data.record.code);
-                                      },
-                                      action: function (data) {
-                                          countryService.delete(data.record.id)
-                                              .then(function () {
-                                                  abp.notify.success(l('SuccessfullyDeleted'));
-                                                  dataTable.ajax.reload();
-                                              }).catch(function (error) {
-                                                  abp.message.error(error.message || l('Error'), l('Error'));
-                                               });
-                                      }
+      var dataTable = $('#CountriesTable').DataTable(
+          abp.libs.datatables.normalizeConfiguration({
+              serverSide: true,
+              paging: true,
+              order: [[1, "asc"]], // Sắp xếp theo cột thứ 2 (Code)
+              searching: false,
+              scrollX: true,
+              ajax: abp.libs.datatables.createAjax(countryAppService.getList, function() {
+                  // Thêm tham số filter nếu cần
+                  return { filter: $('#SearchFilter').val() };
+              }),
+              columnDefs: [
+                  {
+                      title: l('Actions'),
+                      rowAction: {
+                          items: [
+                              {
+                                  text: l('Edit'),
+                                  visible: abp.auth.isGranted('CoreFW.Countries.Edit'), // Kiểm tra quyền
+                                  action: function (data) {
+                                      editModal.open({ id: data.record.id });
                                   }
-                              ]
-                          }
-                      },
-                      {
-                          title: l('CountryCode'),
-                          data: "code",
-                          orderable: true
-                      },
-                      {
-                          title: l('CountryName'),
-                          data: "name",
-                          orderable: true
+                              },
+                              {
+                                  text: l('Delete'),
+                                  visible: abp.auth.isGranted('CoreFW.Countries.Delete'),
+                                  confirmMessage: function (data) {
+                                      return l('AreYouSureToDelete', data.record.name);
+                                  },
+                                  action: function (data) {
+                                      countryAppService.delete(data.record.id)
+                                          .then(function () {
+                                              abp.notify.info(l('SuccessfullyDeleted'));
+                                              dataTable.ajax.reload();
+                                          });
+                                  }
+                              }
+                          ]
                       }
-                  ]
-              })
-          );
-      }
+                  },
+                  {
+                      title: l('CountryCode'),
+                      data: "code"
+                  },
+                  {
+                      title: l('CountryName'),
+                      data: "name"
+                  },
+                  // Thêm các cột khác nếu cần (ví dụ: CreationTime)
+              ]
+          })
+      );
 
-      initializeDataTable();
-
-      // Sự kiện khi modal Tạo thành công
-      createModal.onResult(function () {
+      // Nút tìm kiếm
+      $('#SearchButton').click(function (e) {
+          e.preventDefault();
           dataTable.ajax.reload();
       });
-
-      // Sự kiện khi modal Sửa thành công
-      editModal.onResult(function () {
-          dataTable.ajax.reload();
+      $('#SearchFilter').keypress(function(event){
+          if(event.keyCode == 13){
+              $('#SearchButton').click();
+          }
       });
 
-      // Sự kiện click nút "Thêm mới"
+      // Nút thêm mới
       $('#NewCountryButton').click(function (e) {
           e.preventDefault();
           createModal.open();
       });
 
-      // Sự kiện click nút "Tìm kiếm"
-      $('#SearchButton').click(function (e) {
-           e.preventDefault();
-           dataTable.ajax.reload();
-       });
+      // Xử lý submit form Tạo mới bằng AJAX
+      createModal.onResult(function () {
+          dataTable.ajax.reload();
+          abp.notify.success(l('CreatedSuccessfully'));
+      });
 
-       // Sự kiện nhấn Enter trong ô tìm kiếm
-       $('#SearchFilter').on('keypress', function(e) {
-           if(e.which === 13) { // Enter key code
-               dataTable.ajax.reload();
-           }
-       });
+      // Xử lý submit form Sửa bằng AJAX
+      editModal.onResult(function () {
+          dataTable.ajax.reload();
+          abp.notify.success(l('UpdatedSuccessfully'));
+      });
+
   });
   ```
   

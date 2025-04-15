@@ -1,4 +1,4 @@
-using Aqt.CoreFW.Localization;
+﻿using Aqt.CoreFW.Localization;
 using Volo.Abp.AuditLogging;
 using Volo.Abp.BackgroundJobs;
 using Volo.Abp.FeatureManagement;
@@ -45,10 +45,11 @@ public class CoreFWDomainSharedModule : AbpModule
         Configure<AbpLocalizationOptions>(options =>
         {
             options.Resources
-                .Add<CoreFWResource>("en")
+                .Add<CoreFWResource>("vi")
                 .AddBaseTypes(typeof(AbpValidationResource))
                 .AddVirtualJson("/Localization/CoreFW");
-
+            options.Languages.Add(new LanguageInfo("vi", "vi", "Tiếng Việt"));
+            options.Languages.Add(new LanguageInfo("en", "en", "English"));
             options.DefaultResourceType = typeof(CoreFWResource);
         });
 

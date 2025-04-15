@@ -227,3 +227,25 @@ public class BadOrderAppService : ApplicationService
         AddDomainEvent(new OrderCompletedEvent(order.Id)); // ❌ sai
     }
 }
+### 🚫 AutoMapper - Cấm ánh xạ từ DTO → Entity
+
+- ❌ **KHÔNG sử dụng AutoMapper để ánh xạ trực tiếp từ DTO sang Entity.**
+    - Tránh dùng `ObjectMapper.Map<CreateDto, Entity>()`
+    - Tránh dùng `Mapper.Map<CreateDto, Entity>()`
+    - Tránh dùng `.ReverseMap()` giữa Entity và DTO
+
+- ✅ **Luôn tạo Entity thủ công bằng constructor**, có kiểm soát:
+
+```csharp
+var entity = new Order(_guidGenerator.Create(), input.Name, input.TotalAmount);
+```
+
+- ✅ **Dùng AutoMapper cho chiều Entity → DTO** để xuất dữ liệu ra UI/API là an toàn.
+
+- ✅ Nếu cần tái sử dụng logic ánh xạ, hãy map từ DTO → DTO trung gian trước khi truyền vào constructor của Entity.
+
+🧠 *Lý do cấm dùng AutoMapper từ DTO → Entity:*
+- Vi phạm nguyên tắc **encapsulation** của Domain Entity.
+- Bỏ qua các **invariant**, **validation**, và **domain rule** trong constructor.
+- AutoMapper không hỗ trợ inject service như `IGuidGenerator`.
+- Tạo ra các Entity ở trạng thái **không hợp lệ hoặc không đầy đủ**.

@@ -19,7 +19,7 @@ public class Country : FullAuditedAggregateRoot<Guid>
     /// <summary>
     /// The name of the country.
     /// </summary>
-    public virtual string Name { get; set; } // Allow updating the name directly
+    public virtual string Name { get; private set; } // Changed to private set
 
     /// <summary>
     /// Constructor for ORM.
@@ -40,11 +40,10 @@ public class Country : FullAuditedAggregateRoot<Guid>
 
     /// <summary>
     /// Sets the country code after validation.
-    /// Intended to be used internally, potentially by a Domain Service or Application Service after uniqueness check.
     /// </summary>
     /// <param name="code">The country code.</param>
     /// <returns>The Country entity.</returns>
-    internal Country SetCode([NotNull] string code)
+    public Country SetCode([NotNull] string code) // Changed to public
     {
         Check.NotNullOrWhiteSpace(code, nameof(code));
         // Ensure CountryConsts is accessible (will be created in Domain.Shared step)

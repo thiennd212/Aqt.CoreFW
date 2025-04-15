@@ -4,7 +4,7 @@ $(function () {
 
     // Get the Country AppService proxy (Namespace might vary based on generation)
     // Verify the exact namespace after running 'abp generate-proxy -t js'
-    var countryService = aqt.coreFW.application.contracts.countries.country;
+    var countryService = aqt.coreFW.application.countries.country;
 
     // Initialize ModalManagers for Create and Edit modals
     var createModal = new abp.ModalManager(abp.appPath + 'Countries/CreateModal');
@@ -95,11 +95,13 @@ $(function () {
     // Reload table data when Create modal is successfully submitted
     createModal.onResult(function () {
         dataTable.ajax.reload();
+        abp.notify.success(l('CreatedSuccessfully'));
     });
 
     // Reload table data when Edit modal is successfully submitted
     editModal.onResult(function () {
         dataTable.ajax.reload();
+        abp.notify.success(l('UpdatedSuccessfully'));
     });
 
     // Open Create modal when the "New Country" button is clicked
