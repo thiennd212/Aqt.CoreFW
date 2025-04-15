@@ -1,8 +1,8 @@
 using Aqt.CoreFW.Application.Contracts.Countries.Dtos;
-using Aqt.CoreFW.Web.Pages.Countries; // Namespace of the ViewModel
+using Aqt.CoreFW.Web.Pages.Countries.ViewModels; // Add this using
 using AutoMapper;
 
-namespace Aqt.CoreFW.Web.Countries;
+namespace Aqt.CoreFW.Web.Mappings;
 
 /// <summary>
 /// Configures AutoMapper profiles for mapping between Web ViewModels and Application DTOs for Countries.

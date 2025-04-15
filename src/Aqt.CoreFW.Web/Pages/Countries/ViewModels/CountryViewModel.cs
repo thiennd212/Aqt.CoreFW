@@ -3,7 +3,7 @@ using System.ComponentModel.DataAnnotations;
 using Aqt.CoreFW.Domain.Shared.Countries;
 using Microsoft.AspNetCore.Mvc;
 
-namespace Aqt.CoreFW.Web.Pages.Countries;
+namespace Aqt.CoreFW.Web.Pages.Countries.ViewModels;
 
 /// <summary>
 /// ViewModel for Country Create and Edit Modals.

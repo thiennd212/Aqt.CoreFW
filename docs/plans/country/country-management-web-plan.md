@@ -121,7 +121,13 @@ Phần này mô tả các thành phần cần tạo hoặc cập nhật trong t�
   }
 
   @section scripts {
-      <abp-script src="/Pages/Countries/index.js" /> @* JS cho trang này *@
+        <script>
+            const permissions = {
+                canEdit: @(ViewData["CanEdit"]),
+                canDelete: @(ViewData["CanDelete"])
+            };
+        </script>
+        <abp-script src="/Pages/Countries/index.js" /> @* JS cho trang này *@
   }
 
   @section content_toolbar {
@@ -157,15 +163,38 @@ Phần này mô tả các thành phần cần tạo hoặc cập nhật trong t�
 
 - **Tệp 3: PageModel danh sách:** Tạo file `Index.cshtml.cs`
   ```csharp
-  using Aqt.CoreFW.Web.Pages;
-  using Microsoft.AspNetCore.Mvc.RazorPages;
+    using Aqt.CoreFW.Permissions;
+    using Aqt.CoreFW.Web.Pages;
+    using Microsoft.AspNetCore.Authorization;
+    using Microsoft.AspNetCore.Mvc.RazorPages;
+    using System.Threading.Tasks;
 
-  namespace Aqt.CoreFW.Web.Pages.Countries;
+    namespace Aqt.CoreFW.Web.Pages.Countries;
 
-  public class IndexModel : CoreFWPageModel
-  {
-      public void OnGet() { /* Không cần logic load ban đầu */ }
-  }
+    /// <summary>
+    /// PageModel for the Country list page.
+    /// </summary>
+    public class IndexModel : CoreFWPageModel
+    {
+        private readonly IAuthorizationService _authorizationService;
+
+        public IndexModel(IAuthorizationService authorizationService)
+        {
+            _authorizationService = authorizationService;
+        }
+
+        /// <summary>
+        /// Called when the page is requested via GET.
+        /// No specific logic needed here as data is loaded via AJAX.
+        /// </summary>
+        public async Task OnGetAsync() 
+        {
+            var canEdit = await _authorizationService.IsGrantedAsync(CoreFWPermissions.Countries.Edit);
+            var canDelete = await _authorizationService.IsGrantedAsync(CoreFWPermissions.Countries.Delete);
+            ViewData["CanEdit"] = canEdit.ToString().ToLower();
+            ViewData["CanDelete"] = canDelete.ToString().ToLower();
+        }
+    } 
   ```
 
 - **Tệp 4: Modal Thêm mới:** `CreateModal.cshtml`
@@ -309,7 +338,7 @@ Phần này mô tả các thành phần cần tạo hoặc cập nhật trong t�
 
 ## 3. AutoMapper Profile (Web)
 
-- **Vị trí:** Tạo thư mục `src/Aqt.CoreFW.Web/Countries` (nếu chưa có)
+- **Vị trí:** Tạo file `src/Aqt.CoreFW.Web/Mappings/CountryWebAutoMapperProfile.cs` (Tập trung các profile mapping của tầng Web)
 - **Tệp:** Tạo file `CountryWebAutoMapperProfile.cs`
 - **Nội dung:**
   ```csharp
@@ -317,7 +346,7 @@ Phần này mô tả các thành phần cần tạo hoặc cập nhật trong t�
   using Aqt.CoreFW.Web.Pages.Countries;
   using AutoMapper;
 
-  namespace Aqt.CoreFW.Web.Countries;
+  namespace Aqt.CoreFW.Web.Mappings;
 
   public class CountryWebAutoMapperProfile : Profile
   {
@@ -440,4 +469,17 @@ Phần này mô tả các thành phần cần tạo hoặc cập nhật trong t�
 
   });
   ```
+
+- **Cơ chế đồng bộ và xử lý quyền (Quan trọng):**
+    - **Backend (`Index.cshtml.cs`):**
+        - Trong phương thức `OnGetAsync`, `IAuthorizationService` được sử dụng để kiểm tra các quyền `CoreFWPermissions.Countries.Edit` và `CoreFWPermissions.Countries.Delete`.
+        - Kết quả (boolean `true`/`false`) được lưu trữ vào `ViewData["CanEdit"]` và `ViewData["CanDelete"]`.
+    - **Truyền xuống Frontend (`Index.cshtml`):**
+        - Trang Razor đọc các giá trị từ `ViewData`.
+        - Các giá trị này được nhúng vào trang dưới dạng một đối tượng JavaScript `permissions` (ví dụ: `const permissions = { canEdit: @ViewData["CanEdit"].ToString().ToLower(), canDelete: @ViewData["CanDelete"].ToString().ToLower() };`). Điều này làm cho thông tin quyền có sẵn cho mã JavaScript phía client.
+        - Riêng quyền `CoreFWPermissions.Countries.Create` được kiểm tra trực tiếp trong mã Razor (`@if (await AuthorizationService.IsGrantedAsync(...))`) để quyết định có hiển thị nút "New Country" hay không.
+    - **Frontend (`index.js`):**
+        - Mã JavaScript (cụ thể là trong cấu hình DataTable) sử dụng đối tượng `permissions` (`permissions.canEdit`, `permissions.canDelete`).
+        - Các giá trị này được dùng để đặt thuộc tính `visible` cho các nút hành động "Edit" và "Delete" trong `rowAction` của DataTable, đảm bảo người dùng chỉ thấy các hành động mà họ được phép.
+    - **Thực thi quyền:** Mặc dù giao diện người dùng được điều chỉnh dựa trên quyền, việc **thực thi quyền thực tế** (khi gọi API tạo/sửa/xóa) vẫn diễn ra ở tầng Application Service (`ICountryAppService`), đảm bảo an toàn ngay cả khi người dùng cố gắng gọi API trực tiếp.
   

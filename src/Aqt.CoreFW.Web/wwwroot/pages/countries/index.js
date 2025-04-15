@@ -44,7 +44,7 @@ $(function () {
                                     text: l('Edit'),
                                     icon: "fa fa-pencil-alt",
                                     // Show only if user has Edit permission
-                                    visible: abp.auth.isGranted('CoreFW.Countries.Edit'),
+                                    visible: permissions.canEdit,
                                     action: function (data) {
                                         // Open the Edit modal with the record's ID
                                         editModal.open({ id: data.record.id });
@@ -54,7 +54,7 @@ $(function () {
                                     text: l('Delete'),
                                     icon: "fa fa-trash",
                                     // Show only if user has Delete permission
-                                    visible: abp.auth.isGranted('CoreFW.Countries.Delete'),
+                                    visible: permissions.canDelete,
                                     // Confirmation message before deleting
                                     confirmMessage: function (data) {
                                         return l('AreYouSureToDeleteCountry', data.record.name || data.record.code);

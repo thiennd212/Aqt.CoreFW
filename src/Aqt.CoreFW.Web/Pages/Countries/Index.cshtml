@@ -17,6 +17,13 @@
 }
 
 @section scripts {
+    <script>
+        const permissions = {
+            canEdit: @(ViewData["CanEdit"]),
+            canDelete: @(ViewData["CanDelete"])
+        };
+    </script>
+
     <abp-script src="/Pages/Countries/index.js" />
 }
 
