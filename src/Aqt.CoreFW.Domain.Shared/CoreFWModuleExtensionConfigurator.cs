@@ -2,6 +2,9 @@
 using Volo.Abp.Identity;
 using Volo.Abp.ObjectExtending;
 using Volo.Abp.Threading;
+using Volo.Abp.Localization; // Cần cho LocalizableString
+using Aqt.CoreFW.Localization;
+using Aqt.CoreFW.Domain.Shared.OrgStructure; // Namespace chứa CoreFWResource (sẽ tạo sau)
 
 namespace Aqt.CoreFW;
 
@@ -67,5 +70,33 @@ public static class CoreFWModuleExtensionConfigurator
          * See the documentation for more:
          * https://docs.abp.io/en/abp/latest/Module-Entity-Extensions
          */
+
+        ObjectExtensionManager.Instance.Modules()
+                .ConfigureIdentity(identity => // Nhắm vào module Identity
+                {
+                    identity.ConfigureOrganizationUnit(ou => // Nhắm vào entity OrganizationUnit
+                    {
+                        // Thêm thuộc tính InteroperabilityCode
+                        ou.AddOrUpdateProperty<string>(
+                            OrgStructureConsts.OuExtensionPropertyInteroperabilityCode, // Tên thuộc tính (sẽ tạo const sau)
+                            property =>
+                            {
+                                // Thêm cấu hình nếu cần (validation, UI hints, etc.)
+                                property.DisplayName = LocalizableString.Create<CoreFWResource>(OrgStructureConsts.OuExtensionPropertyInteroperabilityCode); // Có thể thêm DisplayName tương tự nếu cần
+                                property.Attributes.Add(new StringLengthAttribute(OrgStructureConsts.MaxInteroperabilityCodeLength));
+                            }
+                        );
+
+                        // Thêm thuộc tính Address
+                        ou.AddOrUpdateProperty<string>(
+                            OrgStructureConsts.OuExtensionPropertyAddress, // Tên thuộc tính (sẽ tạo const sau)
+                            property =>
+                            {
+                                property.DisplayName = LocalizableString.Create<CoreFWResource>(OrgStructureConsts.OuExtensionPropertyAddress); // Sử dụng tên hằng số làm localization key luôn
+                                property.Attributes.Add(new StringLengthAttribute(OrgStructureConsts.MaxAddressLength));
+                            }
+                        );
+                    });
+                });
     }
 }
