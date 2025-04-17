@@ -1,0 +1,68 @@
+@page
+@using Aqt.CoreFW.Permissions
+@using Microsoft.AspNetCore.Authorization
+@using Volo.Abp.AspNetCore.Mvc.UI.Layout
+@using Aqt.CoreFW.Web.Pages.JobTitles
+@using Aqt.CoreFW.Localization
+@using Microsoft.Extensions.Localization
+@using Aqt.CoreFW.Web.Menus
+@model IndexModel
+@inject IStringLocalizer<CoreFWResource> L
+@inject IAuthorizationService AuthorizationService
+@inject IPageLayout PageLayout
+@{
+    PageLayout.Content.Title = L["JobTitles"].Value;
+    PageLayout.Content.MenuItemName = CoreFWMenus.JobTitles;
+}
+
+@section scripts {
+    <script>
+        const permissions = {
+            canEdit:   @ViewData["CanEdit"],
+            canDelete: @ViewData["CanDelete"]
+        };
+    </script>
+    <abp-script src="/Pages/JobTitles/index.js" />
+}
+
+@section content_toolbar {
+    @if (await AuthorizationService.IsGrantedAsync(CoreFWPermissions.JobTitles.Create))
+    {
+        <abp-button id="NewJobTitleButton"
+                    text="@L["NewJobTitle"].Value"
+                    icon="plus"
+                    button-type="Primary" size="Small"/>
+    }
+    @if (await AuthorizationService.IsGrantedAsync(CoreFWPermissions.JobTitles.ExportExcel))
+    {
+        <abp-button id="ExportExcelButton"
+                    text="@L["ExportToExcel"].Value"
+                    icon="file-excel"
+                    button-type="Success" size="Small"/>
+    }
+}
+
+<abp-card>
+    <abp-card-body>
+        <abp-row class="mb-3">
+             <abp-column size-md="_4">
+                  <input type="text" id="SearchFilter" class="form-control" placeholder="@L["Search"]..." />
+             </abp-column>
+             <abp-column size-md="_4">
+                  <select id="IsActiveFilter" class="form-select">
+                      <option value="">@L["All"]</option>
+                      <option value="true">@L["Active"]</option>
+                      <option value="false">@L["Inactive"]</option>
+                  </select>
+             </abp-column>
+              <abp-column size-md="_4" class="text-end">
+                   <abp-button id="SearchButton"
+                             text="@L["Search"].Value"
+                             icon="search"
+                             button-type="Info" size="Small"/>
+              </abp-column>
+        </abp-row>
+
+        <abp-table striped-rows="true" id="JobTitlesTable"></abp-table>
+    </abp-card-body>
+</abp-card>

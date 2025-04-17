@@ -1,0 +1,28 @@
+@page "/JobTitles/EditModal"
+@using Aqt.CoreFW.Localization
+@using Aqt.CoreFW.Web.Pages.JobTitles
+@using Microsoft.AspNetCore.Mvc.Localization
+@using Volo.Abp.AspNetCore.Mvc.UI.Bootstrap.TagHelpers.Form
+@using Volo.Abp.AspNetCore.Mvc.UI.Bootstrap.TagHelpers.Modal
+@model EditModalModel
+@inject IHtmlLocalizer<CoreFWResource> L
+@{
+    Layout = null;
+}
+
+@*
+Sử dụng abp-dynamic-form tương tự như CreateModal.
+ViewModel đã chứa Id (là HiddenInput) nên sẽ được gửi cùng khi submit.
+asp-page trỏ đến chính nó để OnPostAsync của EditModalModel xử lý.
+*@
+<abp-dynamic-form abp-model="JobTitleViewModel" asp-page="/JobTitles/EditModal" id="EditJobTitleForm">
+    <input type="hidden" asp-for="Id" />
+    <abp-modal>
+        <abp-modal-header title="@L["EditJobTitle"].Value"></abp-modal-header> @* Tiêu đề sửa *@
+        <abp-modal-body>
+            <abp-form-content />
+        </abp-modal-body>
+        <abp-modal-footer buttons="@(AbpModalButtons.Cancel | AbpModalButtons.Save)"> @* Nút Cancel và Save *@
+        </abp-modal-footer>
+    </abp-modal>
+</abp-dynamic-form>

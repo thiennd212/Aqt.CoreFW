@@ -16,6 +16,13 @@ public class CoreFWPermissionDefinitionProvider : PermissionDefinitionProvider
         countriesPermission.AddChild(CoreFWPermissions.Countries.Create, L("Permission:Countries.Create"));
         countriesPermission.AddChild(CoreFWPermissions.Countries.Edit, L("Permission:Countries.Edit"));
         countriesPermission.AddChild(CoreFWPermissions.Countries.Delete, L("Permission:Countries.Delete"));
+
+        // Định nghĩa permission cho JobTitles
+        var jobTitlesPermission = myGroup.AddPermission(CoreFWPermissions.JobTitles.Default, L("Permission:JobTitles"));
+        jobTitlesPermission.AddChild(CoreFWPermissions.JobTitles.Create, L("Permission:JobTitles.Create"));
+        jobTitlesPermission.AddChild(CoreFWPermissions.JobTitles.Edit, L("Permission:JobTitles.Edit"));
+        jobTitlesPermission.AddChild(CoreFWPermissions.JobTitles.Delete, L("Permission:JobTitles.Delete"));
+        jobTitlesPermission.AddChild(CoreFWPermissions.JobTitles.ExportExcel, L("Permission:JobTitles.ExportExcel"));
     }
 
     private static LocalizableString L(string name)

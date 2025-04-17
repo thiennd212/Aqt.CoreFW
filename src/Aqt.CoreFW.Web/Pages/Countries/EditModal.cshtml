@@ -10,10 +10,10 @@
     Layout = null; // Modals don't use the main layout
 }
 <abp-dynamic-form abp-model="CountryViewModel" asp-page="/Countries/EditModal">
+    <input type="hidden" asp-for="Id" />
     <abp-modal>
         <abp-modal-header title="@L["EditCountry"].Value"></abp-modal-header>
         <abp-modal-body>
-            <abp-input asp-for="Id" type="hidden" />
             <abp-form-content />
         </abp-modal-body>
         <abp-modal-footer buttons="@(AbpModalButtons.Cancel | AbpModalButtons.Save)"></abp-modal-footer>

@@ -43,7 +43,7 @@ public class CoreFWMenuContributor : IMenuContributor
 
         //Administration->Identity
         administration.SetSubItemOrder(IdentityMenuNames.GroupName, 1);
-    
+
         if (MultiTenancyConsts.IsEnabled)
         {
             administration.SetSubItemOrder(TenantManagementMenuNames.GroupName, 2);
@@ -52,7 +52,7 @@ public class CoreFWMenuContributor : IMenuContributor
         {
             administration.TryRemoveMenuItem(TenantManagementMenuNames.GroupName);
         }
-        
+
         // Add Countries menu item under Administration if user has permission
         if (await context.IsGrantedAsync(CoreFWPermissions.Countries.Default))
         {
@@ -63,6 +63,19 @@ public class CoreFWMenuContributor : IMenuContributor
                 icon: "fa fa-globe",
                 order: 3
             ).RequirePermissions(CoreFWPermissions.Countries.Default));
+        }
+        // Kiểm tra xem người dùng có quyền xem Job Titles không
+        if (await context.IsGrantedAsync(CoreFWPermissions.JobTitles.Default))
+        {
+            // Nếu có quyền, thêm mục menu Job Titles vào nhóm Administration
+            administration.AddItem(new ApplicationMenuItem(
+                CoreFWMenus.JobTitles,      // Hằng số tên menu
+                l["Menu:JobTitles"],        // Lấy tên hiển thị từ localization
+                "/JobTitles",               // Đường dẫn URL của trang quản lý
+                icon: "fas fa-briefcase",   // Chọn một icon phù hợp (Font Awesome)
+                order: 1                    // Thứ tự hiển thị trong nhóm (điều chỉnh nếu cần)
+            // ).RequirePermissions(CoreFWPermissions.JobTitles.Default)); // Dòng này cũng được, nhưng IsGrantedAsync ở trên đã kiểm tra rồi
+            ));
         }
 
         administration.SetSubItemOrder(SettingManagementMenuNames.GroupName, 4);
