@@ -1,4 +1,4 @@
-using System.IO;
+﻿using System.IO;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpOverrides;
@@ -50,6 +50,11 @@ using Volo.Abp.OpenIddict;
 using Volo.Abp.Security.Claims;
 using Volo.Abp.SettingManagement.Web;
 using Volo.Abp.Studio.Client.AspNetCore;
+using Aqt.CoreFW.Web.Workflows;
+using OptimaJet.Workflow.Core.Runtime;
+using Aqt.CoreFW.Application.Workflows.Providers;
+using Aqt.CoreFW.Application.Workflows.Interfaces;
+using OptimaJet.Workflow.Migrator;
 
 namespace Aqt.CoreFW.Web;
 
@@ -128,7 +133,7 @@ public class CoreFWWebModule : AbpModule
             {
                 options.DisableTransportSecurityRequirement = true;
             });
-            
+
             Configure<ForwardedHeadersOptions>(options =>
             {
                 options.ForwardedHeaders = ForwardedHeaders.XForwardedProto;
@@ -149,6 +154,17 @@ public class CoreFWWebModule : AbpModule
         {
             options.IsDynamicPermissionStoreEnabled = true;
         });
+
+        #region Config workflow
+        context.Services.AddTransient<IWorkflowRuleProvider, WorkflowRuleProvider>();
+        context.Services.AddTransient<IWorkflowActionProvider, WorkflowActionProvider>();
+        context.Services.AddTransient<IDesignerAutocompleteProvider, AutoCompleteProvider>();
+        context.Services.AddSingleton<WorkflowRuntime>(sp =>
+        {
+            return WorkflowRuntimeConfigurator.CreateEmpty(sp);
+        });
+        context.Services.AddSingleton<WorkflowRuntimeAccessor>();
+        #endregion
     }
 
 
@@ -293,5 +309,29 @@ public class CoreFWWebModule : AbpModule
         app.UseAuditing();
         app.UseAbpSerilogEnrichers();
         app.UseConfiguredEndpoints();
+
+        #region Start workflow runtime
+        var sp = context.ServiceProvider;
+        var runtime = sp.GetRequiredService<WorkflowRuntime>();
+
+        var accessor = sp.GetRequiredService<WorkflowRuntimeAccessor>();
+
+        var basicPlugin = sp.GetRequiredService<IBasicPluginFactory>().Create();
+        var approvalPlugin = sp.GetRequiredService<IApprovalPluginFactory>().Create();
+        var actionProvider = sp.GetRequiredService<IWorkflowActionProvider>();
+        var ruleProvider = sp.GetRequiredService<IWorkflowRuleProvider>();
+        var autoCompleteProvider = sp.GetRequiredService<IDesignerAutocompleteProvider>();
+
+        runtime
+            .WithPlugin(basicPlugin)
+            .WithPlugin(approvalPlugin)
+            .WithActionProvider(actionProvider)
+            .WithRuleProvider(ruleProvider)
+            .WithDesignerAutocompleteProvider(autoCompleteProvider)
+            //.RunMigrations()
+            .Start();
+
+        accessor.Runtime = runtime;
+        #endregion
     }
 }
