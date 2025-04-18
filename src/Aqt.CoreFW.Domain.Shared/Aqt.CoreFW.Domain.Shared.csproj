@@ -10,6 +10,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="Microsoft.CodeAnalysis.CSharp.Scripting" Version="4.8.0" />
     <PackageReference Include="Volo.Abp.BackgroundJobs.Domain.Shared" Version="9.1.0" />
     <PackageReference Include="Volo.Abp.AuditLogging.Domain.Shared" Version="9.1.0" />
     <PackageReference Include="Volo.Abp.FeatureManagement.Domain.Shared" Version="9.1.0" />
@@ -32,6 +33,10 @@
   <ItemGroup>
     <EmbeddedResource Include="Localization\CoreFW\*.json" />
     <Content Remove="Localization\CoreFW\*.json" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Workflows\" />
   </ItemGroup>
 
 </Project>

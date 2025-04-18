@@ -1,0 +1,33 @@
+﻿@page
+@model Aqt.CoreFW.Web.Pages.WorkflowDesigner.IndexModel
+@using Volo.Abp.AspNetCore.Mvc.UI.Layout
+@using Microsoft.AspNetCore.Mvc.Localization
+@using Aqt.CoreFW.Localization
+@using Aqt.CoreFW.Web.Menus
+@inject IHtmlLocalizer<CoreFWResource> L
+@inject IPageLayout PageLayout
+@{
+    PageLayout.Content.Title = L["WorkflowDesigner"].Value;
+}
+
+@section styles {
+    <abp-style src="/Pages/WorkflowDesigner/workflowdesigner.min.css" />
+}
+
+@section scripts {
+    <abp-script src="/Pages/WorkflowDesigner/workflowdesigner.min.js" />
+    <abp-script src="/Pages/WorkflowDesigner/workflowdesigner.manager.js" />
+    <abp-script src="/Pages/WorkflowDesigner/index.js" />
+}
+@section content_toolbar {
+        <abp-button id="SaveFWButton"
+                    text="Save"
+                    icon="plus"
+                    button-type="Primary" size="Small" />
+}
+
+<abp-card>
+    <abp-card-body>
+        <div id="wfdesigner"></div>
+    </abp-card-body>
+</abp-card>
