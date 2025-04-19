@@ -16,7 +16,8 @@ using Volo.Abp.Application.Services;
 using Volo.Abp.Domain.Repositories;
 using System.Linq.Dynamic.Core; // For LINQ extensions like WhereIf
 using Volo.Abp.ObjectMapping; // Required for ObjectMapper
-using Volo.Abp.Guids; // Added for IGuidGenerator
+using Volo.Abp.Guids;
+using Aqt.CoreFW.Application.Contracts.Shared.Lookups; // Added for IGuidGenerator
 
 namespace Aqt.CoreFW.Application.Countries;
 

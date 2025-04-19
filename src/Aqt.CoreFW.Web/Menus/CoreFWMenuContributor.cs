@@ -61,22 +61,43 @@ public class CoreFWMenuContributor : IMenuContributor
                 l["Menu:Countries"],
                 "/Countries",
                 icon: "fa fa-globe",
-                order: 3
-            ).RequirePermissions(CoreFWPermissions.Countries.Default));
+                order: 1
+            ));            
+        }
+        if (await context.IsGrantedAsync(CoreFWPermissions.Provinces.Default))
+        {
+            administration.AddItem(new ApplicationMenuItem(
+                CoreFWMenus.Provinces,
+                l["Menu:Provinces"], // Sử dụng key localization
+                "/Provinces",       // Đường dẫn URL
+                icon: "fas fa-map-marked-alt", // Icon ví dụ
+                order: 2 // Điều chỉnh thứ tự nếu cần
+            ));
         }
         // Kiểm tra xem người dùng có quyền xem Job Titles không
         if (await context.IsGrantedAsync(CoreFWPermissions.JobTitles.Default))
         {
             // Nếu có quyền, thêm mục menu Job Titles vào nhóm Administration
             administration.AddItem(new ApplicationMenuItem(
-                CoreFWMenus.JobTitles,      // Hằng số tên menu
-                l["Menu:JobTitles"],        // Lấy tên hiển thị từ localization
-                "/JobTitles",               // Đường dẫn URL của trang quản lý
-                icon: "fas fa-briefcase",   // Chọn một icon phù hợp (Font Awesome)
-                order: 1                    // Thứ tự hiển thị trong nhóm (điều chỉnh nếu cần)
-            // ).RequirePermissions(CoreFWPermissions.JobTitles.Default)); // Dòng này cũng được, nhưng IsGrantedAsync ở trên đã kiểm tra rồi
+                CoreFWMenus.JobTitles,      
+                l["Menu:JobTitles"],        
+                "/JobTitles",               
+                icon: "fas fa-briefcase",   
+                order: 3                   
             ));
         }
+        // Kiểm tra xem người dùng có quyền xem WorkflowStatuses không
+        if (await context.IsGrantedAsync(CoreFWPermissions.WorkflowStatuses.Default))
+        {
+            administration.AddItem(new ApplicationMenuItem(
+                CoreFWMenus.WorkflowStatuses,       
+                l["Menu:WorkflowStatuses"],       
+                "/WorkflowStatuses",              
+                icon: "fas fa-tasks",            
+                order: 4                       
+            ));
+        }
+
 
         administration.SetSubItemOrder(SettingManagementMenuNames.GroupName, 4);
     }

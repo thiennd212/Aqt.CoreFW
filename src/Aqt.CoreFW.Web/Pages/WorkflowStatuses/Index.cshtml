@@ -1,0 +1,70 @@
+@page
+@using Aqt.CoreFW.Permissions
+@using Microsoft.AspNetCore.Authorization
+@using Volo.Abp.AspNetCore.Mvc.UI.Layout
+@using Aqt.CoreFW.Web.Pages.WorkflowStatuses
+@using Aqt.CoreFW.Localization
+@using Microsoft.Extensions.Localization
+@using Aqt.CoreFW.Web.Menus
+@model IndexModel
+@inject IStringLocalizer<CoreFWResource> L
+@inject IAuthorizationService AuthorizationService
+@inject IPageLayout PageLayout
+@{
+    // Set page title and active menu item
+    PageLayout.Content.Title = L["WorkflowStatuses"].Value;
+    PageLayout.Content.MenuItemName = CoreFWMenus.WorkflowStatuses;
+}
+
+@section scripts {
+    <script>
+        // Pass permissions needed by JavaScript
+        const permissions = {
+            canEdit:   @ViewData["CanEdit"],
+            canDelete: @ViewData["CanDelete"]
+        };
+    </script>
+    <abp-script src="/Pages/WorkflowStatuses/index.js" />
+}
+
+@section content_toolbar {
+    @* "New" button, shown only if user has Create permission *@
+    @if (await AuthorizationService.IsGrantedAsync(CoreFWPermissions.WorkflowStatuses.Create))
+    {
+        <abp-button id="NewWorkflowStatusButton"
+                    text="@L["NewWorkflowStatus"].Value"
+                    icon="plus"
+                    button-type="Primary" size="Small" />
+    }
+    @* Optional: Export to Excel Button *@
+    @if (await AuthorizationService.IsGrantedAsync(CoreFWPermissions.WorkflowStatuses.ExportExcel)) {
+                <abp-button id="ExportExcelButton" text="@L["ExportToExcel"]" icon="file-excel" button-type="Success" size="Small"/>
+            }
+}
+
+<abp-card>
+    <abp-card-body>
+        @* Search Filters *@
+        <abp-row class="mb-3">
+            <abp-column size-md="_4">
+                <input type="text" id="SearchFilter" class="form-control" placeholder="@L["Search"] (@L["WorkflowStatusCode"], @L["WorkflowStatusName"])..." />
+            </abp-column>
+            <abp-column size-md="_4">
+                <select id="IsActiveFilter" class="form-select">
+                    <option value="">@L["All"]</option>
+                    <option value="true">@L["Active"]</option>
+                    <option value="false">@L["Inactive"]</option>
+                </select>
+            </abp-column>
+            <abp-column size-md="_4" class="text-end">
+                <abp-button id="SearchButton"
+                            text="@L["Search"].Value"
+                            icon="search"
+                            button-type="Info" size="Small" />
+            </abp-column>
+        </abp-row>
+
+        @* Data Table placeholder - JavaScript will initialize it *@
+        <abp-table striped-rows="true" id="WorkflowStatusesTable"></abp-table>
+    </abp-card-body>
+</abp-card>

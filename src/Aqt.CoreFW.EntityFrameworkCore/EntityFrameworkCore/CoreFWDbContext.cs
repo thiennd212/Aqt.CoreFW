@@ -16,7 +16,9 @@ using Volo.Abp.SettingManagement.EntityFrameworkCore;
 using Volo.Abp.OpenIddict.EntityFrameworkCore;
 using Volo.Abp.TenantManagement;
 using Volo.Abp.TenantManagement.EntityFrameworkCore;
-using System.Reflection; // Required for Assembly
+using System.Reflection;
+using Aqt.CoreFW.Domain.WorkflowStatuses.Entities;
+using Aqt.CoreFW.Domain.Provinces.Entities; // Required for Assembly
 
 namespace Aqt.CoreFW.EntityFrameworkCore;
 
@@ -30,11 +32,12 @@ public class CoreFWDbContext :
 {
     /* Add DbSet properties for your Aggregate Roots / Entities here. */
     public DbSet<Country> Countries { get; set; }
-    // public DbSet<Province> Provinces { get; set; } // TODO: Uncomment when Province entity is created
+    public DbSet<Province> Provinces { get; set; }
     /* Thêm DbSet cho JobTitles */
     public DbSet<JobTitle> JobTitles { get; set; }
     // Chú thích: Khi có module Employee, bạn sẽ thêm DbSet cho nó ở đây nếu cần truy vấn trực tiếp
     // public DbSet<Employee> Employees { get; set; }
+    public DbSet<WorkflowStatus> WorkflowStatuses { get; set; }
 
     #region Entities from the modules
 

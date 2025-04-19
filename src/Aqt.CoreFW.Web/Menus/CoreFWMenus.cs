@@ -8,6 +8,10 @@ public class CoreFWMenus
 
     // Add menu items here...
     public const string Countries = Prefix + ".Countries";
+
+    public const string Provinces = Prefix + ".Provinces";
     // Thêm hằng số cho menu Job Titles
     public const string JobTitles = Prefix + ".JobTitles";
+    // Thêm hằng số cho menu WorkflowStatuses
+    public const string WorkflowStatuses = Prefix + ".WorkflowStatuses";
 }

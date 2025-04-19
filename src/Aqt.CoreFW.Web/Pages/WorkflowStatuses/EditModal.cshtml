@@ -1,0 +1,24 @@
+﻿@page "/WorkflowStatuses/EditModal"
+@using Microsoft.AspNetCore.Mvc.Localization
+@using Volo.Abp.AspNetCore.Mvc.UI.Bootstrap.TagHelpers.Modal
+@using Aqt.CoreFW.Localization
+@using Volo.Abp.AspNetCore.Mvc.UI.Bootstrap.TagHelpers.Form
+@using Aqt.CoreFW.Web.Pages.WorkflowStatuses
+@model EditModalModel
+@inject IHtmlLocalizer<CoreFWResource> L
+@{
+    Layout = null;
+}
+@* Dynamic form binds to the ViewModel provided by the PageModel *@
+<abp-dynamic-form abp-model="WorkflowStatusViewModel" asp-page="/WorkflowStatuses/EditModal" id="EditWorkflowStatusForm">
+    <abp-modal>
+        <abp-modal-header title="@L["EditWorkflowStatus"].Value"></abp-modal-header>
+        <abp-modal-body>
+            @* Hidden input to store the Id of the entity being edited *@
+            <abp-input asp-for="Id" />
+            @* Render form inputs based on the ViewModel *@
+            <abp-form-content />
+        </abp-modal-body>
+        <abp-modal-footer buttons="@(AbpModalButtons.Cancel | AbpModalButtons.Save)"></abp-modal-footer>
+    </abp-modal>
+</abp-dynamic-form>

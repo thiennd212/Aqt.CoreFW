@@ -1,0 +1,76 @@
+﻿@page
+@using Aqt.CoreFW.Permissions
+@using Microsoft.AspNetCore.Authorization
+@using Volo.Abp.AspNetCore.Mvc.UI.Layout
+@using Aqt.CoreFW.Web.Pages.Provinces
+@using Aqt.CoreFW.Localization
+@using Microsoft.Extensions.Localization
+@using Aqt.CoreFW.Web.Menus
+@using Aqt.CoreFW.Domain.Shared.Provinces
+@model IndexModel
+@inject IStringLocalizer<CoreFWResource> L
+@inject IAuthorizationService AuthorizationService
+@inject IPageLayout PageLayout
+@{
+    PageLayout.Content.Title = L["Provinces"].Value;
+    PageLayout.Content.MenuItemName = CoreFWMenus.Provinces;
+}
+
+@section scripts {
+    <script>
+        // Pass permissions to JavaScript
+        const permissions = {
+            canEdit:   @Html.Raw(ViewData["CanEdit"]), // Use Html.Raw to output boolean correctly
+            canDelete: @Html.Raw(ViewData["CanDelete"])
+        };
+    </script>
+    <abp-script src="/Pages/Provinces/index.js" />
+        }
+
+@section content_toolbar {
+    @if (await AuthorizationService.IsGrantedAsync(CoreFWPermissions.Provinces.Create))
+    {
+        <abp-button id="NewProvinceButton"
+                    text="@L["NewProvince"].Value"
+                    icon="plus"
+                    button-type="Primary" size="Small" />
+    }
+    @if (await AuthorizationService.IsGrantedAsync(CoreFWPermissions.Provinces.Export))
+    {
+        <abp-button id="ExportExcelButton"
+                    text="@L["ExportToExcel"].Value"
+                    icon="file-excel"
+                    button-type="Success" size="Small" />
+    }
+        }
+
+<abp-card>
+    <abp-card-body>
+        <abp-row class="mb-3">
+            <abp-column size-md="_3">
+                <input type="text" id="SearchFilter" class="form-control" placeholder="@L["Search"] (@L["DisplayName:Province.Code"], @L["DisplayName:Province.Name"])..." />
+            </abp-column>
+            <abp-column size-md="_3">
+                <select id="StatusFilter" class="form-select">
+                    <option value="">@L["All"] (@L["DisplayName:Province.Status"])</option>
+                    <option value="@((byte)ProvinceStatus.Active)">@L["Enum:ProvinceStatus.1"]</option>
+                    <option value="@((byte)ProvinceStatus.Inactive)">@L["Enum:ProvinceStatus.0"]</option>
+                </select>
+            </abp-column>
+            <abp-column size-md="_3">
+                <select id="CountryFilter" class="form-select" data-placeholder="@L["SelectACountry"]">
+                    <option value="">@L["All"] (@L["DisplayName:Province.CountryId"])</option>
+                    @* Options sẽ được điền bởi JavaScript *@
+                </select>
+            </abp-column>
+            <abp-column size-md="_3" class="text-end">
+                <abp-button id="SearchButton"
+                            text="@L["Search"].Value"
+                            icon="search"
+                            button-type="Info" size="Small" />
+            </abp-column>
+        </abp-row>
+
+        <abp-table striped-rows="true" id="ProvincesTable"></abp-table>
+    </abp-card-body>
+</abp-card>

@@ -1,0 +1,25 @@
+﻿@page "/Provinces/EditModal"
+@using Microsoft.AspNetCore.Mvc.Localization
+@using Volo.Abp.AspNetCore.Mvc.UI.Bootstrap.TagHelpers.Modal
+@using Aqt.CoreFW.Localization
+@using Volo.Abp.AspNetCore.Mvc.UI.Bootstrap.TagHelpers.Form
+@using Aqt.CoreFW.Web.Pages.Provinces
+@model EditModalModel
+@inject IHtmlLocalizer<CoreFWResource> L
+@{
+    Layout = null;
+}
+<abp-dynamic-form abp-model="ProvinceViewModel" asp-page="/Provinces/EditModal" id="EditProvinceForm">
+    <abp-modal>
+        <abp-modal-header title="@L["EditProvince"].Value"></abp-modal-header>
+        <abp-modal-body>
+            @* Truyền Id vào form dưới dạng hidden input *@
+            <input type="hidden" asp-for="Id" />
+            @* Trường Code có thể đặt là readonly nếu không cho phép sửa *@
+            @* <abp-input asp-for="ProvinceViewModel.Code" readonly="true" /> *@
+            @* Các trường khác và dropdown Quốc gia sẽ được tạo bởi abp-form-content *@
+            <abp-form-content />
+        </abp-modal-body>
+        <abp-modal-footer buttons="@(AbpModalButtons.Cancel | AbpModalButtons.Save)"></abp-modal-footer>
+    </abp-modal>
+</abp-dynamic-form>

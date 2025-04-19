@@ -4,6 +4,7 @@ using AutoMapper;
 using Volo.Abp.ObjectExtending; // Required for IgnoreAuditedObjectProperties - actually in Volo.Abp.AutoMapper
 using Volo.Abp.AutoMapper; // Added for IgnoreAuditedObjectProperties extension method
 using Volo.Abp.DependencyInjection;
+using Aqt.CoreFW.Application.Contracts.Shared.Lookups;
 
 namespace Aqt.CoreFW.Application.Countries;
 
