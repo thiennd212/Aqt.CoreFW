@@ -1,0 +1,28 @@
+﻿@page "/Communes/EditModal"
+@using Microsoft.AspNetCore.Mvc.Localization
+@using Volo.Abp.AspNetCore.Mvc.UI.Bootstrap.TagHelpers.Modal
+@using Aqt.CoreFW.Localization
+@using Volo.Abp.AspNetCore.Mvc.UI.Bootstrap.TagHelpers.Form
+@using Aqt.CoreFW.Web.Pages.Communes
+@model EditModalModel
+@inject IHtmlLocalizer<CoreFWResource> L
+@{
+    Layout = null; // No layout for modals
+}
+<abp-dynamic-form abp-model="CommuneViewModel" asp-page="/Communes/EditModal" id="EditCommuneForm">
+    <abp-modal>
+        <abp-modal-header title="@L["EditCommune"].Value"></abp-modal-header>
+        <abp-modal-body>
+            <abp-input asp-for="Id" /> @* Hidden input for Id is crucial *@
+            @* Specify inputs manually to make Code readonly, instead of abp-form-content *@
+            <abp-input asp-for="CommuneViewModel.Code" readonly="true" />
+            <abp-input asp-for="CommuneViewModel.Name" />
+            <abp-select asp-for="CommuneViewModel.ProvinceId" />
+            <abp-select asp-for="CommuneViewModel.DistrictId" />
+            <abp-input asp-for="CommuneViewModel.Order" />
+            <abp-select asp-for="CommuneViewModel.Status" />
+            <abp-textarea asp-for="CommuneViewModel.Description" />
+        </abp-modal-body>
+        <abp-modal-footer buttons="@(AbpModalButtons.Cancel | AbpModalButtons.Save)"></abp-modal-footer>
+    </abp-modal>
+</abp-dynamic-form>

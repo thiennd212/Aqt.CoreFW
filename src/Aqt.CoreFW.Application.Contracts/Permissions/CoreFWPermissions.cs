@@ -1,4 +1,4 @@
-namespace Aqt.CoreFW.Permissions;
+﻿namespace Aqt.CoreFW.Permissions;
 
 public static class CoreFWPermissions
 {
@@ -25,6 +25,28 @@ public static class CoreFWPermissions
         public const string Update = Default + ".Update";
         public const string Delete = Default + ".Delete";
         public const string Export = Default + ".Export";
+    }
+
+    /// <summary>
+    /// Permissions for District management.
+    /// </summary>
+    public static class Districts
+    {
+        public const string Default = GroupName + ".Districts";
+        public const string Create = Default + ".Create";
+        public const string Update = Default + ".Update";
+        public const string Delete = Default + ".Delete";
+        public const string Export = Default + ".Export";
+    }
+
+    // Add permission definitions for Communes
+    public static class Communes
+    {
+        public const string Default = GroupName + ".Communes";
+        public const string Create = Default + ".Create";
+        public const string Update = Default + ".Update";
+        public const string Delete = Default + ".Delete";
+        public const string Export = Default + ".Export"; // Permission for exporting data
     }
 
     /// <summary>

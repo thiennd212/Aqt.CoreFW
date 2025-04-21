@@ -1,0 +1,21 @@
+﻿@page "/Districts/CreateModal"
+@using Microsoft.AspNetCore.Mvc.Localization
+@using Volo.Abp.AspNetCore.Mvc.UI.Bootstrap.TagHelpers.Modal
+@using Aqt.CoreFW.Localization
+@using Volo.Abp.AspNetCore.Mvc.UI.Bootstrap.TagHelpers.Form
+@using Aqt.CoreFW.Web.Pages.Districts
+@model CreateModalModel
+@inject IHtmlLocalizer<CoreFWResource> L
+@{
+    Layout = null;
+}
+<abp-dynamic-form abp-model="DistrictViewModel" asp-page="/Districts/CreateModal" id="CreateDistrictForm">
+    <abp-modal>
+        <abp-modal-header title="@L["NewDistrict"].Value"></abp-modal-header>
+        <abp-modal-body>
+            @* Form content is automatically generated, including the Province dropdown *@
+            <abp-form-content />
+        </abp-modal-body>
+        <abp-modal-footer buttons="@(AbpModalButtons.Cancel | AbpModalButtons.Save)"></abp-modal-footer>
+    </abp-modal>
+</abp-dynamic-form>

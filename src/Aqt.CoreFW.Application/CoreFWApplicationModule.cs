@@ -6,6 +6,9 @@ using Volo.Abp.AutoMapper;
 using Volo.Abp.FeatureManagement;
 using Volo.Abp.Modularity;
 using Volo.Abp.TenantManagement;
+using Aqt.CoreFW.Application.Shared.Excel;
+using Aqt.CoreFW.Shared.Services;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace Aqt.CoreFW;
 
@@ -27,5 +30,6 @@ public class CoreFWApplicationModule : AbpModule
         {
             options.AddMaps<CoreFWApplicationModule>();
         });
+        context.Services.AddTransient<IAbpExcelExportHelper, AbpExcelExportHelper>();
     }
 }

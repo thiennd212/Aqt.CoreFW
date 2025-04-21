@@ -1,4 +1,4 @@
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using Aqt.CoreFW.Localization;
 using Aqt.CoreFW.Permissions;
 using Aqt.CoreFW.MultiTenancy;
@@ -74,6 +74,26 @@ public class CoreFWMenuContributor : IMenuContributor
                 order: 2 // Điều chỉnh thứ tự nếu cần
             ));
         }
+        if (await context.IsGrantedAsync(CoreFWPermissions.Districts.Default))
+        {
+            administration.AddItem(new ApplicationMenuItem(
+                CoreFWMenus.Districts,
+                l["Menu:Districts"], // Use localization key
+                "/Districts",        // Path to Index page
+                icon: "fas fa-map-marker-alt", // Choose an icon
+                order: 3           // Adjust order as needed
+            ));
+        }
+        if (await context.IsGrantedAsync(CoreFWPermissions.Communes.Default))
+        {
+            administration.AddItem(new ApplicationMenuItem(
+                CoreFWMenus.Communes,
+                l["Menu:Communes"], // Key localization
+                "/Communes",        // Đường dẫn đến trang Index
+                icon: "fas fa-map-marker-alt", // Icon ví dụ, có thể đổi
+                order: 4             // Thứ tự trong menu con
+            ));
+        }
         // Kiểm tra xem người dùng có quyền xem Job Titles không
         if (await context.IsGrantedAsync(CoreFWPermissions.JobTitles.Default))
         {
@@ -83,7 +103,7 @@ public class CoreFWMenuContributor : IMenuContributor
                 l["Menu:JobTitles"],        
                 "/JobTitles",               
                 icon: "fas fa-briefcase",   
-                order: 3                   
+                order: 5                  
             ));
         }
         // Kiểm tra xem người dùng có quyền xem WorkflowStatuses không
@@ -94,7 +114,7 @@ public class CoreFWMenuContributor : IMenuContributor
                 l["Menu:WorkflowStatuses"],       
                 "/WorkflowStatuses",              
                 icon: "fas fa-tasks",            
-                order: 4                       
+                order: 6                       
             ));
         }
 

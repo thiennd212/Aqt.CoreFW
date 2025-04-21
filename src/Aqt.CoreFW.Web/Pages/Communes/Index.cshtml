@@ -1,0 +1,90 @@
+﻿@page
+@using Aqt.CoreFW.Permissions
+@using Microsoft.AspNetCore.Authorization
+@using Volo.Abp.AspNetCore.Mvc.UI.Layout
+@using Aqt.CoreFW.Web.Pages.Communes
+@using Aqt.CoreFW.Localization
+@using Microsoft.Extensions.Localization
+@using Aqt.CoreFW.Web.Menus
+@using Aqt.CoreFW.Domain.Shared.Communes
+@model IndexModel
+@inject IStringLocalizer<CoreFWResource> L
+@inject IAuthorizationService AuthorizationService
+@inject IPageLayout PageLayout
+@{
+    PageLayout.Content.Title = L["Communes"].Value; // Page title
+    PageLayout.Content.MenuItemName = CoreFWMenus.Communes;
+}
+
+@section scripts {
+    <script>
+        // Pass permissions to JavaScript read from ViewData
+        // Ensure ViewData keys match those set in Index.cshtml.cs
+        const permissions = {
+            canEdit:   @ViewData["CanEdit"], // Reads from ViewData
+            canDelete: @ViewData["CanDelete"] // Reads from ViewData
+        };
+    </script>
+    <abp-script src="/Pages/Communes/index.js" />
+        }
+
+@section content_toolbar {
+    @if (await AuthorizationService.IsGrantedAsync(CoreFWPermissions.Communes.Create))
+    {
+        <abp-button id="NewCommuneButton"
+                    text="@L["NewCommune"].Value"
+                    icon="plus"
+                    button-type="Primary" size="Small" />
+    }
+    @if (await AuthorizationService.IsGrantedAsync(CoreFWPermissions.Communes.Export))
+    {
+        <abp-button id="ExportExcelButton"
+                    text="@L["ExportToExcel"].Value"
+                    icon="file-excel"
+                    button-type="Success" size="Small" />
+    }
+        }
+
+<abp-card>
+    <abp-card-body>
+        @* Search Filters *@
+        <abp-row class="mb-3">
+            <abp-column size-md="_3">
+                @* Use localization keys for placeholder *@
+                <input type="text" id="SearchFilter" class="form-control" placeholder="@L["Search"] (@L["DisplayName:Commune.Code"], @L["DisplayName:Commune.Name"])..." />
+            </abp-column>
+            <abp-column size-md="_3">
+                <select id="StatusFilter" class="form-select">
+                    <option value="">@L["All"] (@L["DisplayName:Commune.Status"])</option>
+                    <option value="@((byte)CommuneStatus.Active)">@L["Enum:CommuneStatus.1"]</option>
+                    <option value="@((byte)CommuneStatus.Inactive)">@L["Enum:CommuneStatus.0"]</option>
+                </select>
+            </abp-column>
+            <abp-column size-md="_3">
+                @* Use localization key for placeholder *@
+                <select id="ProvinceFilter" class="form-select" data-placeholder="@L["SelectAProvince"]">
+                    <option value="">@L["All"] (@L["DisplayName:Commune.ProvinceId"])</option>
+                    @* Options will be populated by JavaScript *@
+                </select>
+            </abp-column>
+            <abp-column size-md="_3">
+                @* Use localization key for placeholder *@
+                <select id="DistrictFilter" class="form-select" data-placeholder="@L["SelectADistrict"]">
+                    <option value="">@L["All"] (@L["DisplayName:Commune.DistrictId"])</option>
+                    @* Options will be populated by JavaScript based on ProvinceFilter *@
+                </select>
+            </abp-column>
+        </abp-row>
+        <abp-row class="mb-3">
+            <abp-column class="text-end">
+                <abp-button id="SearchButton"
+                            text="@L["Search"].Value"
+                            icon="search"
+                            button-type="Info" size="Small" />
+            </abp-column>
+        </abp-row>
+
+        @* Data Table *@
+        <abp-table striped-rows="true" id="CommunesTable"></abp-table>
+    </abp-card-body>
+</abp-card>

@@ -25,6 +25,7 @@ using Volo.Abp.Domain.Repositories;
 using Volo.Abp.Guids;
 using Volo.Abp.Linq;
 using Aqt.CoreFW.Domain.Countries.Repositories;
+using Volo.Abp.Timing;
 
 namespace Aqt.CoreFW.Application.Provinces;
 
@@ -43,6 +44,7 @@ public class ProvinceAppService :
     private readonly IGuidGenerator _guidGenerator;
     private readonly IStringLocalizer<CoreFWResource> _localizer;
     private readonly IAsyncQueryableExecuter _asyncExecuter;
+    private readonly IClock _clock; // Inject IClock
 
     public ProvinceAppService(
         IRepository<Province, Guid> repository,
@@ -50,7 +52,8 @@ public class ProvinceAppService :
         ICountryRepository countryRepository,
         IGuidGenerator guidGenerator,
         IStringLocalizer<CoreFWResource> localizer,
-        IAsyncQueryableExecuter asyncExecuter)
+        IAsyncQueryableExecuter asyncExecuter,
+        IClock clock)
         : base(repository)
     {
         _provinceRepository = provinceRepository;
@@ -58,6 +61,7 @@ public class ProvinceAppService :
         _guidGenerator = guidGenerator;
         _localizer = localizer;
         _asyncExecuter = asyncExecuter;
+        _clock = clock; // Initialize IClock
 
         GetPolicyName = CoreFWPermissions.Provinces.Default;
         GetListPolicyName = CoreFWPermissions.Provinces.Default;
@@ -201,9 +205,11 @@ public class ProvinceAppService :
         await stream.SaveAsAsync(excelDtos);
         stream.Seek(0, SeekOrigin.Begin);
 
+        var fileName = $"Districts{_clock.Now:yyyyMMdd_HHmmss}.xlsx";
+        // 6. Return the file stream
         return new RemoteStreamContent(
             stream,
-            fileName: "Provinces.xlsx",
+            fileName: fileName, // Suggested filename
             contentType: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
         );
     }

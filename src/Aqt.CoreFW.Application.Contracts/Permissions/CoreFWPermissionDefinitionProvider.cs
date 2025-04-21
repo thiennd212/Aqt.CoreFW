@@ -24,6 +24,21 @@ public class CoreFWPermissionDefinitionProvider : PermissionDefinitionProvider
         provincesPermission.AddChild(CoreFWPermissions.Provinces.Delete, L("Permission:Provinces.Delete"));
         provincesPermission.AddChild(CoreFWPermissions.Provinces.Export, L("Permission:Provinces.Export"));
 
+        // Define permissions for Districts using localization keys from Domain.Shared
+        var districtsPermission = coreFwGroup.AddPermission(CoreFWPermissions.Districts.Default, L("Permission:DistrictManagement"));
+        districtsPermission.AddChild(CoreFWPermissions.Districts.Create, L("Permission:Districts.Create"));
+        districtsPermission.AddChild(CoreFWPermissions.Districts.Update, L("Permission:Districts.Update"));
+        districtsPermission.AddChild(CoreFWPermissions.Districts.Delete, L("Permission:Districts.Delete"));
+        districtsPermission.AddChild(CoreFWPermissions.Districts.Export, L("Permission:Districts.Export"));
+
+        // Define permissions for Communes
+        var communesPermission = coreFwGroup.AddPermission(CoreFWPermissions.Communes.Default, L("Permission:CommuneManagement")); // Use localization key
+        communesPermission.AddChild(CoreFWPermissions.Communes.Create, L("Permission:Communes.Create"));
+        communesPermission.AddChild(CoreFWPermissions.Communes.Update, L("Permission:Communes.Update"));
+        communesPermission.AddChild(CoreFWPermissions.Communes.Delete, L("Permission:Communes.Delete"));
+        communesPermission.AddChild(CoreFWPermissions.Communes.Export, L("Permission:Communes.Export")); // Add export permission
+
+
         // Định nghĩa permission cho JobTitles
         var jobTitlesPermission = coreFwGroup.AddPermission(CoreFWPermissions.JobTitles.Default, L("Permission:JobTitles"));
         jobTitlesPermission.AddChild(CoreFWPermissions.JobTitles.Create, L("Permission:JobTitles.Create"));

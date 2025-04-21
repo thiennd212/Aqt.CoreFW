@@ -24,6 +24,126 @@ namespace Aqt.CoreFW.Migrations
 
             OracleModelBuilderExtensions.UseIdentityColumns(modelBuilder);
 
+            modelBuilder.Entity("Aqt.CoreFW.Domain.Communes.Entities.Commune", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .HasColumnType("RAW(16)");
+
+                    b.Property<string>("Code")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("NVARCHAR2(50)")
+                        .HasColumnName("Code");
+
+                    b.Property<string>("ConcurrencyStamp")
+                        .IsConcurrencyToken()
+                        .IsRequired()
+                        .HasMaxLength(40)
+                        .HasColumnType("NVARCHAR2(40)")
+                        .HasColumnName("ConcurrencyStamp");
+
+                    b.Property<DateTime>("CreationTime")
+                        .HasColumnType("TIMESTAMP(7)")
+                        .HasColumnName("CreationTime");
+
+                    b.Property<Guid?>("CreatorId")
+                        .HasColumnType("RAW(16)")
+                        .HasColumnName("CreatorId");
+
+                    b.Property<Guid?>("DeleterId")
+                        .HasColumnType("RAW(16)")
+                        .HasColumnName("DeleterId");
+
+                    b.Property<DateTime?>("DeletionTime")
+                        .HasColumnType("TIMESTAMP(7)")
+                        .HasColumnName("DeletionTime");
+
+                    b.Property<string>("Description")
+                        .HasMaxLength(500)
+                        .HasColumnType("NVARCHAR2(500)")
+                        .HasColumnName("Description");
+
+                    b.Property<Guid?>("DistrictId")
+                        .HasColumnType("RAW(16)")
+                        .HasColumnName("DistrictId");
+
+                    b.Property<string>("ExtraProperties")
+                        .IsRequired()
+                        .HasColumnType("NVARCHAR2(2000)")
+                        .HasColumnName("ExtraProperties");
+
+                    b.Property<bool>("IsDeleted")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("BOOLEAN")
+                        .HasDefaultValue(false)
+                        .HasColumnName("IsDeleted");
+
+                    b.Property<DateTime?>("LastModificationTime")
+                        .HasColumnType("TIMESTAMP(7)")
+                        .HasColumnName("LastModificationTime");
+
+                    b.Property<Guid?>("LastModifierId")
+                        .HasColumnType("RAW(16)")
+                        .HasColumnName("LastModifierId");
+
+                    b.Property<DateTime?>("LastSyncedTime")
+                        .HasColumnType("TIMESTAMP(7)")
+                        .HasColumnName("LastSyncedTime");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(255)
+                        .HasColumnType("NVARCHAR2(255)")
+                        .HasColumnName("Name");
+
+                    b.Property<int>("Order")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("NUMBER(10)")
+                        .HasDefaultValue(0)
+                        .HasColumnName("Order");
+
+                    b.Property<Guid>("ProvinceId")
+                        .HasColumnType("RAW(16)")
+                        .HasColumnName("ProvinceId");
+
+                    b.Property<byte>("Status")
+                        .HasColumnType("NUMBER(3)")
+                        .HasColumnName("Status");
+
+                    b.Property<string>("SyncCode")
+                        .HasMaxLength(50)
+                        .HasColumnType("NVARCHAR2(50)")
+                        .HasColumnName("SyncCode");
+
+                    b.Property<string>("SyncId")
+                        .HasMaxLength(50)
+                        .HasColumnType("NVARCHAR2(50)")
+                        .HasColumnName("SyncId");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("Code")
+                        .IsUnique()
+                        .HasDatabaseName("IX_AppCommunes_Code");
+
+                    b.HasIndex("DistrictId")
+                        .HasDatabaseName("IX_AppCommunes_DistrictId");
+
+                    b.HasIndex("Name")
+                        .HasDatabaseName("IX_AppCommunes_Name");
+
+                    b.HasIndex("ProvinceId")
+                        .HasDatabaseName("IX_AppCommunes_ProvinceId");
+
+                    b.HasIndex("Status")
+                        .HasDatabaseName("IX_AppCommunes_Status");
+
+                    b.HasIndex("ProvinceId", "DistrictId", "Order", "Name")
+                        .HasDatabaseName("IX_AppCommunes_ProvinceId_DistrictId_Order_Name");
+
+                    b.ToTable("AppCommunes", (string)null);
+                });
+
             modelBuilder.Entity("Aqt.CoreFW.Domain.Countries.Entities.Country", b =>
                 {
                     b.Property<Guid>("Id")
@@ -91,6 +211,119 @@ namespace Aqt.CoreFW.Migrations
                     b.HasIndex("Name");
 
                     b.ToTable("AppCountries", (string)null);
+                });
+
+            modelBuilder.Entity("Aqt.CoreFW.Domain.Districts.Entities.District", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .HasColumnType("RAW(16)");
+
+                    b.Property<string>("Code")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("NVARCHAR2(50)")
+                        .HasColumnName("Code");
+
+                    b.Property<string>("ConcurrencyStamp")
+                        .IsConcurrencyToken()
+                        .IsRequired()
+                        .HasMaxLength(40)
+                        .HasColumnType("NVARCHAR2(40)")
+                        .HasColumnName("ConcurrencyStamp");
+
+                    b.Property<DateTime>("CreationTime")
+                        .HasColumnType("TIMESTAMP(7)")
+                        .HasColumnName("CreationTime");
+
+                    b.Property<Guid?>("CreatorId")
+                        .HasColumnType("RAW(16)")
+                        .HasColumnName("CreatorId");
+
+                    b.Property<Guid?>("DeleterId")
+                        .HasColumnType("RAW(16)")
+                        .HasColumnName("DeleterId");
+
+                    b.Property<DateTime?>("DeletionTime")
+                        .HasColumnType("TIMESTAMP(7)")
+                        .HasColumnName("DeletionTime");
+
+                    b.Property<string>("Description")
+                        .HasMaxLength(500)
+                        .HasColumnType("NVARCHAR2(500)")
+                        .HasColumnName("Description");
+
+                    b.Property<string>("ExtraProperties")
+                        .IsRequired()
+                        .HasColumnType("NVARCHAR2(2000)")
+                        .HasColumnName("ExtraProperties");
+
+                    b.Property<bool>("IsDeleted")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("BOOLEAN")
+                        .HasDefaultValue(false)
+                        .HasColumnName("IsDeleted");
+
+                    b.Property<DateTime?>("LastModificationTime")
+                        .HasColumnType("TIMESTAMP(7)")
+                        .HasColumnName("LastModificationTime");
+
+                    b.Property<Guid?>("LastModifierId")
+                        .HasColumnType("RAW(16)")
+                        .HasColumnName("LastModifierId");
+
+                    b.Property<DateTime?>("LastSyncedTime")
+                        .HasColumnType("TIMESTAMP(7)")
+                        .HasColumnName("LastSyncedTime");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(255)
+                        .HasColumnType("NVARCHAR2(255)")
+                        .HasColumnName("Name");
+
+                    b.Property<int>("Order")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("NUMBER(10)")
+                        .HasDefaultValue(0)
+                        .HasColumnName("Order");
+
+                    b.Property<Guid>("ProvinceId")
+                        .HasColumnType("RAW(16)")
+                        .HasColumnName("ProvinceId");
+
+                    b.Property<byte>("Status")
+                        .HasColumnType("NUMBER(3)")
+                        .HasColumnName("Status");
+
+                    b.Property<string>("SyncCode")
+                        .HasMaxLength(50)
+                        .HasColumnType("NVARCHAR2(50)")
+                        .HasColumnName("SyncCode");
+
+                    b.Property<string>("SyncId")
+                        .HasMaxLength(50)
+                        .HasColumnType("NVARCHAR2(50)")
+                        .HasColumnName("SyncId");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("Code")
+                        .IsUnique()
+                        .HasDatabaseName("IX_AppDistricts_Code");
+
+                    b.HasIndex("ProvinceId")
+                        .HasDatabaseName("IX_AppDistricts_ProvinceId");
+
+                    b.HasIndex("Status")
+                        .HasDatabaseName("IX_AppDistricts_Status");
+
+                    b.HasIndex("ProvinceId", "Name")
+                        .HasDatabaseName("IX_AppDistricts_ProvinceId_Name");
+
+                    b.HasIndex("ProvinceId", "Order", "Name")
+                        .HasDatabaseName("IX_AppDistricts_ProvinceId_Order_Name");
+
+                    b.ToTable("AppDistricts", (string)null);
                 });
 
             modelBuilder.Entity("Aqt.CoreFW.Domain.JobTitles.Entities.JobTitle", b =>
@@ -2204,6 +2437,29 @@ namespace Aqt.CoreFW.Migrations
                     b.HasKey("TenantId", "Name");
 
                     b.ToTable("AbpTenantConnectionStrings", (string)null);
+                });
+
+            modelBuilder.Entity("Aqt.CoreFW.Domain.Communes.Entities.Commune", b =>
+                {
+                    b.HasOne("Aqt.CoreFW.Domain.Districts.Entities.District", null)
+                        .WithMany()
+                        .HasForeignKey("DistrictId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.HasOne("Aqt.CoreFW.Domain.Provinces.Entities.Province", null)
+                        .WithMany()
+                        .HasForeignKey("ProvinceId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("Aqt.CoreFW.Domain.Districts.Entities.District", b =>
+                {
+                    b.HasOne("Aqt.CoreFW.Domain.Provinces.Entities.Province", null)
+                        .WithMany()
+                        .HasForeignKey("ProvinceId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("Aqt.CoreFW.Domain.Provinces.Entities.Province", b =>

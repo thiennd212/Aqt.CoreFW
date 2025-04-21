@@ -1,4 +1,4 @@
-using Aqt.CoreFW.Domain.Countries.Entities;
+﻿using Aqt.CoreFW.Domain.Countries.Entities;
 using Aqt.CoreFW.Domain.JobTitles.Entities;
 using Microsoft.EntityFrameworkCore;
 using Volo.Abp.AuditLogging.EntityFrameworkCore;
@@ -18,7 +18,9 @@ using Volo.Abp.TenantManagement;
 using Volo.Abp.TenantManagement.EntityFrameworkCore;
 using System.Reflection;
 using Aqt.CoreFW.Domain.WorkflowStatuses.Entities;
-using Aqt.CoreFW.Domain.Provinces.Entities; // Required for Assembly
+using Aqt.CoreFW.Domain.Provinces.Entities;
+using Aqt.CoreFW.Domain.Districts.Entities;
+using Aqt.CoreFW.Domain.Communes.Entities; // Required for Assembly
 
 namespace Aqt.CoreFW.EntityFrameworkCore;
 
@@ -33,7 +35,8 @@ public class CoreFWDbContext :
     /* Add DbSet properties for your Aggregate Roots / Entities here. */
     public DbSet<Country> Countries { get; set; }
     public DbSet<Province> Provinces { get; set; }
-    /* Thêm DbSet cho JobTitles */
+    public DbSet<District> Districts { get; set; }
+    public DbSet<Commune> Communes { get; set; }
     public DbSet<JobTitle> JobTitles { get; set; }
     // Chú thích: Khi có module Employee, bạn sẽ thêm DbSet cho nó ở đây nếu cần truy vấn trực tiếp
     // public DbSet<Employee> Employees { get; set; }
