@@ -16,58 +16,49 @@ public class CreateModalModel : AbpPageModel
 {
     [BindProperty]
     public CommuneViewModel CommuneViewModel { get; set; }
-    // No explicit initialization here, done in OnGet as per plan
 
     private readonly ICommuneAppService _communeAppService;
 
     public CreateModalModel(ICommuneAppService communeAppService)
     {
         _communeAppService = communeAppService;
-        // No ViewModel initialization in constructor as per plan (done in OnGet)
+        CommuneViewModel = new CommuneViewModel();
     }
 
     public async Task OnGetAsync()
     {
-        // Initialize ViewModel with defaults as per plan
-        CommuneViewModel = new CommuneViewModel { Status = CommuneStatus.Active, Order = 0 }; // Set default Status and Order
-        await LoadProvinceLookupAsync();
-        // Initialize Districts as empty list as per plan
-        CommuneViewModel.Districts = new List<SelectListItem>();
-    }
-
-    public async Task<IActionResult> OnPostAsync()
-    {
-        // ValidateModel(); // Called implicitly by framework, but plan has it, keep for clarity if needed.
-        // AbpPageModel handles ModelState validation automatically.
-        var dto = ObjectMapper.Map<CommuneViewModel, CreateUpdateCommuneDto>(CommuneViewModel);
-        await _communeAppService.CreateAsync(dto);
-        return NoContent(); // Standard response for successful modal form submission
-    }
-
-    // Helper method to load provinces into the ViewModel's SelectList
-    private async Task LoadProvinceLookupAsync()
-    {
+        CommuneViewModel = new CommuneViewModel { Status = CommuneStatus.Active };
+        
+        // Load provinces for the dropdown
         var provinceLookup = await _communeAppService.GetProvinceLookupAsync();
         CommuneViewModel.Provinces = provinceLookup.Items
             .Select(p => new SelectListItem(p.Name, p.Id.ToString()))
             .ToList();
+
+        // SRS Requirement: Select the first province if available
+        if (CommuneViewModel.Provinces != null && CommuneViewModel.Provinces.Any())
+        {
+            var firstProvinceValue = CommuneViewModel.Provinces.First().Value;
+            if (Guid.TryParse(firstProvinceValue, out Guid firstProvinceId))
+            {
+                CommuneViewModel.ProvinceId = firstProvinceId;
+                // NOTE: No need to load districts here anymore, JS will handle it.
+            }
+        }
+        
+        // Initialize Districts list as empty (or with just a placeholder if needed by UI rendering)
+        // The actual options will be loaded by JavaScript.
+        CommuneViewModel.Districts = new List<SelectListItem>();
+        // Example with placeholder:
+        // CommuneViewModel.Districts = new List<SelectListItem> { new SelectListItem("--- Chọn Quận/Huyện ---", "") };
     }
 
-    // AJAX handler called from JavaScript when the Province dropdown changes
-    // Returns a JSON list of districts for the specified provinceId
-    public async Task<JsonResult> OnGetDistrictsByProvinceAsync(Guid? provinceId)
+    public async Task<IActionResult> OnPostAsync()
     {
-        if (!provinceId.HasValue)
-        {
-            // Return an empty list if no province is selected
-            return new JsonResult(new List<SelectListItem>());
-        }
-        // Fetch districts filtered by the selected provinceId
-        var districtLookup = await _communeAppService.GetDistrictLookupAsync(provinceId);
-        var districts = districtLookup.Items
-            .Select(d => new SelectListItem(d.Name, d.Id.ToString()))
-            .ToList();
-        // Return the list as JSON for the AJAX call
-        return new JsonResult(districts);
+        // Basic validation and mapping
+        ValidateModel();
+        var dto = ObjectMapper.Map<CommuneViewModel, CreateUpdateCommuneDto>(CommuneViewModel);
+        await _communeAppService.CreateAsync(dto);
+        return NoContent();
     }
 }

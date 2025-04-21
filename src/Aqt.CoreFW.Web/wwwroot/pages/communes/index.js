@@ -3,8 +3,17 @@
     // Correct ABP JS Proxy namespace (check your project's generated proxy)
     var communeAppService = aqt.coreFW.application.communes.commune; // Updated service name
 
-    var createModal = new abp.ModalManager(abp.appPath + 'Communes/CreateModal');
-    var editModal = new abp.ModalManager(abp.appPath + 'Communes/EditModal');
+    //var createModal = new abp.ModalManager(abp.appPath + 'Communes/CreateModal');
+    var createModal = new abp.ModalManager({
+        viewUrl: abp.appPath + 'Communes/CreateModal', // URL to load the modal HTML
+        scriptUrl: '/pages/communes/create-commune-modal.js', // URL to lazy load the script
+        modalClass: 'CommuneCreateModal' // Class name defined inside create-commune-modal.js
+    });
+    var editModal = new abp.ModalManager({
+        viewUrl: abp.appPath + 'Communes/EditModal',   // URL to load the modal HTML
+        scriptUrl: '/pages/communes/edit-commune-modal.js', // URL to lazy load the script
+        modalClass: 'CommuneEditModal'      // Class name defined inside edit-commune-modal.js
+    });
 
     var dataTable = null; // Declare globally
 
@@ -140,32 +149,6 @@
     // Modal Success Callbacks
     createModal.onResult(() => { dataTable.ajax.reload(); abp.notify.success(l('SuccessfullySaved')); });
     editModal.onResult(() => { dataTable.ajax.reload(); abp.notify.success(l('SuccessfullySaved')); });
-
-    // AJAX listener for dynamic dropdowns in modals (theo plan)
-    $(document).on('change', '#CreateCommuneForm select[name="CommuneViewModel.ProvinceId"], #EditCommuneForm select[name="CommuneViewModel.ProvinceId"]', function () {
-        const selectedProvinceId = $(this).val();
-        const districtDropdown = $(this).closest('form').find('select[name="CommuneViewModel.DistrictId"]');
-        // Lấy đường dẫn trang từ attribute asp-page như trong plan
-        const url = $(this).closest('form').attr('asp-page') + '?handler=DistrictsByProvince&provinceId=' + (selectedProvinceId || '');
-
-        districtDropdown.find('option:gt(0)').remove(); // Clear existing districts (trừ option đầu tiên nếu có)
-        districtDropdown.prop('disabled', !selectedProvinceId);
-
-        if (selectedProvinceId) {
-            abp.ajax({ url: url, type: 'GET' }) // Plan không ghi rõ dataType
-                .then(function (result) {
-                    // Plan không có kiểm tra result, chỉ lặp trực tiếp
-                    // if (result && result.length > 0) { ... } // <- Bỏ qua kiểm tra này để giống plan
-                    result.forEach(function (item) { // Lặp trực tiếp như plan
-                        districtDropdown.append($('<option>', { value: item.value, text: item.text }));
-                    });
-                    // Optionally re-initialize Select2 if used
-                }); // Plan không có .catch
-        } else {
-            // Optionally re-initialize Select2 if used
-        }
-    });
-
 
     // Export Excel Button Handler (theo plan)
     $('#ExportExcelButton')?.on('click', function (e) {

@@ -15,3 +15,6 @@ Quản lý danh mục xã/phường (commune):
 - Tên là bắt buộc
 - Id tỉnh/thành phố bắt buộc
 - Id quận/huyện không bắt buộc
+- Dropdown quận/huyện có option không chọn giá trị nào
+- Khi chọn tỉnh/thành phố thì load dữ liệu quận/huyện
+- Mặc định khi mở popup tạo mới thì load dữ liệu tỉnh/thành phố (chọn giá trị đầu tiên) và load dữ liệu quận/huyện tương ứng (không chọn giá trị)
