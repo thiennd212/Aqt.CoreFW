@@ -20,7 +20,8 @@ using System.Reflection;
 using Aqt.CoreFW.Domain.WorkflowStatuses.Entities;
 using Aqt.CoreFW.Domain.Provinces.Entities;
 using Aqt.CoreFW.Domain.Districts.Entities;
-using Aqt.CoreFW.Domain.Communes.Entities; // Required for Assembly
+using Aqt.CoreFW.Domain.Communes.Entities;
+using Aqt.CoreFW.Domain.Ranks.Entities; // Required for Assembly
 
 namespace Aqt.CoreFW.EntityFrameworkCore;
 
@@ -37,6 +38,7 @@ public class CoreFWDbContext :
     public DbSet<Province> Provinces { get; set; }
     public DbSet<District> Districts { get; set; }
     public DbSet<Commune> Communes { get; set; }
+    public DbSet<Rank> Ranks { get; set; }
     public DbSet<JobTitle> JobTitles { get; set; }
     // Chú thích: Khi có module Employee, bạn sẽ thêm DbSet cho nó ở đây nếu cần truy vấn trực tiếp
     // public DbSet<Employee> Employees { get; set; }

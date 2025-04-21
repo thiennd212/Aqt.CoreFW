@@ -38,6 +38,12 @@ public class CoreFWPermissionDefinitionProvider : PermissionDefinitionProvider
         communesPermission.AddChild(CoreFWPermissions.Communes.Delete, L("Permission:Communes.Delete"));
         communesPermission.AddChild(CoreFWPermissions.Communes.Export, L("Permission:Communes.Export")); // Add export permission
 
+        // Định nghĩa permissions cho Ranks
+        var ranksPermission = coreFwGroup.AddPermission(CoreFWPermissions.Ranks.Default, L("Permission:RankManagement")); // Key localization cho nhóm quyền
+        ranksPermission.AddChild(CoreFWPermissions.Ranks.Create, L("Permission:Ranks.Create")); // Key localization cho từng quyền
+        ranksPermission.AddChild(CoreFWPermissions.Ranks.Update, L("Permission:Ranks.Update"));
+        ranksPermission.AddChild(CoreFWPermissions.Ranks.Delete, L("Permission:Ranks.Delete"));
+        ranksPermission.AddChild(CoreFWPermissions.Ranks.Export, L("Permission:Ranks.Export"));
 
         // Định nghĩa permission cho JobTitles
         var jobTitlesPermission = coreFwGroup.AddPermission(CoreFWPermissions.JobTitles.Default, L("Permission:JobTitles"));

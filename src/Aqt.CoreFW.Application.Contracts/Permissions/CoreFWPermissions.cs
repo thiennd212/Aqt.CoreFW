@@ -49,6 +49,16 @@ public static class CoreFWPermissions
         public const string Export = Default + ".Export"; // Permission for exporting data
     }
 
+    // Thêm định nghĩa permission cho Ranks
+    public static class Ranks
+    {
+        public const string Default = GroupName + ".Ranks"; // Tên quyền xem mặc định
+        public const string Create = Default + ".Create";
+        public const string Update = Default + ".Update";
+        public const string Delete = Default + ".Delete";
+        public const string Export = Default + ".Export"; // Quyền xuất Excel (nếu có)
+    }
+
     /// <summary>
     /// Defines permissions related to Job Title management.
     /// </summary>

@@ -96,6 +96,16 @@ public class CoreFWMenuContributor : IMenuContributor
                 order: 4             // Thứ tự trong menu con
             ));
         }
+        if (await context.IsGrantedAsync(CoreFWPermissions.Ranks.Default))
+        {
+            administration.AddItem(new ApplicationMenuItem(
+                CoreFWMenus.Ranks,
+                l["Menu:RankManagement"], // Sử dụng key localization đã định nghĩa
+                "/Ranks",
+                icon: "fas fa-layer-group",
+                order: 5 // Điều chỉnh order nếu cần
+            ));
+        }
         // Kiểm tra xem người dùng có quyền xem Job Titles không
         if (await context.IsGrantedAsync(CoreFWPermissions.JobTitles.Default))
         {
@@ -105,7 +115,7 @@ public class CoreFWMenuContributor : IMenuContributor
                 l["Menu:JobTitles"],        
                 "/JobTitles",               
                 icon: "fas fa-briefcase",   
-                order: 5                  
+                order: 6                  
             ));
         }
         // Kiểm tra xem người dùng có quyền xem WorkflowStatuses không
@@ -116,7 +126,7 @@ public class CoreFWMenuContributor : IMenuContributor
                 l["Menu:WorkflowStatuses"],       
                 "/WorkflowStatuses",              
                 icon: "fas fa-tasks",            
-                order: 6                       
+                order: 7                       
             ));
         }
     }

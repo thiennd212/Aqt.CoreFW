@@ -11,6 +11,8 @@ using Aqt.CoreFW.Application.Contracts.Districts.Dtos;
 using Aqt.CoreFW.Web.Pages.Districts.ViewModels;
 using Aqt.CoreFW.Application.Contracts.Communes.Dtos;
 using Aqt.CoreFW.Web.Pages.Communes.ViewModels;
+using Aqt.CoreFW.Application.Contracts.Ranks.Dtos;
+using Aqt.CoreFW.Web.Pages.Ranks.ViewModels;
 
 namespace Aqt.CoreFW.Web;
 
@@ -39,6 +41,9 @@ public class CoreFWWebAutoMapperProfile : Profile
 
         CreateMap<CommuneViewModel, CreateUpdateCommuneDto>();
         CreateMap<CommuneDto, CommuneViewModel>();
+
+        CreateMap<RankViewModel, CreateUpdateRankDto>();
+        CreateMap<RankDto, RankViewModel>();
 
         // Thêm các mapping khác của tầng Web nếu cần...
     }
