@@ -39,19 +39,21 @@ public class CoreFWMenuContributor : IMenuContributor
 
         //Administration
         var administration = context.Menu.GetAdministration();
-        administration.Order = 6;
+        administration.Order = 2;
 
         //Administration->Identity
         administration.SetSubItemOrder(IdentityMenuNames.GroupName, 1);
+        administration.TryRemoveMenuItem(SettingManagementMenuNames.GroupName);
+        administration.TryRemoveMenuItem(TenantManagementMenuNames.GroupName);
 
-        if (MultiTenancyConsts.IsEnabled)
-        {
-            administration.SetSubItemOrder(TenantManagementMenuNames.GroupName, 2);
-        }
-        else
-        {
-            administration.TryRemoveMenuItem(TenantManagementMenuNames.GroupName);
-        }
+        //if (MultiTenancyConsts.IsEnabled)
+        //{
+        //    administration.SetSubItemOrder(TenantManagementMenuNames.GroupName, 2);
+        //}
+        //else
+        //{
+        //    administration.TryRemoveMenuItem(TenantManagementMenuNames.GroupName);
+        //}
 
         // Add Countries menu item under Administration if user has permission
         if (await context.IsGrantedAsync(CoreFWPermissions.Countries.Default))
@@ -117,8 +119,5 @@ public class CoreFWMenuContributor : IMenuContributor
                 order: 6                       
             ));
         }
-
-
-        administration.SetSubItemOrder(SettingManagementMenuNames.GroupName, 4);
     }
 }

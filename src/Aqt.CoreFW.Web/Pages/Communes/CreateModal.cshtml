@@ -4,6 +4,8 @@
 @using Aqt.CoreFW.Localization
 @using Volo.Abp.AspNetCore.Mvc.UI.Bootstrap.TagHelpers.Form
 @using Aqt.CoreFW.Web.Pages.Communes
+@* Remove Grid namespace if no longer needed *@
+@* @using Volo.Abp.AspNetCore.Mvc.UI.Bootstrap.TagHelpers.Grid *@ 
 @model CreateModalModel
 @inject IHtmlLocalizer<CoreFWResource> L
 @{
@@ -13,7 +15,7 @@
     <abp-modal>
         <abp-modal-header title="@L["NewCommune"].Value"></abp-modal-header>
         <abp-modal-body>
-            @* Form content automatically includes Province and District dropdowns based on CommuneViewModel and SelectItems attribute *@
+            @* Revert back to abp-form-content *@
             <abp-form-content />
         </abp-modal-body>
         <abp-modal-footer buttons="@(AbpModalButtons.Cancel | AbpModalButtons.Save)"></abp-modal-footer>

@@ -4,6 +4,8 @@
 @using Aqt.CoreFW.Localization
 @using Volo.Abp.AspNetCore.Mvc.UI.Bootstrap.TagHelpers.Form
 @using Aqt.CoreFW.Web.Pages.Communes
+@* Remove Grid namespace if no longer needed *@
+@* @using Volo.Abp.AspNetCore.Mvc.UI.Bootstrap.TagHelpers.Grid *@
 @model EditModalModel
 @inject IHtmlLocalizer<CoreFWResource> L
 @{
@@ -13,15 +15,12 @@
     <abp-modal>
         <abp-modal-header title="@L["EditCommune"].Value"></abp-modal-header>
         <abp-modal-body>
-            <abp-input asp-for="Id" /> @* Hidden input for Id is crucial *@
-            @* Specify inputs manually to make Code readonly, instead of abp-form-content *@
-            <abp-input asp-for="CommuneViewModel.Code" readonly="true" />
-            <abp-input asp-for="CommuneViewModel.Name" />
-            <abp-select asp-for="CommuneViewModel.ProvinceId" />
-            <abp-select asp-for="CommuneViewModel.DistrictId" />
-            <abp-input asp-for="CommuneViewModel.Order" />
-            <abp-select asp-for="CommuneViewModel.Status" />
-            <abp-textarea asp-for="CommuneViewModel.Description" />
+            <abp-input asp-for="Id" /> @* Keep hidden input for Id *@
+            @* Revert back to abp-form-content 
+               Note: Code field will become editable unless [ReadOnlyInput] 
+               is added to CommuneViewModel.Code property. 
+            *@
+            <abp-form-content />
         </abp-modal-body>
         <abp-modal-footer buttons="@(AbpModalButtons.Cancel | AbpModalButtons.Save)"></abp-modal-footer>
     </abp-modal>

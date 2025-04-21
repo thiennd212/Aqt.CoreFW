@@ -51,10 +51,10 @@
         <abp-row class="mb-3">
             <abp-column size-md="_3">
                 @* Use localization keys for placeholder *@
-                <input type="text" id="SearchFilter" class="form-control" placeholder="@L["Search"] (@L["DisplayName:Commune.Code"], @L["DisplayName:Commune.Name"])..." />
+                <input type="text" id="SearchFilter" class="form-control form-control-sm" placeholder="@L["Search"] (@L["DisplayName:Commune.Code"], @L["DisplayName:Commune.Name"])..." />
             </abp-column>
             <abp-column size-md="_3">
-                <select id="StatusFilter" class="form-select">
+                <select id="StatusFilter" class="form-select form-select-sm">
                     <option value="">@L["All"] (@L["DisplayName:Commune.Status"])</option>
                     <option value="@((byte)CommuneStatus.Active)">@L["Enum:CommuneStatus.1"]</option>
                     <option value="@((byte)CommuneStatus.Inactive)">@L["Enum:CommuneStatus.0"]</option>
@@ -62,14 +62,14 @@
             </abp-column>
             <abp-column size-md="_3">
                 @* Use localization key for placeholder *@
-                <select id="ProvinceFilter" class="form-select" data-placeholder="@L["SelectAProvince"]">
+                <select id="ProvinceFilter" class="form-select form-select-sm" data-placeholder="@L["SelectAProvince"]">
                     <option value="">@L["All"] (@L["DisplayName:Commune.ProvinceId"])</option>
                     @* Options will be populated by JavaScript *@
                 </select>
             </abp-column>
             <abp-column size-md="_3">
                 @* Use localization key for placeholder *@
-                <select id="DistrictFilter" class="form-select" data-placeholder="@L["SelectADistrict"]">
+                <select id="DistrictFilter" class="form-select form-select-sm" data-placeholder="@L["SelectADistrict"]">
                     <option value="">@L["All"] (@L["DisplayName:Commune.DistrictId"])</option>
                     @* Options will be populated by JavaScript based on ProvinceFilter *@
                 </select>

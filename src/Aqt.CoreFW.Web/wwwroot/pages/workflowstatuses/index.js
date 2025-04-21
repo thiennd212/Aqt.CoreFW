@@ -39,7 +39,7 @@
                             items: [
                                 {
                                     text: l('Edit'),
-                                    icon: "fa fa-pencil-alt", // Thêm icon
+                                    icon: "fas fa-pencil-alt", // Thêm icon
                                     visible: permissions.canEdit, // Truy cập trực tiếp biến permissions
                                     action: (data) => {
                                         editModal.open({ id: data.record.id });
@@ -47,7 +47,7 @@
                                 },
                                 {
                                     text: l('Delete'),
-                                    icon: "fa fa-trash", // Thêm icon
+                                    icon: "fas fa-trash", // Thêm icon
                                     visible: permissions.canDelete, // Truy cập trực tiếp biến permissions
                                     confirmMessage: (data) => l('AreYouSureToDeleteWorkflowStatus', data.record.name || data.record.code),
                                     action: (data) => {

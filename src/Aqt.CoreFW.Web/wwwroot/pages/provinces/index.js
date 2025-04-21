@@ -1,4 +1,4 @@
-$(function () {
+﻿$(function () {
     var l = abp.localization.getResource('CoreFW');
     // !!! Kiểm tra lại namespace JS Proxy nếu cần thiết !!!
     var provinceAppService = aqt.coreFW.application.provinces.province;
@@ -52,14 +52,14 @@ $(function () {
                             items: [
                                 {
                                     text: l('Edit'),
-                                    icon: "fa fa-pencil-alt",
+                                    icon: "fas fa-pencil-alt",
                                     // Sử dụng biến permissions đã truyền từ C#
                                     visible: permissions.canEdit,
                                     action: (data) => { editModal.open({ id: data.record.id }); }
                                 },
                                 {
                                     text: l('Delete'),
-                                    icon: "fa fa-trash",
+                                    icon: "fas fa-trash",
                                     visible: permissions.canDelete,
                                     confirmMessage: (data) => l('AreYouSureToDeleteProvince', data.record.name || data.record.code),
                                     action: (data) => {

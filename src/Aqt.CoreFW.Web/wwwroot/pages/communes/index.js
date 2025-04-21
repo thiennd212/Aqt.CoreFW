@@ -86,13 +86,13 @@
                         items: [
                             {
                                 text: l('Edit'),
-                                icon: "fa fa-pencil-alt",
+                                icon: "fas fa-pencil-alt",
                                 visible: permissions.canEdit, // Đọc từ biến permissions toàn cục như plan .cshtml
                                 action: (data) => { editModal.open({ id: data.record.id }); }
                             },
                             {
                                 text: l('Delete'),
-                                icon: "fa fa-trash",
+                                icon: "fas fa-trash",
                                 visible: permissions.canDelete, // Đọc từ biến permissions toàn cục như plan .cshtml
                                 confirmMessage: (data) => l('AreYouSureToDeleteCommune', data.record.name || data.record.code), // Localization key từ plan
                                 action: (data) => {
