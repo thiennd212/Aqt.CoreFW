@@ -20,8 +20,8 @@
     <script>
         const permissions = {
             // Truyền giá trị boolean đã kiểm tra từ PageModel
-            canEdit:   @ViewData["CanEdit"].ToString().ToLowerInvariant(),
-            canDelete: @ViewData["CanDelete"].ToString().ToLowerInvariant()
+            canEdit:   @ViewData["CanEdit"],
+            canDelete: @ViewData["CanDelete"]
         };
     </script>
     <abp-script src="/Pages/Ranks/index.js" />

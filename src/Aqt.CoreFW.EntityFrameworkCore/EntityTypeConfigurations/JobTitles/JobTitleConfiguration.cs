@@ -1,5 +1,4 @@
-using Aqt.CoreFW.Domain.JobTitles.Entities;     // Entity JobTitle
-using Aqt.CoreFW.Domain.Shared;               // CoreFWConsts (nếu có)
+﻿using Aqt.CoreFW.Domain.JobTitles.Entities;     // Entity JobTitle
 using Aqt.CoreFW.Domain.Shared.JobTitles;     // JobTitleConsts
 using Microsoft.EntityFrameworkCore;          // IEntityTypeConfiguration, DbContextOptionsBuilder
 using Microsoft.EntityFrameworkCore.Metadata.Builders; // EntityTypeBuilder
@@ -48,6 +47,16 @@ public class JobTitleConfiguration : IEntityTypeConfiguration<JobTitle>
             .IsRequired() // boolean không thể null
             .HasDefaultValue(true) // Đặt giá trị mặc định ở cấp DB là true
             .HasColumnName(nameof(JobTitle.IsActive));
+
+        builder.Property(x => x.LastSyncDate)
+                .HasColumnName(nameof(JobTitle.LastSyncDate));
+
+        builder.Property(x => x.SyncRecordId)
+            .HasColumnName(nameof(JobTitle.SyncRecordId));
+
+        builder.Property(x => x.SyncRecordCode)
+            .HasMaxLength(JobTitleConsts.MaxSyncRecordCodeLength)
+            .HasColumnName(nameof(JobTitle.SyncRecordCode));
 
         // --- Cấu hình Chỉ mục (Indexes) ---
 

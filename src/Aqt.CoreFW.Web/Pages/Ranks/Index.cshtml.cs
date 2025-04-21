@@ -17,8 +17,8 @@ namespace Aqt.CoreFW.Web.Pages.Ranks
         public async Task OnGetAsync()
         {
             // Kiểm tra và truyền quyền sang View
-            ViewData["CanEdit"] = await _authorizationService.IsGrantedAsync(CoreFWPermissions.Ranks.Update);
-            ViewData["CanDelete"] = await _authorizationService.IsGrantedAsync(CoreFWPermissions.Ranks.Delete);
+            ViewData["CanEdit"] = (await _authorizationService.IsGrantedAsync(CoreFWPermissions.Ranks.Update)).ToString().ToLowerInvariant(); ;
+            ViewData["CanDelete"] = (await _authorizationService.IsGrantedAsync(CoreFWPermissions.Ranks.Delete)).ToString().ToLowerInvariant(); ;
         }
     }
 }
