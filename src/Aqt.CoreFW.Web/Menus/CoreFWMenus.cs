@@ -14,4 +14,5 @@ public class CoreFWMenus
     public const string Ranks = Prefix + ".Ranks";
     public const string JobTitles = Prefix + ".JobTitles";
     public const string WorkflowStatuses = Prefix + ".WorkflowStatuses";
+    public const string DataGroups = Prefix + ".DataGroups";
 }

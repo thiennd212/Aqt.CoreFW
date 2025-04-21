@@ -129,5 +129,15 @@ public class CoreFWMenuContributor : IMenuContributor
                 order: 7                       
             ));
         }
+        if (await context.IsGrantedAsync(CoreFWPermissions.DataGroups.Default))
+        {
+            administration.AddItem(new ApplicationMenuItem(
+                CoreFWMenus.DataGroups,
+                l["Menu:DataGroups"],
+                "/DataGroups",
+                icon: "fas fa-folder-tree",
+                order: 8 // Điều chỉnh thứ tự nếu cần
+            ));
+        }
     }
 }

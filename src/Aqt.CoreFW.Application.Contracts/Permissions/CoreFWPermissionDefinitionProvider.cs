@@ -39,11 +39,20 @@ public class CoreFWPermissionDefinitionProvider : PermissionDefinitionProvider
         communesPermission.AddChild(CoreFWPermissions.Communes.Export, L("Permission:Communes.Export")); // Add export permission
 
         // Định nghĩa permissions cho Ranks
-        var ranksPermission = coreFwGroup.AddPermission(CoreFWPermissions.Ranks.Default, L("Permission:RankManagement")); // Key localization cho nhóm quyền
-        ranksPermission.AddChild(CoreFWPermissions.Ranks.Create, L("Permission:Ranks.Create")); // Key localization cho từng quyền
+        var ranksPermission = coreFwGroup.AddPermission(CoreFWPermissions.Ranks.Default, L("Permission:Ranks"));
+        ranksPermission.AddChild(CoreFWPermissions.Ranks.Create, L("Permission:Ranks.Create"));
         ranksPermission.AddChild(CoreFWPermissions.Ranks.Update, L("Permission:Ranks.Update"));
         ranksPermission.AddChild(CoreFWPermissions.Ranks.Delete, L("Permission:Ranks.Delete"));
         ranksPermission.AddChild(CoreFWPermissions.Ranks.Export, L("Permission:Ranks.Export"));
+
+        // Định nghĩa permissions cho DataGroups
+        // Sử dụng localization key đã định nghĩa trong Domain.Shared plan: "Permission:DataGroupManagement"
+        var dataGroupsPermission = coreFwGroup.AddPermission(CoreFWPermissions.DataGroups.Default, L("Permission:DataGroupManagement")); // Key localization cho nhóm quyền
+        dataGroupsPermission.AddChild(CoreFWPermissions.DataGroups.Create, L("Permission:DataGroups.Create")); // Key localization cho từng quyền
+        dataGroupsPermission.AddChild(CoreFWPermissions.DataGroups.Update, L("Permission:DataGroups.Update"));
+        dataGroupsPermission.AddChild(CoreFWPermissions.DataGroups.Delete, L("Permission:DataGroups.Delete"));
+        dataGroupsPermission.AddChild(CoreFWPermissions.DataGroups.Export, L("Permission:DataGroups.Export")); // (Nếu có)
+        // dataGroupsPermission.AddChild(CoreFWPermissions.DataGroups.ManageHierarchy, L("Permission:DataGroups.ManageHierarchy")); // Nếu có quyền riêng
 
         // Định nghĩa permission cho JobTitles
         var jobTitlesPermission = coreFwGroup.AddPermission(CoreFWPermissions.JobTitles.Default, L("Permission:JobTitles"));

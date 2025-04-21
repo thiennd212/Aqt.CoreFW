@@ -1,0 +1,22 @@
+﻿@page "/DataGroups/CreateModal"
+@using Microsoft.AspNetCore.Mvc.Localization
+@using Volo.Abp.AspNetCore.Mvc.UI.Bootstrap.TagHelpers.Modal
+@using Aqt.CoreFW.Localization
+@using Volo.Abp.AspNetCore.Mvc.UI.Bootstrap.TagHelpers.Form
+@using Aqt.CoreFW.Web.Pages.DataGroups
+@model CreateModalModel
+@inject IHtmlLocalizer<CoreFWResource> L
+@{
+    Layout = null;
+} @* Modal không cần layout chính *@
+
+<abp-dynamic-form abp-model="DataGroupViewModel" asp-page="/DataGroups/CreateModal" id="CreateDataGroupForm">
+    <abp-modal>
+        <abp-modal-header title="@L["NewDataGroup"].Value"></abp-modal-header>
+        <abp-modal-body>
+            @* abp-form-content sẽ tự động render các input cho các thuộc tính trong DataGroupViewModel, trừ các thuộc tính đặc biệt như Id (HiddenInput) và AvailableParents *@
+            <abp-form-content />
+        </abp-modal-body>
+        <abp-modal-footer buttons="@(AbpModalButtons.Cancel | AbpModalButtons.Save)"></abp-modal-footer>
+    </abp-modal>
+</abp-dynamic-form>

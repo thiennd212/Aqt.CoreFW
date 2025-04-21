@@ -1,0 +1,80 @@
+﻿@page
+@using Aqt.CoreFW.Permissions
+@using Microsoft.AspNetCore.Authorization
+@using Volo.Abp.AspNetCore.Mvc.UI.Layout
+@using Aqt.CoreFW.Web.Pages.DataGroups
+@using Aqt.CoreFW.Localization
+@using Microsoft.Extensions.Localization
+@using Aqt.CoreFW.Web.Menus
+@using Aqt.CoreFW.DataGroups
+@model IndexModel
+@inject IStringLocalizer<CoreFWResource> L
+@inject IAuthorizationService AuthorizationService
+@inject IPageLayout PageLayout
+@{
+    PageLayout.Content.Title = L["DataGroups"].Value;
+    PageLayout.Content.MenuItemName = CoreFWMenus.DataGroups;
+}
+
+@section scripts {
+    <script>
+        const permissions = {
+            canEdit:   @Html.Raw(ViewData["CanEdit"] ?? "false"),
+            canDelete: @Html.Raw(ViewData["CanDelete"] ?? "false")
+        };
+    </script>
+    <abp-script src="/Pages/DataGroups/index.js" />
+}
+
+@section content_toolbar {
+    @if (await AuthorizationService.IsGrantedAsync(CoreFWPermissions.DataGroups.Create))
+    {
+        <abp-button id="NewDataGroupButton"
+                    text="@L["NewDataGroup"].Value"
+                    icon="plus"
+                    button-type="Primary" size="Small" />
+    }
+    @if (await AuthorizationService.IsGrantedAsync(CoreFWPermissions.DataGroups.Export))
+    {
+        <abp-button id="ExportExcelButton"
+                    text="@L["ExportToExcel"].Value"
+                    icon="file-excel"
+                    button-type="Success" size="Small" />
+    }
+    @* Có thể thêm nút xem dạng Tree View ở đây *@
+}
+
+<abp-card>
+    <abp-card-body>
+        @* Bộ lọc *@
+        <abp-row class="mb-3">
+            <abp-column size-md="_4">
+                <input type="text" id="SearchFilter" class="form-control form-control-sm" placeholder="@L["Search"] (@L["DisplayName:DataGroup.Code"], @L["DisplayName:DataGroup.Name"])..." />
+            </abp-column>
+            <abp-column size-md="_3">
+                <select id="StatusFilter" class="form-select form-select-sm">
+                    <option value="">@L["All"] (@L["DisplayName:DataGroup.Status"])</option>
+                    <option value="@((byte)DataGroupStatus.Active)">@L["Enum:DataGroupStatus.1"]</option>
+                    <option value="@((byte)DataGroupStatus.Inactive)">@L["Enum:DataGroupStatus.0"]</option>
+                </select>
+            </abp-column>
+            <abp-column size-md="_3">
+                @* Bộ lọc theo Nhóm cha (có thể dùng select2 hoặc tree select) *@
+                <select id="ParentFilter" class="form-select form-select-sm">
+                    <option value="">@L["All"] (@L["DisplayName:DataGroup.ParentId"])</option>
+                    <option value="null">@L["RootLevelItems"]</option> @* Thêm localization key này *@
+                    @* Options cho các parent cụ thể sẽ được load bằng JS *@
+                </select>
+            </abp-column>
+            <abp-column size-md="_2" class="text-end">
+                <abp-button id="SearchButton"
+                            text="@L["Search"].Value"
+                            icon="search"
+                            button-type="Info" size="Small" />
+            </abp-column>
+        </abp-row>
+
+        @* Bảng dữ liệu (có thể thay bằng div cho Tree View) *@
+        <abp-table striped-rows="true" id="DataGroupsTable"></abp-table>
+    </abp-card-body>
+</abp-card>

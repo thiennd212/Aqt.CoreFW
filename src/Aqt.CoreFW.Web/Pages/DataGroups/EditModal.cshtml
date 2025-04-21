@@ -1,0 +1,24 @@
+﻿@page "/DataGroups/EditModal"
+@using Microsoft.AspNetCore.Mvc.Localization
+@using Volo.Abp.AspNetCore.Mvc.UI.Bootstrap.TagHelpers.Modal
+@using Aqt.CoreFW.Localization
+@using Volo.Abp.AspNetCore.Mvc.UI.Bootstrap.TagHelpers.Form
+@using Aqt.CoreFW.Web.Pages.DataGroups
+@model EditModalModel // Tham chiếu tới PageModel của modal sửa (sẽ tạo sau)
+@inject IHtmlLocalizer<CoreFWResource> L
+@{
+    Layout = null;
+} @* Modal không cần layout *@
+
+@* abp-model trỏ tới ViewModel, asp-page trỏ tới PageModel xử lý POST *@
+<abp-dynamic-form abp-model="DataGroupViewModel" asp-page="/DataGroups/EditModal" id="EditDataGroupForm">
+    <abp-modal>
+        <abp-modal-header title="@L["EditDataGroup"].Value"></abp-modal-header>
+        <abp-modal-body>
+            <input type="hidden" asp-for="Id" />
+            @* Render các input khác từ ViewModel *@
+            <abp-form-content />
+        </abp-modal-body>
+        <abp-modal-footer buttons="@(AbpModalButtons.Cancel | AbpModalButtons.Save)"></abp-modal-footer>
+    </abp-modal>
+</abp-dynamic-form>

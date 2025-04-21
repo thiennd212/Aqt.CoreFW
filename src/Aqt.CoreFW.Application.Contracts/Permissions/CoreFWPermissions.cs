@@ -52,11 +52,24 @@ public static class CoreFWPermissions
     // Thêm định nghĩa permission cho Ranks
     public static class Ranks
     {
-        public const string Default = GroupName + ".Ranks"; // Tên quyền xem mặc định
+        public const string Default = GroupName + ".Ranks";
+        public const string Create = Default + ".Create";
+        public const string Update = Default + ".Update";
+        public const string Delete = Default + ".Delete";
+        public const string Export = Default + ".Export";
+    }
+
+    // Thêm định nghĩa permission cho DataGroups
+    public static class DataGroups // Sử dụng tên class khớp với module
+    {
+        // Sử dụng convention đặt tên quyền: CoreFW.DataGroups
+        public const string Default = GroupName + ".DataGroups"; // Quyền xem mặc định
         public const string Create = Default + ".Create";
         public const string Update = Default + ".Update";
         public const string Delete = Default + ".Delete";
         public const string Export = Default + ".Export"; // Quyền xuất Excel (nếu có)
+        // Có thể thêm quyền quản lý cấu trúc cây nếu cần:
+        // public const string ManageHierarchy = Default + ".ManageHierarchy";
     }
 
     /// <summary>

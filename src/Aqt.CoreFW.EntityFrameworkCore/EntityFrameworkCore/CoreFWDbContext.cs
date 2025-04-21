@@ -22,6 +22,7 @@ using Aqt.CoreFW.Domain.Provinces.Entities;
 using Aqt.CoreFW.Domain.Districts.Entities;
 using Aqt.CoreFW.Domain.Communes.Entities;
 using Aqt.CoreFW.Domain.Ranks.Entities; // Required for Assembly
+using Aqt.CoreFW.Domain.DataGroups.Entities; // Thêm using cho DataGroup Entity
 
 namespace Aqt.CoreFW.EntityFrameworkCore;
 
@@ -43,6 +44,7 @@ public class CoreFWDbContext :
     // Chú thích: Khi có module Employee, bạn sẽ thêm DbSet cho nó ở đây nếu cần truy vấn trực tiếp
     // public DbSet<Employee> Employees { get; set; }
     public DbSet<WorkflowStatus> WorkflowStatuses { get; set; }
+    public DbSet<DataGroup> DataGroups { get; set; } // Thêm DbSet cho DataGroup
 
     #region Entities from the modules
 
