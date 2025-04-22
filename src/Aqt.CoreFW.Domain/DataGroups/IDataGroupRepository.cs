@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
@@ -84,13 +84,13 @@ public interface IDataGroupRepository : IRepository<DataGroup, Guid>
          Guid id,
          CancellationToken cancellationToken = default);
 
-     /// <summary>
-    /// Gets a data group by ID, optionally including details (like Parent).
-    /// </summary>
-    Task<DataGroup?> GetAsync(Guid id, bool includeDetails = false, CancellationToken cancellationToken = default); // Overload GetAsync
+    // /// <summary>
+    ///// Gets a data group by ID, optionally including details (like Parent).
+    ///// </summary>
+    //Task<DataGroup> GetAsync(Guid id, bool includeDetails = false, CancellationToken cancellationToken = default); // Overload GetAsync
 
-    /// <summary>
-    /// Finds a data group by ID, optionally including details.
-    /// </summary>
-    Task<DataGroup?> FindAsync(Guid id, bool includeDetails = false, CancellationToken cancellationToken = default); // Overload FindAsync
+    ///// <summary>
+    ///// Finds a data group by ID, optionally including details.
+    ///// </summary>
+    //Task<DataGroup> FindAsync(Guid id, bool includeDetails = false, CancellationToken cancellationToken = default); // Overload FindAsync
 } 

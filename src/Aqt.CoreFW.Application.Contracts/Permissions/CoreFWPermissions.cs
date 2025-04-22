@@ -84,6 +84,16 @@ public static class CoreFWPermissions
         public const string ExportExcel = Default + ".ExportExcel";
     }
 
+    public static class AccountTypes // Sử dụng tên class khớp với module
+    {
+        // Sử dụng convention tên Module: CoreFW.AccountTypes
+        public const string Default = GroupName + ".AccountTypes"; // Tên quyền xem mặc định
+        public const string Create = Default + ".Create";
+        public const string Update = Default + ".Update";
+        public const string Delete = Default + ".Delete";
+        public const string Export = Default + ".Export"; // Quyền xuất Excel (nếu có)
+    }
+
     /// <summary>
     /// Permissions for WorkflowStatus management.
     /// </summary>
@@ -94,5 +104,5 @@ public static class CoreFWPermissions
         public const string Edit = Default + ".Edit";                 // e.g., "CoreFW.WorkflowStatuses.Edit"
         public const string Delete = Default + ".Delete";             // e.g., "CoreFW.WorkflowStatuses.Delete"
         public const string ExportExcel = Default + ".ExportExcel";
-    }
+    }    
 }

@@ -72,7 +72,7 @@ public class DataGroupManager : DomainService
     /// Updates an existing DataGroup entity.
     /// Code cannot be changed. ParentId changes are handled by ChangeParentAsync.
     /// </summary>
-    public async Task<DataGroup> UpdateAsync( // Made async as ValidateParent might be async
+    public DataGroup UpdateAsync( // Made async as ValidateParent might be async
         [NotNull] DataGroup dataGroup, // Use existing entity
         [NotNull] string name,
         // Guid? parentId, // Parent change handled separately

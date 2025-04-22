@@ -117,18 +117,7 @@ public class CoreFWMenuContributor : IMenuContributor
                 icon: "fas fa-briefcase",   
                 order: 6                  
             ));
-        }
-        // Kiểm tra xem người dùng có quyền xem WorkflowStatuses không
-        if (await context.IsGrantedAsync(CoreFWPermissions.WorkflowStatuses.Default))
-        {
-            administration.AddItem(new ApplicationMenuItem(
-                CoreFWMenus.WorkflowStatuses,       
-                l["Menu:WorkflowStatuses"],       
-                "/WorkflowStatuses",              
-                icon: "fas fa-tasks",            
-                order: 7                       
-            ));
-        }
+        }        
         if (await context.IsGrantedAsync(CoreFWPermissions.DataGroups.Default))
         {
             administration.AddItem(new ApplicationMenuItem(
@@ -136,7 +125,29 @@ public class CoreFWMenuContributor : IMenuContributor
                 l["Menu:DataGroups"],
                 "/DataGroups",
                 icon: "fas fa-folder-tree",
-                order: 8 // Điều chỉnh thứ tự nếu cần
+                order: 7 // Điều chỉnh thứ tự nếu cần
+            ));
+        }
+        if (await context.IsGrantedAsync(CoreFWPermissions.AccountTypes.Default))
+        {
+            // Ví dụ: Thêm vào nhóm Administration
+            administration.AddItem(new ApplicationMenuItem(
+                CoreFWMenus.AccountTypes,
+                l["Menu:AccountTypes"], 
+                "/AccountTypes",       
+                icon: "fas fa-id-card", 
+                order: 8
+            ));
+        }
+        // Kiểm tra xem người dùng có quyền xem WorkflowStatuses không
+        if (await context.IsGrantedAsync(CoreFWPermissions.WorkflowStatuses.Default))
+        {
+            administration.AddItem(new ApplicationMenuItem(
+                CoreFWMenus.WorkflowStatuses,
+                l["Menu:WorkflowStatuses"],
+                "/WorkflowStatuses",
+                icon: "fas fa-tasks",
+                order: 9
             ));
         }
     }

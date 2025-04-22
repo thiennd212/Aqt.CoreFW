@@ -153,44 +153,6 @@ public class DataGroupRepository :
         return await query.ToListAsync(GetCancellationToken(cancellationToken));
     }
 
-
-    // --- Overloads for Get/Find with includeDetails --- (Implement interface methods)
-
-    // Giữ lại phương thức này để implement interface
-    public async Task<DataGroup?> GetAsync(Guid id, bool includeDetails = false, CancellationToken cancellationToken = default)
-    {
-        var dbSet = await GetDbSetAsync();
-        var query = dbSet.AsQueryable(); // Track entity for potential updates if includeDetails=false
-
-        if (includeDetails)
-        {
-            query = query.AsNoTracking(); // No tracking if details included (assuming read-only)
-            // Apply include logic here, e.g.:
-            // query = query.Include(x => x.Parent); // Assuming Parent navigation prop exists
-        }
-
-        // Returns nullable as per IRepository<TEntity, TKey>.GetAsync
-        var entity = await query.FirstOrDefaultAsync(e => e.Id == id, GetCancellationToken(cancellationToken));
-        return entity;
-    }
-
-    // Giữ lại phương thức này để implement interface
-    public async Task<DataGroup?> FindAsync(Guid id, bool includeDetails = false, CancellationToken cancellationToken = default)
-    {
-         var dbSet = await GetDbSetAsync();
-         var query = dbSet.AsNoTracking(); // Use NoTracking for Find
-
-        if (includeDetails)
-        {
-            // Apply include logic if needed
-            // query = query.Include(x => x.Parent); // Example
-        }
-
-         return await query.FirstOrDefaultAsync(e => e.Id == id, GetCancellationToken(cancellationToken));
-    }
-
-    // --- Helper Methods ---
-
     // Private helper to build the base query for GetList/GetCount
     private async Task<IQueryable<DataGroup>> GetListQueryInternalAsync(
         string? filterText = null,

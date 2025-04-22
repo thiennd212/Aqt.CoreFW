@@ -15,6 +15,8 @@ using Aqt.CoreFW.Application.Contracts.Ranks.Dtos;
 using Aqt.CoreFW.Web.Pages.Ranks.ViewModels;
 using Aqt.CoreFW.Application.Contracts.DataGroups.Dtos;
 using Aqt.CoreFW.Web.Pages.DataGroups.ViewModels;
+using Aqt.CoreFW.Application.Contracts.AccountTypes.Dtos;
+using Aqt.CoreFW.Web.Pages.AccountTypes.ViewModels;
 
 namespace Aqt.CoreFW.Web;
 
@@ -49,6 +51,9 @@ public class CoreFWWebAutoMapperProfile : Profile
 
         CreateMap<DataGroupViewModel, CreateUpdateDataGroupDto>();
         CreateMap<DataGroupDto, DataGroupViewModel>();
+
+        CreateMap<AccountTypeViewModel, CreateUpdateAccountTypeDto>(); // ViewModel -> DTO (cho Create/Update)
+        CreateMap<AccountTypeDto, AccountTypeViewModel>();
 
         // Thêm các mapping khác của tầng Web nếu cần...
     }

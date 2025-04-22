@@ -15,4 +15,5 @@ public class CoreFWMenus
     public const string JobTitles = Prefix + ".JobTitles";
     public const string WorkflowStatuses = Prefix + ".WorkflowStatuses";
     public const string DataGroups = Prefix + ".DataGroups";
+    public const string AccountTypes = Prefix + ".AccountTypes";
 }

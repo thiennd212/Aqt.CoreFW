@@ -1,0 +1,69 @@
+﻿@page
+@using Aqt.CoreFW.Permissions
+@using Microsoft.AspNetCore.Authorization
+@using Volo.Abp.AspNetCore.Mvc.UI.Layout
+@using Aqt.CoreFW.Web.Pages.AccountTypes
+@using Aqt.CoreFW.Localization
+@using Microsoft.Extensions.Localization
+@using Aqt.CoreFW.Web.Menus
+@using Aqt.CoreFW.AccountTypes
+@model IndexModel
+@inject IStringLocalizer<CoreFWResource> L
+@inject IAuthorizationService AuthorizationService
+@inject IPageLayout PageLayout
+@{
+    PageLayout.Content.Title = L["AccountTypes"].Value; // Cập nhật Title
+    PageLayout.Content.MenuItemName = CoreFWMenus.AccountTypes; // Cập nhật Menu Item
+}
+
+@section scripts {
+    <script>
+        const permissions = {
+            canEdit:   @Html.Raw(ViewData["CanEdit"]), // Sử dụng Html.Raw
+            canDelete: @Html.Raw(ViewData["CanDelete"]) // Sử dụng Html.Raw
+        };
+    </script>
+    <abp-script src="/Pages/AccountTypes/index.js" />
+}
+
+@section content_toolbar {
+    @if (await AuthorizationService.IsGrantedAsync(CoreFWPermissions.AccountTypes.Create))
+    {
+        <abp-button id="NewAccountTypeButton" 
+                    text="@L["NewAccountType"].Value" 
+                    icon="plus"
+                    button-type="Primary" size="Small" />
+    }
+    @if (await AuthorizationService.IsGrantedAsync(CoreFWPermissions.AccountTypes.Export))
+    {
+        <abp-button id="ExportExcelButton"
+                    text="@L["ExportToExcel"].Value"
+                    icon="file-excel"
+                    button-type="Success" size="Small" />
+    }
+}
+
+<abp-card>
+    <abp-card-body>
+        <abp-row class="mb-3">
+            <abp-column size-md="_6">
+                <input type="text" id="SearchFilter" class="form-control form-control-sm" placeholder="@L["Search"] (@L["DisplayName:AccountType.Code"], @L["DisplayName:AccountType.Name"])..." />
+            </abp-column>
+            <abp-column size-md="_3">
+                <select id="StatusFilter" class="form-select form-select-sm">
+                    <option value="">@L["All"] (@L["DisplayName:AccountType.Status"])</option>
+                    <option value="@((byte)AccountTypeStatus.Active)">@L["Enum:AccountTypeStatus.1"]</option> 
+                    <option value="@((byte)AccountTypeStatus.Inactive)">@L["Enum:AccountTypeStatus.0"]</option> 
+                </select>
+            </abp-column>
+            <abp-column size-md="_3" class="text-end">
+                <abp-button id="SearchButton"
+                            text="@L["Search"].Value"
+                            icon="search"
+                            button-type="Info" size="Small" />
+            </abp-column>
+        </abp-row>
+
+        <abp-table striped-rows="true" id="AccountTypesTable"></abp-table> 
+    </abp-card-body>
+</abp-card>

@@ -61,6 +61,13 @@ public class CoreFWPermissionDefinitionProvider : PermissionDefinitionProvider
         jobTitlesPermission.AddChild(CoreFWPermissions.JobTitles.Delete, L("Permission:JobTitles.Delete"));
         jobTitlesPermission.AddChild(CoreFWPermissions.JobTitles.ExportExcel, L("Permission:JobTitles.ExportExcel"));
 
+        var accountTypesPermission = coreFwGroup.AddPermission(CoreFWPermissions.AccountTypes.Default, L("Permission:AccountTypeManagement")); // Key localization cho nhóm quyền
+        accountTypesPermission.AddChild(CoreFWPermissions.AccountTypes.Create, L("Permission:AccountTypes.Create")); // Key localization cho từng quyền
+        accountTypesPermission.AddChild(CoreFWPermissions.AccountTypes.Update, L("Permission:AccountTypes.Update"));
+        accountTypesPermission.AddChild(CoreFWPermissions.AccountTypes.Delete, L("Permission:AccountTypes.Delete"));
+        accountTypesPermission.AddChild(CoreFWPermissions.AccountTypes.Export, L("Permission:AccountTypes.Export")); // (Nếu có)
+
+
         var workflowStatusesPermission = coreFwGroup.AddPermission(CoreFWPermissions.WorkflowStatuses.Default, L("Permission:WorkflowStatuses"));
         workflowStatusesPermission.AddChild(CoreFWPermissions.WorkflowStatuses.Create, L("Permission:WorkflowStatuses.Create"));
         workflowStatusesPermission.AddChild(CoreFWPermissions.WorkflowStatuses.Edit, L("Permission:WorkflowStatuses.Edit"));

@@ -22,7 +22,8 @@ using Aqt.CoreFW.Domain.Provinces.Entities;
 using Aqt.CoreFW.Domain.Districts.Entities;
 using Aqt.CoreFW.Domain.Communes.Entities;
 using Aqt.CoreFW.Domain.Ranks.Entities; // Required for Assembly
-using Aqt.CoreFW.Domain.DataGroups.Entities; // Thêm using cho DataGroup Entity
+using Aqt.CoreFW.Domain.DataGroups.Entities;
+using Aqt.CoreFW.Domain.AccountTypes.Entities; // Thêm using cho DataGroup Entity
 
 namespace Aqt.CoreFW.EntityFrameworkCore;
 
@@ -41,6 +42,7 @@ public class CoreFWDbContext :
     public DbSet<Commune> Communes { get; set; }
     public DbSet<Rank> Ranks { get; set; }
     public DbSet<JobTitle> JobTitles { get; set; }
+    public DbSet<AccountType> AccountTypes { get; set; }
     // Chú thích: Khi có module Employee, bạn sẽ thêm DbSet cho nó ở đây nếu cần truy vấn trực tiếp
     // public DbSet<Employee> Employees { get; set; }
     public DbSet<WorkflowStatus> WorkflowStatuses { get; set; }

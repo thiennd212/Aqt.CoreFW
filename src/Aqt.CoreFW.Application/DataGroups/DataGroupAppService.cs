@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.IO; // Added for MemoryStream
 using System.Linq;
@@ -103,7 +103,7 @@ public class DataGroupAppService :
         }
 
         // Use manager to update other properties
-        entity = await _dataGroupManager.UpdateAsync(
+        entity = _dataGroupManager.UpdateAsync(
             entity,
             input.Name,
             input.Order,
