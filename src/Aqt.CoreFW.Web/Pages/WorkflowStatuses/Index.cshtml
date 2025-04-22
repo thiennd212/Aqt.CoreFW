@@ -1,4 +1,4 @@
-@page
+﻿@page
 @using Aqt.CoreFW.Permissions
 @using Microsoft.AspNetCore.Authorization
 @using Volo.Abp.AspNetCore.Mvc.UI.Layout
@@ -38,7 +38,7 @@
     }
     @* Optional: Export to Excel Button *@
     @if (await AuthorizationService.IsGrantedAsync(CoreFWPermissions.WorkflowStatuses.ExportExcel)) {
-                <abp-button id="ExportExcelButton" text="@L["ExportToExcel"]" icon="file-excel" button-type="Success" size="Small"/>
+        <abp-button id="ExportExcelButton" text="@L["ExportToExcel"]" icon="file-excel" button-type="Success" size="Small" class="ms-2" />
             }
 }
 
