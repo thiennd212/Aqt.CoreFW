@@ -48,7 +48,6 @@ public class CoreFWEntityFrameworkCoreModule : AbpModule
                 /* Remove "includeAllEntities: true" to create
                  * default repositories only for aggregate roots */
             options.AddDefaultRepositories(includeAllEntities: true);
-            options.AddRepository<File, EfCoreRepository<CoreFWDbContext, File, Guid>>();
         });
 
         if (AbpStudioAnalyzeHelper.IsInAnalyzeMode)

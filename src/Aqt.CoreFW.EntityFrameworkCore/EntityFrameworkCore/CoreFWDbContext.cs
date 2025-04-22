@@ -1,32 +1,29 @@
-﻿using Aqt.CoreFW.Domain.Countries.Entities;
+﻿using Aqt.CoreFW.Domain.AccountTypes.Entities;
+using Aqt.CoreFW.Domain.Communes.Entities;
+using Aqt.CoreFW.Domain.Countries.Entities;
+using Aqt.CoreFW.Domain.DataGroups.Entities;
+using Aqt.CoreFW.Domain.Districts.Entities;
 using Aqt.CoreFW.Domain.JobTitles.Entities;
+using Aqt.CoreFW.Domain.Provinces.Entities;
+using Aqt.CoreFW.Domain.Ranks.Entities; // Required for Assembly
+using Aqt.CoreFW.Domain.WorkflowStatuses.Entities;
+using EasyAbp.FileManagement.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
+using System.Reflection;
 using Volo.Abp.AuditLogging.EntityFrameworkCore;
 using Volo.Abp.BackgroundJobs.EntityFrameworkCore;
 using Volo.Abp.BlobStoring.Database.EntityFrameworkCore;
 using Volo.Abp.Data;
 using Volo.Abp.DependencyInjection;
 using Volo.Abp.EntityFrameworkCore;
-using Volo.Abp.EntityFrameworkCore.Modeling;
 using Volo.Abp.FeatureManagement.EntityFrameworkCore;
 using Volo.Abp.Identity;
 using Volo.Abp.Identity.EntityFrameworkCore;
+using Volo.Abp.OpenIddict.EntityFrameworkCore;
 using Volo.Abp.PermissionManagement.EntityFrameworkCore;
 using Volo.Abp.SettingManagement.EntityFrameworkCore;
-using Volo.Abp.OpenIddict.EntityFrameworkCore;
 using Volo.Abp.TenantManagement;
 using Volo.Abp.TenantManagement.EntityFrameworkCore;
-using System.Reflection;
-using Aqt.CoreFW.Domain.WorkflowStatuses.Entities;
-using Aqt.CoreFW.Domain.Provinces.Entities;
-using Aqt.CoreFW.Domain.Districts.Entities;
-using Aqt.CoreFW.Domain.Communes.Entities;
-using Aqt.CoreFW.Domain.Ranks.Entities; // Required for Assembly
-using Aqt.CoreFW.Domain.DataGroups.Entities;
-using Aqt.CoreFW.Domain.AccountTypes.Entities;
-using EasyAbp.FileManagement.EntityFrameworkCore;
-using EasyAbp.FileManagement.Files;
-using EasyAbp.FileManagement.Users; // Thêm using cho DataGroup Entity
 
 namespace Aqt.CoreFW.EntityFrameworkCore;
 
@@ -103,13 +100,6 @@ public class CoreFWDbContext :
         builder.ConfigureBlobStoring();
         //EasyAbp.FileManagement
         builder.ConfigureFileManagement();
-        //builder.Entity<File>(b => { 
-        //    b.ToTable(CoreFWConsts.DbTablePrefix + "Files", CoreFWConsts.DbSchema);
-        //});
-        //builder.Entity<FileUser>(b => {
-        //    b.ToTable(CoreFWConsts.DbTablePrefix + "FileUsers", CoreFWConsts.DbSchema);
-        //});
-
         /* Configure your own tables/entities inside here */
 
         //builder.Entity<YourEntity>(b =>

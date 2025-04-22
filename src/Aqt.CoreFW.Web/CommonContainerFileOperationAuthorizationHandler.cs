@@ -23,43 +23,7 @@ namespace Aqt.CoreFW.Web
                  FileContainerNameAttribute.GetContainerName(typeof(CommonFileContainer)) // Only for CommonFileContainer
             };
         }
-
-        protected override Task HandleCreateAsync(AuthorizationHandlerContext context, OperationAuthorizationRequirement requirement, FileCreationOperationInfoModel resource)
-        {
-            throw new NotImplementedException();
-        }
-
-        protected override Task HandleDeleteAsync(AuthorizationHandlerContext context, OperationAuthorizationRequirement requirement, FileDeletionOperationInfoModel resource)
-        {
-            throw new NotImplementedException();
-        }
-
-        protected override Task HandleGetDownloadInfoAsync(AuthorizationHandlerContext context, OperationAuthorizationRequirement requirement, FileGetDownloadInfoOperationInfoModel resource)
-        {
-            throw new NotImplementedException();
-        }
-
-        protected override Task HandleGetInfoAsync(AuthorizationHandlerContext context, OperationAuthorizationRequirement requirement, FileGetInfoOperationInfoModel resource)
-        {
-            throw new NotImplementedException();
-        }
-
-        protected override Task HandleGetListAsync(AuthorizationHandlerContext context, OperationAuthorizationRequirement requirement, FileGetListOperationInfoModel resource)
-        {
-            throw new NotImplementedException();
-        }
-
-        protected override Task HandleMoveAsync(AuthorizationHandlerContext context, OperationAuthorizationRequirement requirement, FileMoveOperationInfoModel resource)
-        {
-            throw new NotImplementedException();
-        }
-
-        protected override Task HandleUpdateInfoAsync(AuthorizationHandlerContext context, OperationAuthorizationRequirement requirement, FileUpdateInfoOperationInfoModel resource)
-        {
-            throw new NotImplementedException();
-        }
-
-        /*
+        
         protected override async Task HandleGetInfoAsync(AuthorizationHandlerContext context,
             OperationAuthorizationRequirement requirement, FileGetInfoOperationInfoModel resource)
         {
@@ -128,6 +92,6 @@ namespace Aqt.CoreFW.Web
             // We don't set fail, so admin (with "manage" permission) can do it.
             // context.Fail();
         }
-        */
+        
     }
 }
