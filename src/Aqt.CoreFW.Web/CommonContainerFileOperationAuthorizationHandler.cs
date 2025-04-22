@@ -20,10 +20,46 @@ namespace Aqt.CoreFW.Web
 
             SpecifiedFileContainerNames = new[]
             {
-            FileContainerNameAttribute.GetContainerName(typeof(CommonFileContainer)) // Only for CommonFileContainer
-        };
+                 FileContainerNameAttribute.GetContainerName(typeof(CommonFileContainer)) // Only for CommonFileContainer
+            };
         }
 
+        protected override Task HandleCreateAsync(AuthorizationHandlerContext context, OperationAuthorizationRequirement requirement, FileCreationOperationInfoModel resource)
+        {
+            throw new NotImplementedException();
+        }
+
+        protected override Task HandleDeleteAsync(AuthorizationHandlerContext context, OperationAuthorizationRequirement requirement, FileDeletionOperationInfoModel resource)
+        {
+            throw new NotImplementedException();
+        }
+
+        protected override Task HandleGetDownloadInfoAsync(AuthorizationHandlerContext context, OperationAuthorizationRequirement requirement, FileGetDownloadInfoOperationInfoModel resource)
+        {
+            throw new NotImplementedException();
+        }
+
+        protected override Task HandleGetInfoAsync(AuthorizationHandlerContext context, OperationAuthorizationRequirement requirement, FileGetInfoOperationInfoModel resource)
+        {
+            throw new NotImplementedException();
+        }
+
+        protected override Task HandleGetListAsync(AuthorizationHandlerContext context, OperationAuthorizationRequirement requirement, FileGetListOperationInfoModel resource)
+        {
+            throw new NotImplementedException();
+        }
+
+        protected override Task HandleMoveAsync(AuthorizationHandlerContext context, OperationAuthorizationRequirement requirement, FileMoveOperationInfoModel resource)
+        {
+            throw new NotImplementedException();
+        }
+
+        protected override Task HandleUpdateInfoAsync(AuthorizationHandlerContext context, OperationAuthorizationRequirement requirement, FileUpdateInfoOperationInfoModel resource)
+        {
+            throw new NotImplementedException();
+        }
+
+        /*
         protected override async Task HandleGetInfoAsync(AuthorizationHandlerContext context,
             OperationAuthorizationRequirement requirement, FileGetInfoOperationInfoModel resource)
         {
@@ -42,7 +78,6 @@ namespace Aqt.CoreFW.Web
             if (_clock.Now <= resource.File.CreationTime + TimeSpan.FromDays(7))
             {
                 context.Succeed(requirement); // Everyone can download in 7 days from the file was uploaded.
-                return;
             }
 
             // We don't set fail, so admin (with "manage" permission) can do it.
@@ -55,7 +90,6 @@ namespace Aqt.CoreFW.Web
             if (context.User.FindUserId() == resource.OwnerUserId)
             {
                 context.Succeed(requirement); // Owner users can upload a new file.
-                return;
             }
 
             // We don't set fail, so admin (with "manage" permission) can do it.
@@ -68,7 +102,6 @@ namespace Aqt.CoreFW.Web
             if (context.User.FindTenantId() == null && context.User.FindUserId() == resource.OwnerUserId)
             {
                 context.Succeed(requirement); // Host-side owner users can update their uploaded files.
-                return;
             }
 
             // We don't set fail, so admin (with "manage" permission) can do it.
@@ -95,5 +128,6 @@ namespace Aqt.CoreFW.Web
             // We don't set fail, so admin (with "manage" permission) can do it.
             // context.Fail();
         }
+        */
     }
 }
