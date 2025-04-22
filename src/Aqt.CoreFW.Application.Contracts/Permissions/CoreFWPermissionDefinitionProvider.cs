@@ -1,4 +1,5 @@
 ﻿using Aqt.CoreFW.Localization;
+using EasyAbp.FileManagement.Permissions;
 using Volo.Abp.Authorization.Permissions;
 using Volo.Abp.Localization;
 using Volo.Abp.MultiTenancy;
@@ -73,6 +74,14 @@ public class CoreFWPermissionDefinitionProvider : PermissionDefinitionProvider
         workflowStatusesPermission.AddChild(CoreFWPermissions.WorkflowStatuses.Edit, L("Permission:WorkflowStatuses.Edit"));
         workflowStatusesPermission.AddChild(CoreFWPermissions.WorkflowStatuses.Delete, L("Permission:WorkflowStatuses.Delete"));
         workflowStatusesPermission.AddChild(CoreFWPermissions.WorkflowStatuses.ExportExcel, L("Permission:WorkflowStatuses.ExportExcel"));
+
+        //var fileManagementGroup = context.AddGroup(FileManagementPermissions.GroupName, L("Permission:FileManagement"));
+
+        //fileManagementGroup.AddPermission(FileManagementPermissions.File.Default, L("Permission:File"));
+        //fileManagementGroup.AddPermission(FileManagementPermissions.File.Create, L("Permission:Create"));
+        //fileManagementGroup.AddPermission(FileManagementPermissions.File.Update, L("Permission:Update"));
+        //fileManagementGroup.AddPermission(FileManagementPermissions.File.Delete, L("Permission:Delete"));
+
     }
 
     private static LocalizableString L(string name)

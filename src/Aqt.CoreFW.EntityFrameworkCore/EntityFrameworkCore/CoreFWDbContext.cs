@@ -23,7 +23,10 @@ using Aqt.CoreFW.Domain.Districts.Entities;
 using Aqt.CoreFW.Domain.Communes.Entities;
 using Aqt.CoreFW.Domain.Ranks.Entities; // Required for Assembly
 using Aqt.CoreFW.Domain.DataGroups.Entities;
-using Aqt.CoreFW.Domain.AccountTypes.Entities; // Thêm using cho DataGroup Entity
+using Aqt.CoreFW.Domain.AccountTypes.Entities;
+using EasyAbp.FileManagement.EntityFrameworkCore;
+using EasyAbp.FileManagement.Files;
+using EasyAbp.FileManagement.Users; // Thêm using cho DataGroup Entity
 
 namespace Aqt.CoreFW.EntityFrameworkCore;
 
@@ -98,6 +101,14 @@ public class CoreFWDbContext :
         builder.ConfigureOpenIddict();
         builder.ConfigureTenantManagement();
         builder.ConfigureBlobStoring();
+        //EasyAbp.FileManagement
+        builder.ConfigureFileManagement();
+        //builder.Entity<File>(b => { 
+        //    b.ToTable(CoreFWConsts.DbTablePrefix + "Files", CoreFWConsts.DbSchema);
+        //});
+        //builder.Entity<FileUser>(b => {
+        //    b.ToTable(CoreFWConsts.DbTablePrefix + "FileUsers", CoreFWConsts.DbSchema);
+        //});
 
         /* Configure your own tables/entities inside here */
 

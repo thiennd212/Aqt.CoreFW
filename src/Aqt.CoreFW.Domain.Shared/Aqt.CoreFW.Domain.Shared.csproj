@@ -10,20 +10,21 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="EasyAbp.FileManagement.Domain.Shared" Version="5.6.0" />
     <PackageReference Include="Microsoft.CodeAnalysis.CSharp.Scripting" Version="4.8.0" />
-    <PackageReference Include="Volo.Abp.BackgroundJobs.Domain.Shared" Version="9.1.0" />
-    <PackageReference Include="Volo.Abp.AuditLogging.Domain.Shared" Version="9.1.0" />
-    <PackageReference Include="Volo.Abp.FeatureManagement.Domain.Shared" Version="9.1.0" />
-    <PackageReference Include="Volo.Abp.PermissionManagement.Domain.Shared" Version="9.1.0" />
-    <PackageReference Include="Volo.Abp.SettingManagement.Domain.Shared" Version="9.1.0" />
-    <PackageReference Include="Volo.Abp.BlobStoring.Database.Domain.Shared" Version="9.1.0" />
-    <PackageReference Include="Volo.Abp.GlobalFeatures" Version="9.1.0" />
+    <PackageReference Include="Volo.Abp.BackgroundJobs.Domain.Shared" Version="9.1.1" />
+    <PackageReference Include="Volo.Abp.AuditLogging.Domain.Shared" Version="9.1.1" />
+    <PackageReference Include="Volo.Abp.FeatureManagement.Domain.Shared" Version="9.1.1" />
+    <PackageReference Include="Volo.Abp.PermissionManagement.Domain.Shared" Version="9.1.1" />
+    <PackageReference Include="Volo.Abp.SettingManagement.Domain.Shared" Version="9.1.1" />
+    <PackageReference Include="Volo.Abp.BlobStoring.Database.Domain.Shared" Version="9.1.1" />
+    <PackageReference Include="Volo.Abp.GlobalFeatures" Version="9.1.1" />
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Volo.Abp.OpenIddict.Domain.Shared" Version="9.1.0" />
-    <PackageReference Include="Volo.Abp.Identity.Domain.Shared" Version="9.1.0" />
-    <PackageReference Include="Volo.Abp.TenantManagement.Domain.Shared" Version="9.1.0" />
+    <PackageReference Include="Volo.Abp.OpenIddict.Domain.Shared" Version="9.1.1" />
+    <PackageReference Include="Volo.Abp.Identity.Domain.Shared" Version="9.1.1" />
+    <PackageReference Include="Volo.Abp.TenantManagement.Domain.Shared" Version="9.1.1" />
   </ItemGroup>
 
   <ItemGroup>
