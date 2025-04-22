@@ -190,6 +190,11 @@ public class CoreFWWebModule : AbpModule
                 container.AllowOnlyConfiguredFileExtensions = true;
                 container.FileExtensionsConfiguration.Add(".jpg", true);
                 container.FileExtensionsConfiguration.Add(".PNG", true);
+                container.FileExtensionsConfiguration.Add(".doc", true);
+                container.FileExtensionsConfiguration.Add(".docx", true);
+                container.FileExtensionsConfiguration.Add(".xls", true);
+                container.FileExtensionsConfiguration.Add(".xlsx", true);
+                container.FileExtensionsConfiguration.Add(".pdf", true);
                 // container.FileExtensionsConfiguration.Add(".tar.gz", true);
                 // container.FileExtensionsConfiguration.Add(".exe", false);
 
