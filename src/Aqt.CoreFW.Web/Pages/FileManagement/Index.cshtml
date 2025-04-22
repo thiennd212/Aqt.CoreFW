@@ -1,0 +1,36 @@
+﻿@page
+@using Volo.Abp.AspNetCore.Mvc.UI.Layout
+@using EasyAbp.FileManagement.Web.Pages.FileManagement.Components.FileManagerWidget
+@using EasyAbp.FileManagement.Files
+@using EasyAbp.FileManagement.Localization
+@using Microsoft.Extensions.Localization
+@using Microsoft.AspNetCore.Authorization
+@using Volo.Abp.Users
+@inject IStringLocalizer<FileManagementResource> L
+@inject IAuthorizationService AuthorizationService
+@inject IPageLayout PageLayout
+@inject ICurrentUser CurrentUser
+
+@{
+    PageLayout.Content.Title = L["Menu:FileManagement"].Value;
+    PageLayout.Content.MenuItemName = "FileManagement";
+}
+
+@section scripts {}
+
+@section styles {}
+
+@section content_toolbar {}
+
+<abp-card>
+    <abp-card-body>
+
+        @await Component.InvokeAsync("FileManager", new
+        {
+                fileContainerName = "default",
+                ownerUserId = CurrentUser.GetId(),
+                parentId = (Guid?)null
+        })
+
+    </abp-card-body>
+</abp-card>

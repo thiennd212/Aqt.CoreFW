@@ -1,60 +1,56 @@
-﻿using System.IO;
-using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.HttpOverrides;
-using Microsoft.AspNetCore.Mvc.RazorPages;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Hosting;
+﻿using Aqt.CoreFW.Application.Workflows.Interfaces;
+using Aqt.CoreFW.Application.Workflows.Providers;
 using Aqt.CoreFW.EntityFrameworkCore;
 using Aqt.CoreFW.Localization;
 using Aqt.CoreFW.MultiTenancy;
-using Aqt.CoreFW.Permissions;
-using Aqt.CoreFW.Web.Menus;
 using Aqt.CoreFW.Web.HealthChecks;
+using Aqt.CoreFW.Web.Menus;
+using Aqt.CoreFW.Web.Workflows;
+using EasyAbp.FileManagement;
+using EasyAbp.FileManagement.Containers;
+using EasyAbp.FileManagement.EntityFrameworkCore;
+using EasyAbp.FileManagement.Files;
+using EasyAbp.FileManagement.Options;
+using EasyAbp.FileManagement.Web;
+using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Extensions.DependencyInjection;
+using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.HttpOverrides;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
 using Microsoft.OpenApi.Models;
-using Volo.Abp;
-using Volo.Abp.Studio;
-using Volo.Abp.AspNetCore.Mvc;
-using Volo.Abp.AspNetCore.Mvc.Localization;
-using Volo.Abp.AspNetCore.Mvc.UI;
-using Volo.Abp.AspNetCore.Mvc.UI.Bootstrap;
-using Volo.Abp.AspNetCore.Mvc.UI.Theme.Shared;
-using Volo.Abp.AspNetCore.Mvc.UI.Theme.LeptonXLite;
-using Volo.Abp.AspNetCore.Mvc.UI.Theme.LeptonXLite.Bundling;
-using Volo.Abp.Autofac;
-using Volo.Abp.AutoMapper;
-using Volo.Abp.Modularity;
-using Volo.Abp.PermissionManagement;
-using Volo.Abp.PermissionManagement.Web;
-using Volo.Abp.UI.Navigation.Urls;
-using Volo.Abp.UI;
-using Volo.Abp.UI.Navigation;
-using Volo.Abp.VirtualFileSystem;
-using Volo.Abp.Identity.Web;
-using Volo.Abp.FeatureManagement;
 using OpenIddict.Server.AspNetCore;
 using OpenIddict.Validation.AspNetCore;
-using Volo.Abp.TenantManagement.Web;
+using OptimaJet.Workflow.Core.Runtime;
 using System;
-using System.Security.Cryptography.X509Certificates;
-using Microsoft.AspNetCore.Authentication;
-using Microsoft.AspNetCore.Extensions.DependencyInjection;
+using System.IO;
+using Volo.Abp;
 using Volo.Abp.Account.Web;
+using Volo.Abp.AspNetCore.Mvc;
+using Volo.Abp.AspNetCore.Mvc.Localization;
 using Volo.Abp.AspNetCore.Mvc.UI.Bundling;
+using Volo.Abp.AspNetCore.Mvc.UI.Theme.LeptonXLite;
+using Volo.Abp.AspNetCore.Mvc.UI.Theme.LeptonXLite.Bundling;
+using Volo.Abp.AspNetCore.Mvc.UI.Theme.Shared;
 using Volo.Abp.AspNetCore.Mvc.UI.Theme.Shared.Toolbars;
 using Volo.Abp.AspNetCore.Serilog;
-using Volo.Abp.Identity;
-using Volo.Abp.Swashbuckle;
+using Volo.Abp.Autofac;
+using Volo.Abp.AutoMapper;
+using Volo.Abp.BlobStoring;
+using Volo.Abp.BlobStoring.FileSystem;
+using Volo.Abp.FeatureManagement;
+using Volo.Abp.Identity.Web;
+using Volo.Abp.Modularity;
 using Volo.Abp.OpenIddict;
+using Volo.Abp.PermissionManagement;
 using Volo.Abp.Security.Claims;
-using Volo.Abp.SettingManagement.Web;
 using Volo.Abp.Studio.Client.AspNetCore;
-using Aqt.CoreFW.Web.Workflows;
-using OptimaJet.Workflow.Core.Runtime;
-using Aqt.CoreFW.Application.Workflows.Providers;
-using Aqt.CoreFW.Application.Workflows.Interfaces;
-using OptimaJet.Workflow.Migrator;
+using Volo.Abp.Swashbuckle;
+using Volo.Abp.TenantManagement.Web;
+using Volo.Abp.UI.Navigation;
+using Volo.Abp.UI.Navigation.Urls;
+using Volo.Abp.VirtualFileSystem;
 
 namespace Aqt.CoreFW.Web;
 
@@ -70,7 +66,13 @@ namespace Aqt.CoreFW.Web;
     typeof(AbpTenantManagementWebModule),
     typeof(AbpFeatureManagementWebModule),
     typeof(AbpSwashbuckleModule),
-    typeof(AbpAspNetCoreSerilogModule)
+    typeof(AbpAspNetCoreSerilogModule),
+    typeof(FileManagementWebModule),
+    typeof(FileManagementApplicationModule),
+    typeof(FileManagementDomainModule),
+    typeof(FileManagementHttpApiModule),
+    typeof(FileManagementEntityFrameworkCoreModule),
+    typeof(AbpBlobStoringFileSystemModule)
 )]
 public class CoreFWWebModule : AbpModule
 {
@@ -154,6 +156,47 @@ public class CoreFWWebModule : AbpModule
         {
             options.IsDynamicPermissionStoreEnabled = true;
         });
+
+        Configure<AbpBlobStoringOptions>(options =>
+        {
+            options.Containers.Configure<LocalFileSystemBlobContainer>(container =>
+            {
+                container.IsMultiTenant = true;
+                container.UseFileSystem(fileSystem =>
+                {
+                    // fileSystem.BasePath = "C:\\my-files";
+                    fileSystem.BasePath = Path.Combine(hostingEnvironment.ContentRootPath, "FileUploads");
+                });
+            });
+        });
+
+        Configure<FileManagementOptions>(options =>
+        {
+            options.DefaultFileDownloadProviderType = typeof(LocalFileDownloadProvider);
+            options.Containers.Configure<CommonFileContainer>(container =>
+            {
+                // private container never be used by non-owner users (except user who has the "File.Manage" permission).
+                container.FileContainerType = FileContainerType.Public;
+                container.AbpBlobContainerName = BlobContainerNameAttribute.GetContainerName<LocalFileSystemBlobContainer>();
+                container.AbpBlobDirectorySeparator = "/";
+
+                container.RetainUnusedBlobs = false;
+                container.EnableAutoRename = true;
+
+                container.MaxByteSizeForEachFile = 5 * 1024 * 1024;
+                container.MaxByteSizeForEachUpload = 10 * 1024 * 1024;
+                container.MaxFileQuantityForEachUpload = 2;
+
+                container.AllowOnlyConfiguredFileExtensions = true;
+                container.FileExtensionsConfiguration.Add(".jpg", true);
+                container.FileExtensionsConfiguration.Add(".PNG", true);
+                // container.FileExtensionsConfiguration.Add(".tar.gz", true);
+                // container.FileExtensionsConfiguration.Add(".exe", false);
+
+                container.GetDownloadInfoTimesLimitEachUserPerMinute = 10;
+            });
+        });
+
 
         #region Config workflow
         context.Services.AddTransient<IWorkflowRuleProvider, WorkflowRuleProvider>();

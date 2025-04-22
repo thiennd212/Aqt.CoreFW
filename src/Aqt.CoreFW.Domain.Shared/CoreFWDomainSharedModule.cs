@@ -13,6 +13,7 @@ using Volo.Abp.VirtualFileSystem;
 using Volo.Abp.OpenIddict;
 using Volo.Abp.BlobStoring.Database;
 using Volo.Abp.TenantManagement;
+using EasyAbp.FileManagement;
 
 namespace Aqt.CoreFW;
 
@@ -25,7 +26,8 @@ namespace Aqt.CoreFW;
     typeof(AbpIdentityDomainSharedModule),
     typeof(AbpOpenIddictDomainSharedModule),
     typeof(AbpTenantManagementDomainSharedModule),
-    typeof(BlobStoringDatabaseDomainSharedModule)
+    typeof(BlobStoringDatabaseDomainSharedModule),
+    typeof(FileManagementDomainSharedModule)
     )]
 public class CoreFWDomainSharedModule : AbpModule
 {

@@ -1,4 +1,4 @@
-using Microsoft.Extensions.DependencyInjection;
+﻿using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Aqt.CoreFW.Localization;
 using Aqt.CoreFW.MultiTenancy;
@@ -17,6 +17,7 @@ using Volo.Abp.Emailing;
 using Volo.Abp.FeatureManagement;
 using Volo.Abp.Identity;
 using Volo.Abp.TenantManagement;
+using EasyAbp.FileManagement;
 
 namespace Aqt.CoreFW;
 
@@ -33,7 +34,8 @@ namespace Aqt.CoreFW;
     typeof(AbpIdentityDomainModule),
     typeof(AbpOpenIddictDomainModule),
     typeof(AbpTenantManagementDomainModule),
-    typeof(BlobStoringDatabaseDomainModule)
+    typeof(BlobStoringDatabaseDomainModule),
+    typeof(FileManagementDomainModule)
     )]
 public class CoreFWDomainModule : AbpModule
 {

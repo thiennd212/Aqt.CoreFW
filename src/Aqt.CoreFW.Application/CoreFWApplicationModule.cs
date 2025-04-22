@@ -9,6 +9,7 @@ using Volo.Abp.TenantManagement;
 using Aqt.CoreFW.Application.Shared.Excel;
 using Aqt.CoreFW.Shared.Services;
 using Microsoft.Extensions.DependencyInjection;
+using EasyAbp.FileManagement;
 
 namespace Aqt.CoreFW;
 
@@ -20,7 +21,8 @@ namespace Aqt.CoreFW;
     typeof(AbpIdentityApplicationModule),
     typeof(AbpAccountApplicationModule),
     typeof(AbpTenantManagementApplicationModule),
-    typeof(AbpSettingManagementApplicationModule)
+    typeof(AbpSettingManagementApplicationModule),
+    typeof(FileManagementApplicationModule)
     )]
 public class CoreFWApplicationModule : AbpModule
 {

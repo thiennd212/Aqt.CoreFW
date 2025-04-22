@@ -8,6 +8,7 @@ using Volo.Abp.Identity.Web.Navigation;
 using Volo.Abp.UI.Navigation;
 using Volo.Abp.TenantManagement.Web.Navigation;
 using Microsoft.Extensions.Localization;
+using EasyAbp.FileManagement.Permissions;
 
 namespace Aqt.CoreFW.Web.Menus;
 
@@ -148,6 +149,16 @@ public class CoreFWMenuContributor : IMenuContributor
                 "/WorkflowStatuses",
                 icon: "fas fa-tasks",
                 order: 9
+            ));
+        }
+        if (await context.IsGrantedAsync(FileManagementPermissions.File.Default))
+        {
+            administration.AddItem(new ApplicationMenuItem(
+                "FileManagement",
+                l["Menu:FileManagement"],
+                url: "/FileManagement",
+                icon: "fa fa-file",
+                order: 10
             ));
         }
     }

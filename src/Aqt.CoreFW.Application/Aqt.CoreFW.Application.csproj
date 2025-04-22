@@ -14,14 +14,18 @@
   </ItemGroup>
 
   <ItemGroup>
+    <PackageReference Include="EasyAbp.FileManagement.Application" Version="5.6.0" />
+    <PackageReference Include="EasyAbp.FileManagement.EntityFrameworkCore" Version="5.6.0" />
+    <PackageReference Include="EasyAbp.FileManagement.HttpApi.Client" Version="5.6.0" />
+    <PackageReference Include="EasyAbp.FileManagement.Web" Version="5.6.0" />
     <PackageReference Include="Microsoft.CodeAnalysis.CSharp.Scripting" Version="4.8.0" />
     <PackageReference Include="MiniExcel" Version="1.40.0" />
-    <PackageReference Include="Volo.Abp.PermissionManagement.Application" Version="9.1.0" />
-    <PackageReference Include="Volo.Abp.FeatureManagement.Application" Version="9.1.0" />
-    <PackageReference Include="Volo.Abp.SettingManagement.Application" Version="9.1.0" />
-    <PackageReference Include="Volo.Abp.Account.Application" Version="9.1.0" />
-    <PackageReference Include="Volo.Abp.Identity.Application" Version="9.1.0" />
-    <PackageReference Include="Volo.Abp.TenantManagement.Application" Version="9.1.0" />
+    <PackageReference Include="Volo.Abp.PermissionManagement.Application" Version="9.1.1" />
+    <PackageReference Include="Volo.Abp.FeatureManagement.Application" Version="9.1.1" />
+    <PackageReference Include="Volo.Abp.SettingManagement.Application" Version="9.1.1" />
+    <PackageReference Include="Volo.Abp.Account.Application" Version="9.1.1" />
+    <PackageReference Include="Volo.Abp.Identity.Application" Version="9.1.1" />
+    <PackageReference Include="Volo.Abp.TenantManagement.Application" Version="9.1.1" />
     <PackageReference Include="WorkflowEngine.NETCore-Core" Version="15.0.1" />
   </ItemGroup>
 

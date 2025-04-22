@@ -8,6 +8,7 @@ using Volo.Abp.Modularity;
 using Volo.Abp.PermissionManagement.HttpApi;
 using Volo.Abp.Localization;
 using Volo.Abp.TenantManagement;
+using EasyAbp.FileManagement;
 
 namespace Aqt.CoreFW;
 
@@ -18,7 +19,8 @@ namespace Aqt.CoreFW;
     typeof(AbpAccountHttpApiModule),
     typeof(AbpIdentityHttpApiModule),
     typeof(AbpTenantManagementHttpApiModule),
-    typeof(AbpFeatureManagementHttpApiModule)
+    typeof(AbpFeatureManagementHttpApiModule),
+    typeof(FileManagementHttpApiModule)
     )]
 public class CoreFWHttpApiModule : AbpModule
 {
