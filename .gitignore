@@ -272,3 +272,4 @@ src/Aqt.CoreFW.Blazor.Server.Tiered/Logs/*
 # IdentityServer temp files
 tempkey.rsa
 tempkey.jwk
+/src/Aqt.CoreFW.Web/FileUploads/host/local/2025/4/22
