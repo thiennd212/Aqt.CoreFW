@@ -56,6 +56,17 @@ public class CoreFWMenuContributor : IMenuContributor
         //    administration.TryRemoveMenuItem(TenantManagementMenuNames.GroupName);
         //}
 
+        // Add OrganizationUnits menu item if user has permission
+        if (await context.IsGrantedAsync(CoreFWPermissions.OrganizationUnits.Default)) // Sử dụng quyền xem mặc định
+        {
+            administration.AddItem(new ApplicationMenuItem(
+                CoreFWMenus.OrganizationUnits,
+                l["Menu:OrganizationUnits"], // Sử dụng key localization
+                "/OrganizationUnits",        // Đường dẫn tới trang Index
+                icon: "fas fa-sitemap",      // Icon gợi ý cho cây tổ chức
+                order: 2 // Ví dụ: sau AccountTypes
+            ));
+        }
         // Add Countries menu item under Administration if user has permission
         if (await context.IsGrantedAsync(CoreFWPermissions.Countries.Default))
         {
@@ -64,8 +75,8 @@ public class CoreFWMenuContributor : IMenuContributor
                 l["Menu:Countries"],
                 "/Countries",
                 icon: "fa fa-globe",
-                order: 1
-            ));            
+                order: 3
+            ));
         }
         if (await context.IsGrantedAsync(CoreFWPermissions.Provinces.Default))
         {
@@ -74,7 +85,7 @@ public class CoreFWMenuContributor : IMenuContributor
                 l["Menu:Provinces"], // Sử dụng key localization
                 "/Provinces",       // Đường dẫn URL
                 icon: "fas fa-map-marked-alt", // Icon ví dụ
-                order: 2 // Điều chỉnh thứ tự nếu cần
+                order: 4 // Điều chỉnh thứ tự nếu cần
             ));
         }
         if (await context.IsGrantedAsync(CoreFWPermissions.Districts.Default))
@@ -84,7 +95,7 @@ public class CoreFWMenuContributor : IMenuContributor
                 l["Menu:Districts"], // Use localization key
                 "/Districts",        // Path to Index page
                 icon: "fas fa-map-marker-alt", // Choose an icon
-                order: 3           // Adjust order as needed
+                order: 5           // Adjust order as needed
             ));
         }
         if (await context.IsGrantedAsync(CoreFWPermissions.Communes.Default))
@@ -94,7 +105,7 @@ public class CoreFWMenuContributor : IMenuContributor
                 l["Menu:Communes"], // Key localization
                 "/Communes",        // Đường dẫn đến trang Index
                 icon: "fas fa-map-marker-alt", // Icon ví dụ, có thể đổi
-                order: 4             // Thứ tự trong menu con
+                order: 6             // Thứ tự trong menu con
             ));
         }
         if (await context.IsGrantedAsync(CoreFWPermissions.Ranks.Default))
@@ -104,7 +115,7 @@ public class CoreFWMenuContributor : IMenuContributor
                 l["Menu:RankManagement"], // Sử dụng key localization đã định nghĩa
                 "/Ranks",
                 icon: "fas fa-layer-group",
-                order: 5 // Điều chỉnh order nếu cần
+                order: 7 // Điều chỉnh order nếu cần
             ));
         }
         // Kiểm tra xem người dùng có quyền xem Job Titles không
@@ -116,7 +127,7 @@ public class CoreFWMenuContributor : IMenuContributor
                 l["Menu:JobTitles"],        
                 "/JobTitles",               
                 icon: "fas fa-briefcase",   
-                order: 6                  
+                order: 8                  
             ));
         }        
         if (await context.IsGrantedAsync(CoreFWPermissions.DataGroups.Default))
@@ -126,7 +137,7 @@ public class CoreFWMenuContributor : IMenuContributor
                 l["Menu:DataGroups"],
                 "/DataGroups",
                 icon: "fas fa-folder-tree",
-                order: 7 // Điều chỉnh thứ tự nếu cần
+                order: 9 // Điều chỉnh thứ tự nếu cần
             ));
         }
         if (await context.IsGrantedAsync(CoreFWPermissions.AccountTypes.Default))
@@ -137,7 +148,7 @@ public class CoreFWMenuContributor : IMenuContributor
                 l["Menu:AccountTypes"], 
                 "/AccountTypes",       
                 icon: "fas fa-id-card", 
-                order: 8
+                order: 10
             ));
         }
         // Kiểm tra xem người dùng có quyền xem WorkflowStatuses không
@@ -148,30 +159,18 @@ public class CoreFWMenuContributor : IMenuContributor
                 l["Menu:WorkflowStatuses"],
                 "/WorkflowStatuses",
                 icon: "fas fa-tasks",
-                order: 9
+                order: 11
             ));
         }
-        if (await context.IsGrantedAsync(FileManagementPermissions.File.Default))
-        {
-            administration.AddItem(new ApplicationMenuItem(
-                "FileManagement",
-                l["Menu:FileManagement"],
-                url: "/FileManagement",
-                icon: "fa fa-file",
-                order: 10
-            ));
-        }
-
-        // Add OrganizationUnits menu item if user has permission
-        if (await context.IsGrantedAsync(CoreFWPermissions.OrganizationUnits.Default)) // Sử dụng quyền xem mặc định
-        {
-            administration.AddItem(new ApplicationMenuItem(
-                CoreFWMenus.OrganizationUnits,
-                l["Menu:OrganizationUnits"], // Sử dụng key localization
-                "/OrganizationUnits",        // Đường dẫn tới trang Index
-                icon: "fas fa-sitemap",      // Icon gợi ý cho cây tổ chức
-                order: 25 // Ví dụ: sau AccountTypes
-            ));
-        }
+        //if (await context.IsGrantedAsync(FileManagementPermissions.File.Default))
+        //{
+        //    administration.AddItem(new ApplicationMenuItem(
+        //        "FileManagement",
+        //        l["Menu:FileManagement"],
+        //        url: "/FileManagement",
+        //        icon: "fa fa-file",
+        //        order: 10
+        //    ));
+        //}        
     }
 }
