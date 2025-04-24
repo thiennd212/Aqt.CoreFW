@@ -180,6 +180,17 @@ public class CoreFWMenuContributor : IMenuContributor
                 icon: "fa fa-database",
                 order: 2 // Thứ tự trong CatalogManagement
             ));
-        }      
+        }
+        if (await context.IsGrantedAsync(CoreFWPermissions.DataImportants.Default)) // Check DataImportant permission
+        {
+            // Giả sử menu cha tên là catalogManagementMenu
+            catalogManagementMenu.AddItem(new ApplicationMenuItem(
+                CoreFWMenus.DataImportants, // Menu constant
+                l["Menu:DataImportants"],    // Localization key: "Important Data Catalogs"
+                "/DataImportants",         // Đường dẫn tới trang Index
+                icon: "fa fa-exclamation-triangle", // Chọn icon phù hợp (ví dụ: fa-exclamation-triangle)
+                order: 3 // Điều chỉnh thứ tự trong CatalogManagement (ví dụ: sau DataCore)
+            ));
+        }
     }
 }

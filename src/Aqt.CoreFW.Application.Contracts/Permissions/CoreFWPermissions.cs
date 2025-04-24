@@ -127,4 +127,15 @@ public static class CoreFWPermissions
         public const string Delete = Default + ".Delete";
         public const string Export = Default + ".Export"; // Quyền xuất Excel (nếu có)
     }
+
+    // Thêm định nghĩa permission cho DataImportants
+    public static class DataImportants // Sử dụng tên class khớp với module
+    {
+        // Sử dụng convention đặt tên quyền: CoreFW.DataImportants
+        public const string Default = GroupName + ".DataImportants"; // Quyền xem mặc định
+        public const string Create = Default + ".Create";
+        public const string Update = Default + ".Update";
+        public const string Delete = Default + ".Delete";
+        public const string Export = Default + ".Export";
+    }
 }

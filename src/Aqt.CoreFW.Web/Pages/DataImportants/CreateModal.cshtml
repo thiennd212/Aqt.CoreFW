@@ -1,0 +1,21 @@
+﻿@page "/DataImportants/CreateModal"
+@using Microsoft.AspNetCore.Mvc.Localization
+@using Volo.Abp.AspNetCore.Mvc.UI.Bootstrap.TagHelpers.Modal
+@using Aqt.CoreFW.Localization
+@using Volo.Abp.AspNetCore.Mvc.UI.Bootstrap.TagHelpers.Form
+@using Aqt.CoreFW.Web.Pages.DataImportants // Namespace PageModel
+@model CreateModalModel
+@inject IHtmlLocalizer<CoreFWResource> L
+@{
+    Layout = null;
+}
+
+<abp-dynamic-form abp-model="DataImportantViewModel" asp-page="/DataImportants/CreateModal" id="CreateDataImportantForm"> @* Model và ID form mới *@
+    <abp-modal>
+        <abp-modal-header title="@L["NewDataImportant"].Value"></abp-modal-header> @* Key localization mới *@
+        <abp-modal-body>
+            <abp-form-content />
+        </abp-modal-body>
+        <abp-modal-footer buttons="@(AbpModalButtons.Cancel | AbpModalButtons.Save)"></abp-modal-footer>
+    </abp-modal>
+</abp-dynamic-form>

@@ -8,6 +8,7 @@ using Aqt.CoreFW.Domain.JobTitles.Entities;
 using Aqt.CoreFW.Domain.Provinces.Entities;
 using Aqt.CoreFW.Domain.Ranks.Entities;
 using Aqt.CoreFW.Domain.WorkflowStatuses.Entities;
+using Aqt.CoreFW.Domain.DataImportants.Entities;
 using EasyAbp.FileManagement.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using System.Reflection;
@@ -49,6 +50,7 @@ public class CoreFWDbContext :
     public DbSet<WorkflowStatus> WorkflowStatuses { get; set; }
     public DbSet<DataGroup> DataGroups { get; set; } // Thêm DbSet cho DataGroup
     public DbSet<DataCore> DataCores { get; set; } // Thêm DbSet cho DataCore
+    public DbSet<DataImportant> DataImportants { get; set; } // << Thêm DbSet
 
     #region Entities from the modules
 

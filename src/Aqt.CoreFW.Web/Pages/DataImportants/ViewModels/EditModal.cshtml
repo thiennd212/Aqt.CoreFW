@@ -1,0 +1,22 @@
+﻿@page "/DataImportants/EditModal"
+@using Microsoft.AspNetCore.Mvc.Localization
+@using Volo.Abp.AspNetCore.Mvc.UI.Bootstrap.TagHelpers.Modal
+@using Aqt.CoreFW.Localization
+@using Volo.Abp.AspNetCore.Mvc.UI.Bootstrap.TagHelpers.Form
+@using Aqt.CoreFW.Web.Pages.DataImportants
+@model EditModalModel
+@inject IHtmlLocalizer<CoreFWResource> L
+@{
+    Layout = null;
+}
+
+<abp-dynamic-form abp-model="DataImportantViewModel" asp-page="/DataImportants/EditModal" id="EditDataImportantForm"> @* Model và ID form mới *@
+    <abp-modal>
+        <abp-modal-header title="@L["EditDataImportant"].Value"></abp-modal-header> @* Key localization mới *@
+        <abp-modal-body>
+            <abp-input asp-for="Id" /> @* Hidden Id field *@
+            <abp-form-content />
+        </abp-modal-body>
+        <abp-modal-footer buttons="@(AbpModalButtons.Cancel | AbpModalButtons.Save)"></abp-modal-footer>
+    </abp-modal>
+</abp-dynamic-form>

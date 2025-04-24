@@ -1,0 +1,79 @@
+﻿@page
+@using Aqt.CoreFW.Permissions
+@using Microsoft.AspNetCore.Authorization
+@using Volo.Abp.AspNetCore.Mvc.UI.Layout
+@using Aqt.CoreFW.Web.Pages.DataImportants
+@using Aqt.CoreFW.Localization
+@using Microsoft.Extensions.Localization
+@using Aqt.CoreFW.Web.Menus
+@using Aqt.CoreFW.DataImportants
+@model IndexModel
+@inject IStringLocalizer<CoreFWResource> L
+@inject IAuthorizationService AuthorizationService
+@inject IPageLayout PageLayout
+@{
+    PageLayout.Content.Title = L["DataImportants"].Value; // Title trang
+    PageLayout.Content.MenuItemName = CoreFWMenus.DataImportants; // Active menu item
+}
+
+@section scripts {
+    <script>
+        // Pass permissions to JS
+        const permissions = {
+            canEdit:   @Html.Raw(ViewData["CanEdit"]),
+            canDelete: @Html.Raw(ViewData["CanDelete"])
+        };
+    </script>
+    <abp-script src="/Pages/DataImportants/index.js" />
+}
+
+@section content_toolbar {
+    @if (await AuthorizationService.IsGrantedAsync(CoreFWPermissions.DataImportants.Create))
+    {
+        <abp-button id="NewDataImportantButton"
+                    text="@L["NewDataImportant"].Value"
+                    icon="plus"
+                    button-type="Primary" size="Small" />
+    }
+    @if (await AuthorizationService.IsGrantedAsync(CoreFWPermissions.DataImportants.Export))
+    {
+        <abp-button id="ExportExcelButton"
+                    text="@L["ExportToExcel"].Value"
+                    icon="file-excel"
+                    button-type="Success" size="Small" class="ms-2" />
+    }
+}
+
+<abp-card>
+    <abp-card-body>
+        @* Filter Section *@
+        <abp-row class="mb-3">
+            <abp-column size-md="_4">
+                <input type="text" id="SearchFilter" class="form-control form-control-sm" placeholder="@L["Search"] (@L["DisplayName:DataImportant.Code"], @L["DisplayName:DataImportant.Name"])..." />
+            </abp-column>
+            <abp-column size-md="_3">
+                <select id="StatusFilter" class="form-select form-select-sm">
+                    <option value="">@L["All"] (@L["DisplayName:DataImportant.Status"])</option>
+                    <option value="@((byte)DataImportantStatus.Active)">@L["Enum:DataImportantStatus.1"]</option>
+                    <option value="@((byte)DataImportantStatus.Inactive)">@L["Enum:DataImportantStatus.0"]</option>
+                </select>
+            </abp-column>
+            <abp-column size-md="_3">
+                @* DataGroup Filter Dropdown *@
+                <select id="DataGroupFilter" class="form-select form-select-sm">
+                    <option value="">@L["All"] (@L["DisplayName:DataImportant.DataGroupId"])</option>
+                    @* Các options sẽ được load bởi JavaScript *@
+                </select>
+            </abp-column>
+            <abp-column size-md="_2" class="text-end">
+                <abp-button id="SearchButton"
+                            text="@L["Search"].Value"
+                            icon="search"
+                            button-type="Info" size="Small" />
+            </abp-column>
+        </abp-row>
+
+        @* Data Table *@
+        <abp-table striped-rows="true" id="DataImportantsTable"></abp-table> @* ID bảng mới *@
+    </abp-card-body>
+</abp-card>

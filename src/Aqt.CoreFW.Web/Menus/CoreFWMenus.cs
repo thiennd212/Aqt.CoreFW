@@ -19,4 +19,5 @@ public class CoreFWMenus
     public const string CatalogManagement = Prefix + ".CatalogManagement";
     public const string DataGroups = Prefix + ".DataGroups";
     public const string DataCores = Prefix + ".DataCores";
+    public const string DataImportants = Prefix + ".DataImportants";
 }
