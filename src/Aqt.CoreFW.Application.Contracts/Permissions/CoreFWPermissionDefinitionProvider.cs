@@ -83,6 +83,12 @@ public class CoreFWPermissionDefinitionProvider : PermissionDefinitionProvider
         ouPermission.AddChild(CoreFWPermissions.OrganizationUnits.Move, L("Permission:OrganizationUnits.Move"));
         ouPermission.AddChild(CoreFWPermissions.OrganizationUnits.ManagePermissions, L("Permission:OrganizationUnits.ManagePermissions"));
 
+        // Thêm định nghĩa permissions cho DataCores
+        var dataCorePermission = coreFwGroup.AddPermission(CoreFWPermissions.DataCores.Default, L("Permission:DataCoreManagement"));
+        dataCorePermission.AddChild(CoreFWPermissions.DataCores.Create, L("Permission:DataCores.Create"));
+        dataCorePermission.AddChild(CoreFWPermissions.DataCores.Update, L("Permission:DataCores.Update"));
+        dataCorePermission.AddChild(CoreFWPermissions.DataCores.Delete, L("Permission:DataCores.Delete"));        
+        dataCorePermission.AddChild(CoreFWPermissions.DataCores.Export, L("Permission:DataCores.Export"));        
     }
 
     private static LocalizableString L(string name)

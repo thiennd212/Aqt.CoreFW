@@ -129,16 +129,6 @@ public class CoreFWMenuContributor : IMenuContributor
                 icon: "fas fa-briefcase",   
                 order: 8                  
             ));
-        }        
-        if (await context.IsGrantedAsync(CoreFWPermissions.DataGroups.Default))
-        {
-            administration.AddItem(new ApplicationMenuItem(
-                CoreFWMenus.DataGroups,
-                l["Menu:DataGroups"],
-                "/DataGroups",
-                icon: "fas fa-folder-tree",
-                order: 9 // Điều chỉnh thứ tự nếu cần
-            ));
         }
         if (await context.IsGrantedAsync(CoreFWPermissions.AccountTypes.Default))
         {
@@ -162,15 +152,34 @@ public class CoreFWMenuContributor : IMenuContributor
                 order: 11
             ));
         }
-        //if (await context.IsGrantedAsync(FileManagementPermissions.File.Default))
-        //{
-        //    administration.AddItem(new ApplicationMenuItem(
-        //        "FileManagement",
-        //        l["Menu:FileManagement"],
-        //        url: "/FileManagement",
-        //        icon: "fa fa-file",
-        //        order: 10
-        //    ));
-        //}        
+
+        var catalogManagementMenu = new ApplicationMenuItem(
+                   CoreFWMenus.CatalogManagement,
+                   l["Menu:CatalogManagement"], // Key localization cho "Catalog Management"
+                   icon: "fa fa-book",
+                   order: 12 // Điều chỉnh thứ tự nếu cần
+               );
+        administration.AddItem(catalogManagementMenu);
+
+        if (await context.IsGrantedAsync(CoreFWPermissions.DataGroups.Default))
+        {
+            catalogManagementMenu.AddItem(new ApplicationMenuItem(
+                CoreFWMenus.DataGroups,
+                l["Menu:DataGroups"],
+                "/DataGroups",
+                icon: "fas fa-folder-tree",
+                order: 1 // Điều chỉnh thứ tự nếu cần
+            ));
+        }
+        if (await context.IsGrantedAsync(CoreFWPermissions.DataCores.Default))
+        {
+            catalogManagementMenu.AddItem(new ApplicationMenuItem(
+                CoreFWMenus.DataCores,
+                l["Menu:DataCores"], // Key: "Core Data Catalogs"
+                "/DataCores",        // Đường dẫn tới trang Index
+                icon: "fa fa-database",
+                order: 2 // Thứ tự trong CatalogManagement
+            ));
+        }      
     }
 }

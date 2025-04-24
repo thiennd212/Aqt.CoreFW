@@ -1,0 +1,79 @@
+﻿    @page
+    @using Aqt.CoreFW.Permissions
+    @using Microsoft.AspNetCore.Authorization
+    @using Volo.Abp.AspNetCore.Mvc.UI.Layout
+    @using Aqt.CoreFW.Web.Pages.DataCores
+    @using Aqt.CoreFW.Localization
+    @using Microsoft.Extensions.Localization
+    @using Aqt.CoreFW.Web.Menus
+    @using Aqt.CoreFW.DataCores
+    @model IndexModel
+    @inject IStringLocalizer<CoreFWResource> L
+    @inject IAuthorizationService AuthorizationService
+    @inject IPageLayout PageLayout
+    @{
+        PageLayout.Content.Title = L["DataCores"].Value;
+        PageLayout.Content.MenuItemName = CoreFWMenus.DataCores;
+    }
+
+    @section scripts {
+        <script>
+            // Pass permissions to JS
+            const permissions = {
+                canEdit:   @Html.Raw(ViewData["CanEdit"] ?? "false"),
+                canDelete: @Html.Raw(ViewData["CanDelete"] ?? "false")
+            };
+        </script>
+        <abp-script src="/Pages/DataCores/index.js" />
+    }
+
+    @section content_toolbar {
+        @if (await AuthorizationService.IsGrantedAsync(CoreFWPermissions.DataCores.Create))
+        {
+            <abp-button id="NewDataCoreButton"
+                        text="@L["NewDataCore"].Value"
+                        icon="plus"
+                        button-type="Primary" size="Small"/>
+        }
+        @if (await AuthorizationService.IsGrantedAsync(CoreFWPermissions.DataCores.Export))
+        {
+            <abp-button id="ExportExcelButton"
+                        text="@L["ExportToExcel"].Value"
+                        icon="file-excel"
+                        button-type="Success" size="Small" class="ms-2"/>
+        }
+    }
+
+    <abp-card>
+        <abp-card-body>
+            @* Filter Section *@
+            <abp-row class="mb-3">
+                 <abp-column size-md="_4">
+                     <input type="text" id="SearchFilter" class="form-control form-control-sm" placeholder="@L["Search"] (@L["DisplayName:DataCore.Code"], @L["DisplayName:DataCore.Name"])..." />
+                 </abp-column>
+                 <abp-column size-md="_3">
+                      <select id="StatusFilter" class="form-select form-select-sm">
+                          <option value="">@L["All"] (@L["DisplayName:DataCore.Status"])</option>
+                          <option value="@((byte)DataCoreStatus.Active)">@L["Enum:DataCoreStatus.1"]</option>
+                          <option value="@((byte)DataCoreStatus.Inactive)">@L["Enum:DataCoreStatus.0"]</option>
+                      </select>
+                 </abp-column>
+                 <abp-column size-md="_3">
+                      @* DataGroup Filter Dropdown *@
+                      <select id="DataGroupFilter" class="form-select form-select-sm">
+                          <option value="">@L["All"] (@L["DisplayName:DataCore.DataGroupId"])</option>
+                          @* Options will be loaded by JS *@
+                      </select>
+                 </abp-column>
+                 <abp-column size-md="_2" class="text-end">
+                      <abp-button id="SearchButton"
+                                text="@L["Search"].Value"
+                                icon="search"
+                                button-type="Info" size="Small"/>
+                 </abp-column>
+            </abp-row>
+
+            @* Data Table *@
+            <abp-table striped-rows="true" id="DataCoresTable"></abp-table>
+        </abp-card-body>
+    </abp-card>

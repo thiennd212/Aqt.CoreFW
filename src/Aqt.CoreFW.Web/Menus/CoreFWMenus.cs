@@ -13,8 +13,10 @@ public class CoreFWMenus
     public const string Communes = Prefix + ".Communes";
     public const string Ranks = Prefix + ".Ranks";
     public const string JobTitles = Prefix + ".JobTitles";
-    public const string WorkflowStatuses = Prefix + ".WorkflowStatuses";
-    public const string DataGroups = Prefix + ".DataGroups";
+    public const string WorkflowStatuses = Prefix + ".WorkflowStatuses";    
     public const string AccountTypes = Prefix + ".AccountTypes";
     public const string OrganizationUnits = Prefix + ".OrganizationUnits";
+    public const string CatalogManagement = Prefix + ".CatalogManagement";
+    public const string DataGroups = Prefix + ".DataGroups";
+    public const string DataCores = Prefix + ".DataCores";
 }

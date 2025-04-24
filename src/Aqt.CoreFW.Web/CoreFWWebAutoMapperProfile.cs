@@ -19,6 +19,8 @@ using Aqt.CoreFW.Application.Contracts.AccountTypes.Dtos;
 using Aqt.CoreFW.Web.Pages.AccountTypes.ViewModels;
 using Aqt.CoreFW.Application.Contracts.OrganizationUnits.Dtos;
 using Aqt.CoreFW.Web.Pages.OrganizationUnits.ViewModels;
+using Aqt.CoreFW.Application.Contracts.DataCores.Dtos;
+using Aqt.CoreFW.Web.Pages.DataCores.ViewModels;
 
 namespace Aqt.CoreFW.Web;
 
@@ -61,6 +63,10 @@ public class CoreFWWebAutoMapperProfile : Profile
         CreateMap<OrganizationUnitViewModel, CreateOrganizationUnitDto>(); // ViewModel -> DTO (cho Create)
         CreateMap<OrganizationUnitViewModel, UpdateOrganizationUnitDto>(); // ViewModel -> DTO (cho Update)
         CreateMap<OrganizationUnitDto, OrganizationUnitViewModel>();             // DTO -> ViewModel (cho Edit)
+
+        // Thêm mapping cho DataCore ViewModel <-> DTO
+        CreateMap<DataCoreViewModel, CreateUpdateDataCoreDto>();
+        CreateMap<DataCoreDto, DataCoreViewModel>();
 
         // Thêm các mapping khác của tầng Web nếu cần...
     }

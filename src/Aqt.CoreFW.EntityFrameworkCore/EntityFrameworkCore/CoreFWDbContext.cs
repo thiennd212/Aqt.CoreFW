@@ -1,6 +1,7 @@
 ﻿using Aqt.CoreFW.Domain.AccountTypes.Entities;
 using Aqt.CoreFW.Domain.Communes.Entities;
 using Aqt.CoreFW.Domain.Countries.Entities;
+using Aqt.CoreFW.Domain.DataCores.Entities;
 using Aqt.CoreFW.Domain.DataGroups.Entities;
 using Aqt.CoreFW.Domain.Districts.Entities;
 using Aqt.CoreFW.Domain.JobTitles.Entities;
@@ -47,6 +48,7 @@ public class CoreFWDbContext :
     // public DbSet<Employee> Employees { get; set; }
     public DbSet<WorkflowStatus> WorkflowStatuses { get; set; }
     public DbSet<DataGroup> DataGroups { get; set; } // Thêm DbSet cho DataGroup
+    public DbSet<DataCore> DataCores { get; set; } // Thêm DbSet cho DataCore
 
     #region Entities from the modules
 

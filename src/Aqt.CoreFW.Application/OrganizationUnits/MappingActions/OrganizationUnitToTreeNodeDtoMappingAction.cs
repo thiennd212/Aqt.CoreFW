@@ -20,11 +20,16 @@ public class OrganizationUnitToTreeNodeDtoMappingAction : IMappingAction<Organiz
 
         // Populate dest.Data using ExtraProperties
         destination.Data.ManualCode = manualCode;
-        destination.Data.Status = source.ExtraProperties.ContainsKey(OrganizationUnitExtensionProperties.Status)
-                            ? (OrganizationUnitStatus)source.ExtraProperties[OrganizationUnitExtensionProperties.Status]
-                            : default;
-        destination.Data.Order = source.ExtraProperties.ContainsKey(OrganizationUnitExtensionProperties.Order)
-                           ? (int)source.ExtraProperties[OrganizationUnitExtensionProperties.Order]
-                           : 0;
+
+        // Fix for CS8605: Unboxing a possibly null value
+        destination.Data.Status = source.ExtraProperties.ContainsKey(OrganizationUnitExtensionProperties.Status) &&
+                                  source.ExtraProperties[OrganizationUnitExtensionProperties.Status] is OrganizationUnitStatus status
+                                  ? status
+                                  : default;
+
+        destination.Data.Order = source.ExtraProperties.ContainsKey(OrganizationUnitExtensionProperties.Order) &&
+                                 source.ExtraProperties[OrganizationUnitExtensionProperties.Order] is int order
+                                 ? order
+                                 : 0;
     }
-} 
+}

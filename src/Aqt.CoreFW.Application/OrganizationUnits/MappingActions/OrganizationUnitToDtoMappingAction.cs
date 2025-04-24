@@ -16,12 +16,14 @@ public class OrganizationUnitToDtoMappingAction : IMappingAction<OrganizationUni
         destination.ManualCode = source.ExtraProperties.ContainsKey(OrganizationUnitExtensionProperties.ManualCode)
                             ? source.ExtraProperties[OrganizationUnitExtensionProperties.ManualCode] as string
                             : null;
-        destination.Status = source.ExtraProperties.ContainsKey(OrganizationUnitExtensionProperties.Status)
-                        ? (OrganizationUnitStatus)source.ExtraProperties[OrganizationUnitExtensionProperties.Status]
-                        : default; // Or handle default/null case as needed
-        destination.Order = source.ExtraProperties.ContainsKey(OrganizationUnitExtensionProperties.Order)
-                        ? (int)source.ExtraProperties[OrganizationUnitExtensionProperties.Order]
-                        : 0;
+        destination.Status = source.ExtraProperties.ContainsKey(OrganizationUnitExtensionProperties.Status) &&
+                             source.ExtraProperties[OrganizationUnitExtensionProperties.Status] is OrganizationUnitStatus status
+                            ? status
+                            : default; // Or handle default/null case as needed
+        destination.Order = source.ExtraProperties.ContainsKey(OrganizationUnitExtensionProperties.Order) &&
+                            source.ExtraProperties[OrganizationUnitExtensionProperties.Order] is int order
+                            ? order
+                            : 0;
         destination.Description = source.ExtraProperties.ContainsKey(OrganizationUnitExtensionProperties.Description)
                              ? source.ExtraProperties[OrganizationUnitExtensionProperties.Description] as string
                              : null;

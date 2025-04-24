@@ -1,0 +1,22 @@
+﻿@page "/DataCores/EditModal"
+@using Microsoft.AspNetCore.Mvc.Localization
+@using Volo.Abp.AspNetCore.Mvc.UI.Bootstrap.TagHelpers.Modal
+@using Aqt.CoreFW.Localization
+@using Volo.Abp.AspNetCore.Mvc.UI.Bootstrap.TagHelpers.Form
+@using Aqt.CoreFW.Web.Pages.DataCores
+@model EditModalModel
+@inject IHtmlLocalizer<CoreFWResource> L
+@{
+    Layout = null;
+}
+
+<abp-dynamic-form abp-model="DataCoreViewModel" asp-page="/DataCores/EditModal" id="EditDataCoreForm">
+    <abp-modal>
+        <abp-modal-header title="@L["EditDataCore"].Value"></abp-modal-header>
+        <abp-modal-body>
+            <abp-input asp-for="Id" /> @* Hidden Id field *@
+            <abp-form-content />
+        </abp-modal-body>
+        <abp-modal-footer buttons="@(AbpModalButtons.Cancel | AbpModalButtons.Save)"></abp-modal-footer>
+    </abp-modal>
+</abp-dynamic-form>
