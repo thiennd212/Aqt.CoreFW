@@ -1,0 +1,24 @@
+@page "/OrganizationUnits/EditModal"
+@using Microsoft.AspNetCore.Mvc.Localization
+@using Volo.Abp.AspNetCore.Mvc.UI.Bootstrap.TagHelpers.Modal
+@using Aqt.CoreFW.Localization
+@using Volo.Abp.AspNetCore.Mvc.UI.Bootstrap.TagHelpers.Form
+@using Aqt.CoreFW.Web.Pages.OrganizationUnits
+@model EditModalModel
+@inject IHtmlLocalizer<CoreFWResource> L
+@{
+    Layout = null;
+}
+<abp-dynamic-form abp-model="OrganizationUnitViewModel" asp-page="/OrganizationUnits/EditModal" id="EditOrganizationUnitForm">
+    <abp-modal>
+        <abp-modal-header title="@L["EditOrganizationUnit"].Value"></abp-modal-header>
+        <abp-modal-body>
+             @* Bind vào thuộc tính Id của PageModel (không phải ViewModel) *@
+             <abp-input asp-for="Id" />
+             @* ParentId vẫn lấy từ ViewModel (nếu cần ẩn) *@
+             <abp-input asp-for="OrganizationUnitViewModel.ParentId" />
+             <abp-form-content /> @* Render các thuộc tính còn lại của OrganizationUnitViewModel *@
+        </abp-modal-body>
+        <abp-modal-footer buttons="@(AbpModalButtons.Cancel | AbpModalButtons.Save)"></abp-modal-footer>
+    </abp-modal>
+</abp-dynamic-form> 

@@ -1,0 +1,50 @@
+﻿@page
+@using Microsoft.AspNetCore.Authorization
+@using Volo.Abp.AspNetCore.Mvc.UI.Layout
+@using Aqt.CoreFW.Localization
+@using Microsoft.Extensions.Localization
+@using Aqt.CoreFW.Web.Menus
+@using Aqt.CoreFW.Permissions
+@model Aqt.CoreFW.Web.Pages.OrganizationUnits.IndexModel
+@inject IStringLocalizer<CoreFWResource> L
+@inject IAuthorizationService AuthorizationService
+@inject IPageLayout PageLayout
+@{
+    PageLayout.Content.Title = L["OrganizationUnits"].Value;
+    PageLayout.Content.MenuItemName = CoreFWMenus.OrganizationUnits;
+}
+
+@section styles {
+    <link rel="stylesheet" href="/libs/jstree/themes/default/style.min.css" />
+}
+
+@section scripts {
+    <script src="/libs/jstree/jstree.min.js"></script>
+     <script>
+         var ouPermissions = {
+             canCreate: @Html.Raw(ViewData["CanCreate"]),
+             canUpdate: @Html.Raw(ViewData["CanUpdate"]),
+             canDelete: @Html.Raw(ViewData["CanDelete"]),
+             canMove:   @Html.Raw(ViewData["CanMove"])
+         };
+     </script>
+    <abp-script src="/Pages/OrganizationUnits/index.js" />
+}
+
+@section content_toolbar {
+    @if (await AuthorizationService.IsGrantedAsync(CoreFWPermissions.OrganizationUnits.Create))
+    {
+        <abp-button id="AddRootUnitButton"
+                    text="@L["AddRootUnit"].Value"
+                    icon="plus"
+                    button-type="Primary" size="Small"/>
+    }
+}
+
+<abp-card>
+    <abp-card-body>
+        <div id="OrganizationUnitTreeContainer"></div>
+    </abp-card-body>
+</abp-card>
+
+@* Không cần Partial View cho modals nữa *@ 

@@ -10,7 +10,7 @@ public class CoreFWPermissionDefinitionProvider : PermissionDefinitionProvider
 {
     public override void Define(IPermissionDefinitionContext context)
     {
-        var coreFwGroup = context.AddGroup(CoreFWPermissions.GroupName, L("Permission:CoreFWGroup"));
+        var coreFwGroup = context.GetGroupOrNull(CoreFWPermissions.GroupName) ?? context.AddGroup(CoreFWPermissions.GroupName, L("Permission:CoreFW")); // Adjusted group lookup/add
 
         // Define permissions for Countries
         var countriesPermission = coreFwGroup.AddPermission(CoreFWPermissions.Countries.Default, L("Permission:Countries"));
@@ -75,12 +75,13 @@ public class CoreFWPermissionDefinitionProvider : PermissionDefinitionProvider
         workflowStatusesPermission.AddChild(CoreFWPermissions.WorkflowStatuses.Delete, L("Permission:WorkflowStatuses.Delete"));
         workflowStatusesPermission.AddChild(CoreFWPermissions.WorkflowStatuses.ExportExcel, L("Permission:WorkflowStatuses.ExportExcel"));
 
-        //var fileManagementGroup = context.AddGroup(FileManagementPermissions.GroupName, L("Permission:FileManagement"));
-
-        //fileManagementGroup.AddPermission(FileManagementPermissions.File.Default, L("Permission:File"));
-        //fileManagementGroup.AddPermission(FileManagementPermissions.File.Create, L("Permission:Create"));
-        //fileManagementGroup.AddPermission(FileManagementPermissions.File.Update, L("Permission:Update"));
-        //fileManagementGroup.AddPermission(FileManagementPermissions.File.Delete, L("Permission:Delete"));
+        // Add OrganizationUnit Permissions
+        var ouPermission = coreFwGroup.AddPermission(CoreFWPermissions.OrganizationUnits.Default, L("Permission:OrganizationUnitManagement"));
+        ouPermission.AddChild(CoreFWPermissions.OrganizationUnits.Create, L("Permission:OrganizationUnits.Create"));
+        ouPermission.AddChild(CoreFWPermissions.OrganizationUnits.Update, L("Permission:OrganizationUnits.Update"));
+        ouPermission.AddChild(CoreFWPermissions.OrganizationUnits.Delete, L("Permission:OrganizationUnits.Delete"));
+        ouPermission.AddChild(CoreFWPermissions.OrganizationUnits.Move, L("Permission:OrganizationUnits.Move"));
+        ouPermission.AddChild(CoreFWPermissions.OrganizationUnits.ManagePermissions, L("Permission:OrganizationUnits.ManagePermissions"));
 
     }
 

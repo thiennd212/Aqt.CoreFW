@@ -5,7 +5,7 @@ using Aqt.CoreFW.Domain.DataGroups.Entities;
 using Aqt.CoreFW.Domain.Districts.Entities;
 using Aqt.CoreFW.Domain.JobTitles.Entities;
 using Aqt.CoreFW.Domain.Provinces.Entities;
-using Aqt.CoreFW.Domain.Ranks.Entities; // Required for Assembly
+using Aqt.CoreFW.Domain.Ranks.Entities;
 using Aqt.CoreFW.Domain.WorkflowStatuses.Entities;
 using EasyAbp.FileManagement.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;

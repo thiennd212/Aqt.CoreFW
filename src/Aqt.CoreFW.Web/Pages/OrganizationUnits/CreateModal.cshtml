@@ -1,0 +1,22 @@
+@page "/OrganizationUnits/CreateModal"
+@using Microsoft.AspNetCore.Mvc.Localization
+@using Volo.Abp.AspNetCore.Mvc.UI.Bootstrap.TagHelpers.Modal
+@using Aqt.CoreFW.Localization
+@using Volo.Abp.AspNetCore.Mvc.UI.Bootstrap.TagHelpers.Form
+@using Aqt.CoreFW.Web.Pages.OrganizationUnits
+@model CreateModalModel
+@inject IHtmlLocalizer<CoreFWResource> L
+@{
+    Layout = null;
+}
+<abp-dynamic-form abp-model="OrganizationUnitViewModel" asp-page="/OrganizationUnits/CreateModal" id="CreateOrganizationUnitForm">
+    <abp-modal>
+        <abp-modal-header title="@L["NewOrganizationUnit"].Value"></abp-modal-header>
+        <abp-modal-body>
+             @* ParentId được set trong PageModel và bind vào hidden input *@
+             <abp-input asp-for="OrganizationUnitViewModel.ParentId" />
+             <abp-form-content />
+        </abp-modal-body>
+        <abp-modal-footer buttons="@(AbpModalButtons.Cancel | AbpModalButtons.Save)"></abp-modal-footer>
+    </abp-modal>
+</abp-dynamic-form> 

@@ -161,5 +161,17 @@ public class CoreFWMenuContributor : IMenuContributor
                 order: 10
             ));
         }
+
+        // Add OrganizationUnits menu item if user has permission
+        if (await context.IsGrantedAsync(CoreFWPermissions.OrganizationUnits.Default)) // Sử dụng quyền xem mặc định
+        {
+            administration.AddItem(new ApplicationMenuItem(
+                CoreFWMenus.OrganizationUnits,
+                l["Menu:OrganizationUnits"], // Sử dụng key localization
+                "/OrganizationUnits",        // Đường dẫn tới trang Index
+                icon: "fas fa-sitemap",      // Icon gợi ý cho cây tổ chức
+                order: 25 // Ví dụ: sau AccountTypes
+            ));
+        }
     }
 }

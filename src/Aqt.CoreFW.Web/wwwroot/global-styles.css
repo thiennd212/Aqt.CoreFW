@@ -1,5 +1,20 @@
-/* Your Global Styles */
+﻿/* Your Global Styles */
 :root .lpx-brand-logo {
     --lpx-logo: url('/images/logo/leptonxlite/logo-light.png');
     --lpx-logo-icon: url('/images/logo/leptonxlite/logo-light-thumbnail.png');
 }
+
+/* --- jsTree Customizations --- */
+/* Make disabled node icons semi-transparent */
+.jstree-default .jstree-disabled > .jstree-icon,
+.jstree-default .jstree-disabled > .jstree-anchor > .jstree-icon {
+    opacity: 0.5;
+}
+
+/* Ensure jsTree context menu appears above modal backdrops */
+.vakata-context.jstree-contextmenu {
+    z-index: 10000; /* Adjust if necessary based on theme's backdrop z-index */
+}
+    .vakata-context.jstree-contextmenu, .vakata-context.jstree-contextmenu ul {
+        background: #f5f5f5 !important;
+    }
