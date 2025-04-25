@@ -96,6 +96,13 @@ public class CoreFWPermissionDefinitionProvider : PermissionDefinitionProvider
         dataImportantPermission.AddChild(CoreFWPermissions.DataImportants.Update, L("Permission:DataImportants.Update"));
         dataImportantPermission.AddChild(CoreFWPermissions.DataImportants.Delete, L("Permission:DataImportants.Delete"));
         dataImportantPermission.AddChild(CoreFWPermissions.DataImportants.Export, L("Permission:DataImportants.Export"));
+
+        // Thêm định nghĩa permissions cho Procedures
+        var proceduresPermission = coreFwGroup.AddPermission(CoreFWPermissions.Procedures.Default, L("Permission:ProcedureManagement")); // Sử dụng key localization từ plan 1
+        proceduresPermission.AddChild(CoreFWPermissions.Procedures.Create, L("Permission:Procedures.Create"));
+        proceduresPermission.AddChild(CoreFWPermissions.Procedures.Update, L("Permission:Procedures.Update"));
+        proceduresPermission.AddChild(CoreFWPermissions.Procedures.Delete, L("Permission:Procedures.Delete"));
+        proceduresPermission.AddChild(CoreFWPermissions.Procedures.Export, L("Permission:Procedures.Export"));
     }
 
     private static LocalizableString L(string name)

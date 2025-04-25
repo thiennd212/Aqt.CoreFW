@@ -1,0 +1,69 @@
+﻿@page
+@using Aqt.CoreFW.Permissions
+@using Microsoft.AspNetCore.Authorization
+@using Volo.Abp.AspNetCore.Mvc.UI.Layout
+@using Aqt.CoreFW.Web.Pages.Procedures
+@using Aqt.CoreFW.Localization
+@using Microsoft.Extensions.Localization
+@using Aqt.CoreFW.Web.Menus
+@using Aqt.CoreFW.Procedures
+@model IndexModel
+@inject IStringLocalizer<CoreFWResource> L
+@inject IAuthorizationService AuthorizationService
+@inject IPageLayout PageLayout
+@{
+    PageLayout.Content.Title = L["Procedures"].Value; // Updated Title key
+    PageLayout.Content.MenuItemName = CoreFWMenus.Procedures; // Updated menu item
+}
+
+@section scripts {
+    <script>
+        // Pass permissions to JS
+        const permissions = {
+            canEdit:   @Html.Raw(ViewData["CanEdit"]),
+            canDelete: @Html.Raw(ViewData["CanDelete"])
+        };
+    </script>
+    <abp-script src="/Pages/Procedures/index.js" />
+    }
+
+@section content_toolbar {
+    @if (await AuthorizationService.IsGrantedAsync(CoreFWPermissions.Procedures.Create)) // Updated permission
+    {
+        <abp-button id="NewProcedureButton"
+                    text="@L["NewProcedure"].Value"
+                    icon="plus"
+                    button-type="Primary" size="Small" />
+    }
+    @if (await AuthorizationService.IsGrantedAsync(CoreFWPermissions.Procedures.Export)) // Updated permission
+    {
+        <abp-button id="ExportExcelButton"
+                    text="@L["ExportToExcel"].Value"
+                    icon="file-excel"
+                    button-type="Success" size="Small" class="ms-2" />
+    }
+    }
+
+<abp-card>
+    <abp-card-body>
+        <abp-row class="mb-3">
+            <abp-column size-md="_6">
+                <input type="text" id="SearchFilter" class="form-control form-control-sm" placeholder="@L["Search"] (@L["DisplayName:Procedure.Code"], @L["DisplayName:Procedure.Name"])..." /> @* Updated display names *@
+            </abp-column>
+            <abp-column size-md="_4">
+                <select id="StatusFilter" class="form-select form-select-sm">
+                    <option value="">@L["All"] (@L["DisplayName:Procedure.Status"])</option> @* Updated display name *@
+                    <option value="@((byte)ProcedureStatus.Active)">@L["Enum:ProcedureStatus.1"]</option> @* Updated enum/key *@
+                    <option value="@((byte)ProcedureStatus.Inactive)">@L["Enum:ProcedureStatus.0"]</option> @* Updated enum/key *@
+                </select>
+            </abp-column>
+            <abp-column size-md="_2" class="text-end">
+                <abp-button id="SearchButton"
+                            text="@L["Search"].Value"
+                            icon="search"
+                            button-type="Info" size="Small" />
+            </abp-column>
+        </abp-row>
+        <abp-table striped-rows="true" id="ProcedureTable"></abp-table> 
+    </abp-card-body>
+</abp-card>

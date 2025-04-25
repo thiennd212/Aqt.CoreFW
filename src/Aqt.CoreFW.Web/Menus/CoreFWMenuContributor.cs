@@ -153,6 +153,20 @@ public class CoreFWMenuContributor : IMenuContributor
             ));
         }
 
+        if (await context.IsGrantedAsync(CoreFWPermissions.Procedures.Default))
+        {
+            // Thêm vào menu Administration (hoặc menu phù hợp khác)
+            administration.AddItem(
+                 new ApplicationMenuItem(
+                     CoreFWMenus.Procedures,       // Sử dụng hằng số đã định nghĩa
+                     l["Menu:Procedures"],          // Key localization cho tên menu
+                     "/Procedures",                 // Đường dẫn URL của trang Index
+                     icon: "fas fa-tasks",           // Chọn icon (ví dụ: fa-tasks, fa-file-alt)
+                     order: 13                     // Điều chỉnh thứ tự hiển thị nếu cần
+                 ).RequirePermissions(CoreFWPermissions.Procedures.Default) // Có thể thêm RequirePermissions ở đây nữa
+             );
+        }
+
         var catalogManagementMenu = new ApplicationMenuItem(
                    CoreFWMenus.CatalogManagement,
                    l["Menu:CatalogManagement"], // Key localization cho "Catalog Management"

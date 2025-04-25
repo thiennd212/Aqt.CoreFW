@@ -26,6 +26,7 @@ using Volo.Abp.PermissionManagement.EntityFrameworkCore;
 using Volo.Abp.SettingManagement.EntityFrameworkCore;
 using Volo.Abp.TenantManagement;
 using Volo.Abp.TenantManagement.EntityFrameworkCore;
+using Aqt.CoreFW.Domain.Procedures.Entities;
 
 namespace Aqt.CoreFW.EntityFrameworkCore;
 
@@ -51,6 +52,7 @@ public class CoreFWDbContext :
     public DbSet<DataGroup> DataGroups { get; set; } // Thêm DbSet cho DataGroup
     public DbSet<DataCore> DataCores { get; set; } // Thêm DbSet cho DataCore
     public DbSet<DataImportant> DataImportants { get; set; } // << Thêm DbSet
+    public DbSet<Procedure> Procedures { get; set; }
 
     #region Entities from the modules
 
