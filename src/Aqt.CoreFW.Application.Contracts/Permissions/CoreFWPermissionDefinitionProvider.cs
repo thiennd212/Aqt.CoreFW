@@ -104,6 +104,16 @@ public class CoreFWPermissionDefinitionProvider : PermissionDefinitionProvider
         proceduresPermission.AddChild(CoreFWPermissions.Procedures.Delete, L("Permission:Procedures.Delete"));
         proceduresPermission.AddChild(CoreFWPermissions.Procedures.Export, L("Permission:Procedures.Export"));
 
+        // Thêm định nghĩa permissions cho Components
+        // Sử dụng key localization từ plan 1 (Domain.Shared)
+        var componentsPermissionGroup = coreFwGroup.AddPermission(CoreFWPermissions.Components.Default, L("Permission:Components"));
+        componentsPermissionGroup.AddChild(CoreFWPermissions.Components.Create, L("Permission:Components.Create"));
+        componentsPermissionGroup.AddChild(CoreFWPermissions.Components.Update, L("Permission:Components.Update"));
+        componentsPermissionGroup.AddChild(CoreFWPermissions.Components.Delete, L("Permission:Components.Delete"));
+        // Quyền quản lý liên kết là con của quyền Update hoặc quyền Default tùy theo logic nghiệp vụ
+        // Ví dụ: là con của Update nếu chỉ cho phép quản lý link khi đang sửa component
+        componentsPermissionGroup.AddChild(CoreFWPermissions.Components.ManageProcedureLinks, L("Permission:Components.ManageProcedureLinks"));
+        componentsPermissionGroup.AddChild(CoreFWPermissions.Components.Export, L("Permission:Components.Export")); // Optional
     }
 
     private static LocalizableString L(string name)

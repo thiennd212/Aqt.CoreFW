@@ -1,0 +1,23 @@
+﻿    @page "/Components/CreateModal"
+    @using Microsoft.AspNetCore.Mvc.Localization
+    @using Volo.Abp.AspNetCore.Mvc.UI.Bootstrap.TagHelpers.Modal
+    @using Aqt.CoreFW.Localization
+    @using Volo.Abp.AspNetCore.Mvc.UI.Bootstrap.TagHelpers.Form
+    @using Aqt.CoreFW.Web.Pages.Components
+    @using Aqt.CoreFW.Components
+    @model CreateModalModel
+    @inject IHtmlLocalizer<CoreFWResource> L
+@{
+    Layout = null;
+}
+
+
+<abp-modal size="Large">
+    <abp-dynamic-form abp-model="ComponentViewModel" asp-page="/Components/CreateModal" id="CreateComponentForm">
+        <abp-modal-header title="@L["NewComponent"].Value"></abp-modal-header>
+        <abp-modal-body>
+            <abp-form-content />
+        </abp-modal-body>
+        <abp-modal-footer buttons="@(AbpModalButtons.Cancel | AbpModalButtons.Save)"></abp-modal-footer>
+    </abp-dynamic-form>
+</abp-modal>

@@ -163,7 +163,20 @@ public class CoreFWMenuContributor : IMenuContributor
                      "/Procedures",                 // Đường dẫn URL của trang Index
                      icon: "fas fa-tasks",           // Chọn icon (ví dụ: fa-tasks, fa-file-alt)
                      order: 13                     // Điều chỉnh thứ tự hiển thị nếu cần
-                 ).RequirePermissions(CoreFWPermissions.Procedures.Default) // Có thể thêm RequirePermissions ở đây nữa
+                 )
+             );
+        }
+
+        if (await context.IsGrantedAsync(CoreFWPermissions.Components.Default)) // Kiểm tra quyền xem Components
+        {
+            administration.AddItem(
+                 new ApplicationMenuItem(
+                     CoreFWMenus.Components,        // Menu constant vừa thêm
+                     l["Menu:Components"],           // Key localization từ Domain.Shared
+                     "/Components",                 // Đường dẫn tới trang Index.cshtml
+                     icon: "fas fa-puzzle-piece",    // Icon (chọn icon phù hợp từ Font Awesome)
+                     order: 14                 // Thứ tự hiển thị (điều chỉnh nếu cần)
+                 )
              );
         }
 

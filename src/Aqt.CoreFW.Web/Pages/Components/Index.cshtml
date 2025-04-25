@@ -1,0 +1,77 @@
+﻿    @page
+    @using Aqt.CoreFW.Permissions
+    @using Microsoft.AspNetCore.Authorization
+    @using Volo.Abp.AspNetCore.Mvc.UI.Layout
+    @using Aqt.CoreFW.Web.Pages.Components
+    @using Aqt.CoreFW.Localization
+    @using Microsoft.Extensions.Localization
+    @using Aqt.CoreFW.Web.Menus
+    @using Aqt.CoreFW.Components
+    @model IndexModel
+    @inject IStringLocalizer<CoreFWResource> L
+    @inject IAuthorizationService AuthorizationService
+    @inject IPageLayout PageLayout
+@{
+    PageLayout.Content.Title = L["Components"].Value; // Title của trang
+    PageLayout.Content.MenuItemName = CoreFWMenus.Components; // Active menu
+}
+
+@section scripts {
+    <script>
+        // Pass permissions to JS
+        const permissions = {
+            canEdit:   @Html.Raw(ViewData["CanEdit"]),
+            canDelete: @Html.Raw(ViewData["CanDelete"]),
+            canManageLinks: @Html.Raw(ViewData["CanManageLinks"]) // Quyền quản lý link
+        };
+    </script>
+    <abp-script src="/Pages/Components/index.js" /> @* Đường dẫn tới JS file *@
+    }
+
+@section content_toolbar {
+    @if (await AuthorizationService.IsGrantedAsync(CoreFWPermissions.Components.Create))
+    {
+        <abp-button id="NewComponentButton"
+                    text="@L["NewComponent"].Value"
+                    icon="plus"
+                    button-type="Primary" size="Small" />
+    }
+    @if (await AuthorizationService.IsGrantedAsync(CoreFWPermissions.Components.Export))
+    {
+        <abp-button id="ExportExcelButton"
+                    text="@L["ExportToExcel"].Value"
+                    icon="file-excel"
+                    button-type="Success" size="Small" class="ms-2" />
+    }
+    }
+
+<abp-card>
+    <abp-card-body>
+        <abp-row class="mb-3">
+            <abp-column size-md="_4">
+                <input type="text" id="SearchFilter" class="form-control form-control-sm" placeholder="@L["Search"] (@L["DisplayName:Component.Code"], @L["DisplayName:Component.Name"])..." />
+            </abp-column>
+            <abp-column size-md="_3">
+                <select id="TypeFilter" class="form-select form-select-sm">
+                    <option value="">@L["All"] (@L["DisplayName:Component.Type"])</option>
+                    <option value="@((byte)ComponentType.Form)">@L["Enum:ComponentType.0"]</option>
+                    <option value="@((byte)ComponentType.File)">@L["Enum:ComponentType.1"]</option>
+                </select>
+            </abp-column>
+            <abp-column size-md="_3">
+                <select id="StatusFilter" class="form-select form-select-sm">
+                    <option value="">@L["All"] (@L["DisplayName:Component.Status"])</option>
+                    <option value="@((byte)ComponentStatus.Active)">@L["Enum:ComponentStatus.1"]</option>
+                    <option value="@((byte)ComponentStatus.Inactive)">@L["Enum:ComponentStatus.0"]</option>
+                </select>
+            </abp-column>
+            <abp-column size-md="_2" class="text-end">
+                <abp-button id="SearchButton"
+                            text="@L["Search"].Value"
+                            icon="search"
+                            button-type="Info" size="Small" />
+            </abp-column>
+        </abp-row>
+        <abp-table striped-rows="true" id="ComponentTable"></abp-table> @* ID của DataTable *@
+    </abp-card-body>
+</abp-card>

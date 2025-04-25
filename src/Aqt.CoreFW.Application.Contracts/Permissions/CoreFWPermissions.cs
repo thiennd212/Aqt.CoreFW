@@ -149,4 +149,17 @@ public static class CoreFWPermissions
         public const string Delete = Default + ".Delete";
         public const string Export = Default + ".Export";
     }
+
+    // Thêm định nghĩa permission cho Components
+    public static class Components // Sử dụng tên class khớp với module
+    {
+        // Group Permission Name: CoreFW.ComponentManagement (Từ kế hoạch 0)
+        // Prefix: CoreFW.Components
+        public const string Default = GroupName + ".Components"; // Quyền xem mặc định
+        public const string Create = Default + ".Create";
+        public const string Update = Default + ".Update";
+        public const string Delete = Default + ".Delete";
+        public const string ManageProcedureLinks = Default + ".ManageProcedureLinks"; // Quyền quản lý liên kết
+        public const string Export = Default + ".Export"; // Quyền xuất Excel (Optional)
+    }
 }
