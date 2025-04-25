@@ -149,4 +149,15 @@ public static class CoreFWPermissions
         public const string Delete = Default + ".Delete";
         public const string Export = Default + ".Export";
     }
+
+    // Thêm định nghĩa permission cho AttachedDocuments
+    public static class AttachedDocuments // Sử dụng tên class khớp với module
+    {
+        // Sử dụng convention đặt tên quyền: CoreFW.AttachedDocuments
+        public const string Default = GroupName + ".AttachedDocuments"; // Quyền xem mặc định
+        public const string Create = Default + ".Create";
+        public const string Update = Default + ".Update";
+        public const string Delete = Default + ".Delete";
+        public const string Export = Default + ".Export";
+    }
 }

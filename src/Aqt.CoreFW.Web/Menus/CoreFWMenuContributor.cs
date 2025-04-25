@@ -167,6 +167,17 @@ public class CoreFWMenuContributor : IMenuContributor
              );
         }
 
+        if (await context.IsGrantedAsync(CoreFWPermissions.AttachedDocuments.Default)) // Check quyền xem
+        {
+            administration.AddItem(new ApplicationMenuItem(
+                CoreFWMenus.AttachedDocuments,   // Menu constant mới
+                l["Menu:AttachedDocuments"],  // Key localization mới
+                "/AttachedDocuments",       // Đường dẫn tới trang Index mới
+                icon: "fa fa-paperclip",   // Icon (có thể thay đổi)
+                order: 14                   // Thứ tự trong menu cha (điều chỉnh nếu cần)
+            ));
+        }
+
         var catalogManagementMenu = new ApplicationMenuItem(
                    CoreFWMenus.CatalogManagement,
                    l["Menu:CatalogManagement"], // Key localization cho "Catalog Management"

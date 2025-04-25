@@ -21,4 +21,5 @@ public class CoreFWMenus
     public const string DataCores = Prefix + ".DataCores";
     public const string DataImportants = Prefix + ".DataImportants";
     public const string Procedures = Prefix + ".Procedures";
+    public const string AttachedDocuments = Prefix + ".AttachedDocuments";
 }

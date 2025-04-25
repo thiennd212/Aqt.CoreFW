@@ -103,6 +103,13 @@ public class CoreFWPermissionDefinitionProvider : PermissionDefinitionProvider
         proceduresPermission.AddChild(CoreFWPermissions.Procedures.Update, L("Permission:Procedures.Update"));
         proceduresPermission.AddChild(CoreFWPermissions.Procedures.Delete, L("Permission:Procedures.Delete"));
         proceduresPermission.AddChild(CoreFWPermissions.Procedures.Export, L("Permission:Procedures.Export"));
+
+        // Thêm định nghĩa permissions cho AttachedDocuments
+        var attachedDocumentPermission = coreFwGroup.AddPermission(CoreFWPermissions.AttachedDocuments.Default, L("Permission:AttachedDocumentManagement")); // Sử dụng key localization từ plan 1
+        attachedDocumentPermission.AddChild(CoreFWPermissions.AttachedDocuments.Create, L("Permission:AttachedDocuments.Create"));
+        attachedDocumentPermission.AddChild(CoreFWPermissions.AttachedDocuments.Update, L("Permission:AttachedDocuments.Update"));
+        attachedDocumentPermission.AddChild(CoreFWPermissions.AttachedDocuments.Delete, L("Permission:AttachedDocuments.Delete"));
+        attachedDocumentPermission.AddChild(CoreFWPermissions.AttachedDocuments.Export, L("Permission:AttachedDocuments.Export"));
     }
 
     private static LocalizableString L(string name)
