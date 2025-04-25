@@ -127,103 +127,6 @@ namespace Aqt.CoreFW.Migrations
                     b.ToTable("AppAccountTypes", (string)null);
                 });
 
-            modelBuilder.Entity("Aqt.CoreFW.Domain.AttachedDocuments.Entities.AttachedDocument", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .HasColumnType("RAW(16)");
-
-                    b.Property<string>("Code")
-                        .IsRequired()
-                        .HasMaxLength(50)
-                        .HasColumnType("NVARCHAR2(50)")
-                        .HasColumnName("Code");
-
-                    b.Property<string>("ConcurrencyStamp")
-                        .IsConcurrencyToken()
-                        .IsRequired()
-                        .HasMaxLength(40)
-                        .HasColumnType("NVARCHAR2(40)")
-                        .HasColumnName("ConcurrencyStamp");
-
-                    b.Property<DateTime>("CreationTime")
-                        .HasColumnType("TIMESTAMP(7)")
-                        .HasColumnName("CreationTime");
-
-                    b.Property<Guid?>("CreatorId")
-                        .HasColumnType("RAW(16)")
-                        .HasColumnName("CreatorId");
-
-                    b.Property<Guid?>("DeleterId")
-                        .HasColumnType("RAW(16)")
-                        .HasColumnName("DeleterId");
-
-                    b.Property<DateTime?>("DeletionTime")
-                        .HasColumnType("TIMESTAMP(7)")
-                        .HasColumnName("DeletionTime");
-
-                    b.Property<string>("Description")
-                        .HasMaxLength(500)
-                        .HasColumnType("NVARCHAR2(500)")
-                        .HasColumnName("Description");
-
-                    b.Property<string>("ExtraProperties")
-                        .IsRequired()
-                        .HasColumnType("NVARCHAR2(2000)")
-                        .HasColumnName("ExtraProperties");
-
-                    b.Property<bool>("IsDeleted")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("BOOLEAN")
-                        .HasDefaultValue(false)
-                        .HasColumnName("IsDeleted");
-
-                    b.Property<DateTime?>("LastModificationTime")
-                        .HasColumnType("TIMESTAMP(7)")
-                        .HasColumnName("LastModificationTime");
-
-                    b.Property<Guid?>("LastModifierId")
-                        .HasColumnType("RAW(16)")
-                        .HasColumnName("LastModifierId");
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasMaxLength(250)
-                        .HasColumnType("NVARCHAR2(250)")
-                        .HasColumnName("Name");
-
-                    b.Property<int>("Order")
-                        .HasColumnType("NUMBER(10)")
-                        .HasColumnName("Order");
-
-                    b.Property<Guid>("ProcedureId")
-                        .HasColumnType("RAW(16)")
-                        .HasColumnName("ProcedureId");
-
-                    b.Property<byte>("Status")
-                        .HasColumnType("NUMBER(3)")
-                        .HasColumnName("Status");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("Name")
-                        .HasDatabaseName("IX_AppAttachedDocuments_Name");
-
-                    b.HasIndex("ProcedureId")
-                        .HasDatabaseName("IX_AppAttachedDocuments_ProcedureId");
-
-                    b.HasIndex("Status")
-                        .HasDatabaseName("IX_AppAttachedDocuments_Status");
-
-                    b.HasIndex("ProcedureId", "Code")
-                        .IsUnique()
-                        .HasDatabaseName("IX_AppAttachedDocuments_ProcedureId_Code");
-
-                    b.HasIndex("ProcedureId", "Status", "Order", "Name")
-                        .HasDatabaseName("IX_AppAttachedDocuments_ProcedureId_Status_Order_Name");
-
-                    b.ToTable("AppAttachedDocuments", (string)null);
-                });
-
             modelBuilder.Entity("Aqt.CoreFW.Domain.Communes.Entities.Commune", b =>
                 {
                     b.Property<Guid>("Id")
@@ -3386,15 +3289,6 @@ namespace Aqt.CoreFW.Migrations
                     b.HasKey("TenantId", "Name");
 
                     b.ToTable("AbpTenantConnectionStrings", (string)null);
-                });
-
-            modelBuilder.Entity("Aqt.CoreFW.Domain.AttachedDocuments.Entities.AttachedDocument", b =>
-                {
-                    b.HasOne("Aqt.CoreFW.Domain.Procedures.Entities.Procedure", null)
-                        .WithMany()
-                        .HasForeignKey("ProcedureId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
                 });
 
             modelBuilder.Entity("Aqt.CoreFW.Domain.Communes.Entities.Commune", b =>
