@@ -83,3 +83,5 @@ dotnet_diagnostic.CS8629.severity = none
 dotnet_diagnostic.S125.severity = none
 # CS8602: Dereference of a possibly null reference.
 dotnet_diagnostic.CS8602.severity = none
+# Disable requirement for documentation headers
+dotnet_diagnostic.PropertyDocumentationHeader.severity = none
