@@ -230,6 +230,7 @@ public class CoreFWWebModule : AbpModule
                 bundle =>
                 {
                     bundle.AddFiles("/global-scripts.js");
+                    bundle.AddFiles("/libs/select2/theme/select2-bootstrap-5-theme.css");
                     bundle.AddFiles("/global-styles.css");
                 }
             );

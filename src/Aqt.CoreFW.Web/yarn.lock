@@ -218,7 +218,7 @@ bootstrap-daterangepicker@^3.1.0:
     jquery ">=1.10"
     moment "^2.9.0"
 
-bootstrap@^5.3.3:
+bootstrap@^5.1.3, bootstrap@^5.3.3:
   version "5.3.5"
   resolved "https://registry.npmjs.org/bootstrap/-/bootstrap-5.3.5.tgz"
   integrity sha512-ct1CHKtiobRimyGzmsSldEtM03E8fcEX4Tb3dGXz1V8faRwM50+vfHwTzOxB3IlKO7m+9vTH3s/3C6T2EAPeTA==
@@ -306,6 +306,13 @@ moment@^2.30.1, moment@^2.9.0:
   version "2.30.1"
   resolved "https://registry.npmjs.org/moment/-/moment-2.30.1.tgz"
   integrity sha512-uEmtNhbDOrWPFS+hdjFCBfy9f2YoyzRpwcl+DqpC6taX21FzsTLQVbMV/W7PzNSX6x/bhC1zA3c2UQ5NzH6how==
+
+select2-bootstrap-5-theme@^1.3.0:
+  version "1.3.0"
+  resolved "https://registry.npmjs.org/select2-bootstrap-5-theme/-/select2-bootstrap-5-theme-1.3.0.tgz"
+  integrity sha512-uEJDruP4tmwyKcs3V0oP7CIsyC45PGF5ddo8unwTp8OucJ1PSuTOBr+xbWaHTQPGnvp7N96psVQ5UBMQvFCcHA==
+  dependencies:
+    bootstrap "^5.1.3"
 
 select2@^4.0.13:
   version "4.0.13"

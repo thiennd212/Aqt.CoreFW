@@ -4,6 +4,6 @@
 
     // Khởi tạo Select2 (nếu dùng)
     form.find('select[name="ComponentViewModel.ProcedureIds"]').attr('multiple', 'multiple');
-    form.find('select[name="ComponentViewModel.ProcedureIds"]').select2({ dropdownParent: form.closest('.modal-content'), width: '100%' });
+    form.find('select[name="ComponentViewModel.ProcedureIds"]').select2({ dropdownParent: form.closest('.modal-content'), width: '100%', theme: 'bootstrap-5' });
 
 })(jQuery);
