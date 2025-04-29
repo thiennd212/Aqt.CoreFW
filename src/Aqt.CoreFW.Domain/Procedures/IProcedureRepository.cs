@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
@@ -82,5 +82,15 @@ public interface IProcedureRepository : IRepository<Procedure, Guid> // Kế th�
     Task<List<Procedure>> GetLookupAsync(
         bool onlyActive = true,
         string? sorting = "Order ASC, Name ASC",
+        CancellationToken cancellationToken = default);
+
+    /// <summary>
+    /// Gets a list of Procedures by their IDs.
+    /// </summary>
+    /// <param name="ids"></param>
+    /// <param name="cancellationToken"></param>
+    /// <returns></returns>
+    Task<List<Procedure>> GetListByIdsAsync(
+        List<Guid> ids,
         CancellationToken cancellationToken = default);
 } 

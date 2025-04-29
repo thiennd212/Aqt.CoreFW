@@ -85,3 +85,9 @@ dotnet_diagnostic.S125.severity = none
 dotnet_diagnostic.CS8602.severity = none
 # Disable requirement for documentation headers
 dotnet_diagnostic.PropertyDocumentationHeader.severity = none
+# S1135: Track uses of "TODO" tags
+dotnet_diagnostic.S1135.severity = none
+# MVC1002: Route attributes cannot be applied to page handler methods
+dotnet_diagnostic.MVC1002.severity = none
+# MVC1001: Filters cannot be applied to page handler methods
+dotnet_diagnostic.MVC1001.severity = none

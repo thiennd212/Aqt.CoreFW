@@ -1,0 +1,46 @@
+﻿@page "/BDocuments/EditModal"
+@using Microsoft.AspNetCore.Mvc.Localization
+@using Volo.Abp.AspNetCore.Mvc.UI.Bootstrap.TagHelpers.Modal
+@using Aqt.CoreFW.Localization
+@using Volo.Abp.AspNetCore.Mvc.UI.Bootstrap.TagHelpers.Form
+@using Aqt.CoreFW.Web.Pages.BDocuments
+@model EditModalModel
+@inject IHtmlLocalizer<CoreFWResource> L
+@{
+    Layout = null;
+}
+
+@* Edit Modal chỉ sửa thông tin chính, không sửa Tờ khai hay File đính kèm ở đây *@
+<abp-dynamic-form abp-model="BDocumentViewModel" asp-page="/BDocuments/EditModal" id="EditBDocumentForm">
+    <abp-modal size="ExtraLarge">
+        <abp-modal-header title="@L["EditBDocument"].Value"></abp-modal-header>
+        <abp-modal-body>
+            @* ID ẩn của BDocument cần sửa *@
+            <input type="hidden" asp-for="BDocumentViewModel.Id" />
+
+            @* Các trường thông tin không cho sửa trực tiếp ở đây *@
+            <abp-input asp-for="BDocumentViewModel.MaHoSo" readonly="true" />
+            <abp-input asp-for="BDocumentViewModel.ProcedureName" readonly="true" label="@L["DisplayName:BDocument.ProcedureId"].Value" />
+            <abp-input asp-for="BDocumentViewModel.TrangThaiHoSoName" readonly="true" label="@L["DisplayName:BDocument.TrangThaiHoSoId"].Value" />
+            <hr />
+
+            <h5>@L["ApplicantInformation"]</h5>
+            <abp-input asp-for="BDocumentViewModel.TenChuHoSo" />
+            <abp-input asp-for="BDocumentViewModel.SoDinhDanhChuHoSo" />
+            <abp-input asp-for="BDocumentViewModel.DiaChiChuHoSo" />
+            <abp-input asp-for="BDocumentViewModel.EmailChuHoSo" type="email" />
+            <abp-input asp-for="BDocumentViewModel.SoDienThoaiChuHoSo" type="tel" />
+            <hr />
+
+            <h5>@L["AdditionalInformation"]</h5>
+            <abp-input asp-for="BDocumentViewModel.PhamViHoatDong" /> @* TextArea *@
+            <abp-check asp-for="BDocumentViewModel.DangKyNhanQuaBuuDien" /> @* Checkbox *@
+
+            @* Không hiển thị/sửa ComponentDataList ở đây *@
+
+        </abp-modal-body>
+        <abp-modal-footer buttons="@(AbpModalButtons.Cancel | AbpModalButtons.Save)"></abp-modal-footer>
+    </abp-modal>
+</abp-dynamic-form>
+
+<abp-script src="/Pages/BDocuments/editModal.js" />

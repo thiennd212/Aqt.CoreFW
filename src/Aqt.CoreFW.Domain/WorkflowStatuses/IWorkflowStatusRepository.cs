@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
@@ -95,5 +95,15 @@ public interface IWorkflowStatusRepository : IRepository<WorkflowStatus, Guid>
     /// <returns>True if the status is in use; otherwise, false (currently placeholder).</returns>
     Task<bool> IsInUseAsync(
         Guid workflowStatusId,
+        CancellationToken cancellationToken = default);
+
+    /// <summary>
+    /// Gets a list of workflow statuses by their unique IDs.
+    /// </summary>
+    /// <param name="ids"></param>
+    /// <param name="cancellationToken"></param>
+    /// <returns></returns>
+    Task<List<WorkflowStatus>> GetListByIdsAsync(
+        List<Guid> ids,
         CancellationToken cancellationToken = default);
 }

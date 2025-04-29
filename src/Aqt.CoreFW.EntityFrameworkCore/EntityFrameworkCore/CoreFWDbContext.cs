@@ -28,6 +28,7 @@ using Volo.Abp.TenantManagement;
 using Volo.Abp.TenantManagement.EntityFrameworkCore;
 using Aqt.CoreFW.Domain.Procedures.Entities;
 using Aqt.CoreFW.Domain.Components.Entities;
+using Aqt.CoreFW.Domain.BDocuments.Entities;
 namespace Aqt.CoreFW.EntityFrameworkCore;
 
 [ReplaceDbContext(typeof(IIdentityDbContext))]
@@ -55,6 +56,8 @@ public class CoreFWDbContext :
     public DbSet<Procedure> Procedures { get; set; }
     public DbSet<ProcedureComponent> ProcedureComponents { get; set; }
     public DbSet<ProcedureComponentLink> ProcedureComponentLinks { get; set; }
+    public DbSet<BDocument> BDocuments { get; set; }
+    public DbSet<BDocumentData> BDocumentData { get; set; }
 
     #region Entities from the modules
 

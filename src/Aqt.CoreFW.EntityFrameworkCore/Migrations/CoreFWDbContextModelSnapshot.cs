@@ -127,6 +127,204 @@ namespace Aqt.CoreFW.Migrations
                     b.ToTable("AppAccountTypes", (string)null);
                 });
 
+            modelBuilder.Entity("Aqt.CoreFW.Domain.BDocuments.Entities.BDocument", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .HasColumnType("RAW(16)");
+
+                    b.Property<string>("ConcurrencyStamp")
+                        .IsConcurrencyToken()
+                        .IsRequired()
+                        .HasMaxLength(40)
+                        .HasColumnType("NVARCHAR2(40)")
+                        .HasColumnName("ConcurrencyStamp");
+
+                    b.Property<DateTime>("CreationTime")
+                        .HasColumnType("TIMESTAMP(7)")
+                        .HasColumnName("CreationTime");
+
+                    b.Property<Guid?>("CreatorId")
+                        .HasColumnType("RAW(16)")
+                        .HasColumnName("CreatorId");
+
+                    b.Property<bool>("DangKyNhanQuaBuuDien")
+                        .HasColumnType("BOOLEAN")
+                        .HasColumnName("DangKyNhanQuaBuuDien");
+
+                    b.Property<Guid?>("DeleterId")
+                        .HasColumnType("RAW(16)")
+                        .HasColumnName("DeleterId");
+
+                    b.Property<DateTime?>("DeletionTime")
+                        .HasColumnType("TIMESTAMP(7)")
+                        .HasColumnName("DeletionTime");
+
+                    b.Property<string>("DiaChiChuHoSo")
+                        .HasMaxLength(500)
+                        .HasColumnType("NVARCHAR2(500)")
+                        .HasColumnName("DiaChiChuHoSo");
+
+                    b.Property<string>("EmailChuHoSo")
+                        .HasMaxLength(100)
+                        .HasColumnType("NVARCHAR2(100)")
+                        .HasColumnName("EmailChuHoSo");
+
+                    b.Property<string>("ExtraProperties")
+                        .IsRequired()
+                        .HasColumnType("NVARCHAR2(2000)")
+                        .HasColumnName("ExtraProperties");
+
+                    b.Property<bool>("IsDeleted")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("BOOLEAN")
+                        .HasDefaultValue(false)
+                        .HasColumnName("IsDeleted");
+
+                    b.Property<DateTime?>("LastModificationTime")
+                        .HasColumnType("TIMESTAMP(7)")
+                        .HasColumnName("LastModificationTime");
+
+                    b.Property<Guid?>("LastModifierId")
+                        .HasColumnType("RAW(16)")
+                        .HasColumnName("LastModifierId");
+
+                    b.Property<string>("LyDoTuChoiHoacBoSung")
+                        .HasMaxLength(1000)
+                        .HasColumnType("NVARCHAR2(1000)")
+                        .HasColumnName("LyDoTuChoiHoacBoSung");
+
+                    b.Property<string>("MaHoSo")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("NVARCHAR2(50)")
+                        .HasColumnName("MaHoSo");
+
+                    b.Property<DateTime?>("NgayHenTra")
+                        .HasColumnType("TIMESTAMP(7)")
+                        .HasColumnName("NgayHenTra");
+
+                    b.Property<DateTime?>("NgayNop")
+                        .HasColumnType("TIMESTAMP(7)")
+                        .HasColumnName("NgayNop");
+
+                    b.Property<DateTime?>("NgayTiepNhan")
+                        .HasColumnType("TIMESTAMP(7)")
+                        .HasColumnName("NgayTiepNhan");
+
+                    b.Property<DateTime?>("NgayTraKetQua")
+                        .HasColumnType("TIMESTAMP(7)")
+                        .HasColumnName("NgayTraKetQua");
+
+                    b.Property<string>("PhamViHoatDong")
+                        .HasColumnType("NCLOB")
+                        .HasColumnName("PhamViHoatDong");
+
+                    b.Property<Guid>("ProcedureId")
+                        .HasColumnType("RAW(16)")
+                        .HasColumnName("ProcedureId");
+
+                    b.Property<string>("SoDienThoaiChuHoSo")
+                        .HasMaxLength(20)
+                        .HasColumnType("NVARCHAR2(20)")
+                        .HasColumnName("SoDienThoaiChuHoSo");
+
+                    b.Property<string>("SoDinhDanhChuHoSo")
+                        .HasMaxLength(50)
+                        .HasColumnType("NVARCHAR2(50)")
+                        .HasColumnName("SoDinhDanhChuHoSo");
+
+                    b.Property<string>("TenChuHoSo")
+                        .IsRequired()
+                        .HasMaxLength(250)
+                        .HasColumnType("NVARCHAR2(250)")
+                        .HasColumnName("TenChuHoSo");
+
+                    b.Property<Guid?>("TrangThaiHoSoId")
+                        .HasColumnType("RAW(16)")
+                        .HasColumnName("TrangThaiHoSoId");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CreationTime")
+                        .HasDatabaseName("IX_AppBDocuments_CreationTime");
+
+                    b.HasIndex("DangKyNhanQuaBuuDien")
+                        .HasDatabaseName("IX_AppBDocuments_DangKyBuuDien");
+
+                    b.HasIndex("MaHoSo")
+                        .IsUnique()
+                        .HasDatabaseName("IX_AppBDocuments_MaHoSo");
+
+                    b.HasIndex("ProcedureId")
+                        .HasDatabaseName("IX_AppBDocuments_ProcedureId");
+
+                    b.HasIndex("TenChuHoSo")
+                        .HasDatabaseName("IX_AppBDocuments_TenChuHoSo");
+
+                    b.HasIndex("TrangThaiHoSoId")
+                        .HasDatabaseName("IX_AppBDocuments_TrangThaiHoSoId");
+
+                    b.HasIndex("ProcedureId", "TrangThaiHoSoId", "CreationTime")
+                        .HasDatabaseName("IX_AppBDocuments_Proc_Status_Created");
+
+                    b.ToTable("AppBDocuments", (string)null);
+                });
+
+            modelBuilder.Entity("Aqt.CoreFW.Domain.BDocuments.Entities.BDocumentData", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .HasColumnType("RAW(16)");
+
+                    b.Property<Guid>("BDocumentId")
+                        .HasColumnType("RAW(16)")
+                        .HasColumnName("BDocumentId");
+
+                    b.Property<DateTime>("CreationTime")
+                        .HasColumnType("TIMESTAMP(7)")
+                        .HasColumnName("CreationTime");
+
+                    b.Property<Guid?>("CreatorId")
+                        .HasColumnType("RAW(16)")
+                        .HasColumnName("CreatorId");
+
+                    b.Property<string>("DuLieuNhap")
+                        .HasColumnType("NCLOB")
+                        .HasColumnName("DuLieuNhap");
+
+                    b.Property<Guid?>("FileId")
+                        .HasColumnType("RAW(16)")
+                        .HasColumnName("FileId");
+
+                    b.Property<DateTime?>("LastModificationTime")
+                        .HasColumnType("TIMESTAMP(7)")
+                        .HasColumnName("LastModificationTime");
+
+                    b.Property<Guid?>("LastModifierId")
+                        .HasColumnType("RAW(16)")
+                        .HasColumnName("LastModifierId");
+
+                    b.Property<Guid>("ProcedureComponentId")
+                        .HasColumnType("RAW(16)")
+                        .HasColumnName("ProcedureComponentId");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("BDocumentId")
+                        .HasDatabaseName("IX_AppBDocumentData_BDocumentId");
+
+                    b.HasIndex("FileId")
+                        .HasDatabaseName("IX_AppBDocumentData_FileId");
+
+                    b.HasIndex("ProcedureComponentId")
+                        .HasDatabaseName("IX_AppBDocumentData_ProcedureComponentId");
+
+                    b.HasIndex("BDocumentId", "ProcedureComponentId")
+                        .IsUnique()
+                        .HasDatabaseName("IX_AppBDocumentData_Doc_Comp");
+
+                    b.ToTable("AppBDocumentData", (string)null);
+                });
+
             modelBuilder.Entity("Aqt.CoreFW.Domain.Communes.Entities.Commune", b =>
                 {
                     b.Property<Guid>("Id")
@@ -3416,6 +3614,33 @@ namespace Aqt.CoreFW.Migrations
                     b.ToTable("AbpTenantConnectionStrings", (string)null);
                 });
 
+            modelBuilder.Entity("Aqt.CoreFW.Domain.BDocuments.Entities.BDocument", b =>
+                {
+                    b.HasOne("Aqt.CoreFW.Domain.Procedures.Entities.Procedure", "Procedure")
+                        .WithMany()
+                        .HasForeignKey("ProcedureId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("Aqt.CoreFW.Domain.WorkflowStatuses.Entities.WorkflowStatus", "TrangThaiHoSo")
+                        .WithMany()
+                        .HasForeignKey("TrangThaiHoSoId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.Navigation("Procedure");
+
+                    b.Navigation("TrangThaiHoSo");
+                });
+
+            modelBuilder.Entity("Aqt.CoreFW.Domain.BDocuments.Entities.BDocumentData", b =>
+                {
+                    b.HasOne("Aqt.CoreFW.Domain.BDocuments.Entities.BDocument", null)
+                        .WithMany("DocumentData")
+                        .HasForeignKey("BDocumentId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
             modelBuilder.Entity("Aqt.CoreFW.Domain.Communes.Entities.Commune", b =>
                 {
                     b.HasOne("Aqt.CoreFW.Domain.Districts.Entities.District", null)
@@ -3632,6 +3857,11 @@ namespace Aqt.CoreFW.Migrations
                         .HasForeignKey("TenantId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+                });
+
+            modelBuilder.Entity("Aqt.CoreFW.Domain.BDocuments.Entities.BDocument", b =>
+                {
+                    b.Navigation("DocumentData");
                 });
 
             modelBuilder.Entity("Aqt.CoreFW.Domain.Components.Entities.ProcedureComponent", b =>

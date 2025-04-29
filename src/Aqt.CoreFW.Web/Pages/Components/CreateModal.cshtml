@@ -11,12 +11,17 @@
     Layout = null;
 }
 
-
 <abp-modal size="Large">
     <abp-dynamic-form abp-model="ComponentViewModel" asp-page="/Components/CreateModal" id="CreateComponentForm">
         <abp-modal-header title="@L["NewComponent"].Value"></abp-modal-header>
         <abp-modal-body>
             <abp-form-content />
+            <abp-input asp-for="ComponentViewModel.TempPath"
+                       asp-label="@L["DisplayName:Component.TempPath"].Value" />
+            @* <input asp-for="UploadedFiles" type="file" multiple id="file" data-preview-file-type="text" /> *@
+            <abp-button id="UploadButton"
+                        text="@L["Upload"].Value"
+                        button-type="Primary" />
         </abp-modal-body>
         <abp-modal-footer buttons="@(AbpModalButtons.Cancel | AbpModalButtons.Save)"></abp-modal-footer>
     </abp-dynamic-form>

@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
@@ -147,4 +147,38 @@ public interface IProcedureComponentRepository : IRepository<ProcedureComponent,
         bool onlyActive = true,
         string? sorting = "Order ASC, Name ASC",
         CancellationToken cancellationToken = default);
-} 
+
+    /// <summary>
+    /// IsLinkedToProcedureAsync
+    /// </summary>
+    /// <param name="componentId"></param>
+    /// <param name="procedureId"></param>
+    /// <returns></returns>
+    Task<bool> IsLinkedToProcedureAsync(Guid componentId, Guid procedureId);
+
+    /// <summary>
+    /// Gets a list of ProcedureComponents by their IDs.
+    /// </summary>
+    /// <param name="ids"></param>
+    /// <param name="includeDetails"></param>
+    /// <param name="cancellationToken"></param>
+    /// <returns></returns>
+    Task<List<ProcedureComponent>> GetListByIdsAsync(
+        List<Guid> ids,
+        bool includeDetails = false, // Default false for lists
+        CancellationToken cancellationToken = default);
+
+    /// <summary>
+    /// GetListByProcedureAsync
+    /// </summary>
+    /// <param name="procedureId"></param>
+    /// <param name="includeDetails"></param>
+    /// <param name="cancellationToken"></param>
+    /// <returns></returns>
+    Task<List<ProcedureComponent>> GetListByProcedureAsync(
+        Guid procedureId,
+        ComponentType? type = null,
+        bool includeDetails = false,
+        CancellationToken cancellationToken = default);
+
+}

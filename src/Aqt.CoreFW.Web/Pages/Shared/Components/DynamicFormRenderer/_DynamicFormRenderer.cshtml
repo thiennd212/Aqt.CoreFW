@@ -1,0 +1,281 @@
+﻿@using System.Text.Json
+@using System.Text.Json.Nodes
+@using Microsoft.AspNetCore.Mvc.Localization
+@using Microsoft.Extensions.Logging
+@using Aqt.CoreFW.Localization
+@using Aqt.CoreFW.Web.Pages.Shared.ViewModels
+@using Volo.Abp.AspNetCore.Mvc.UI.Bootstrap.TagHelpers.Grid
+@model DynamicFormViewModel
+@inject IHtmlLocalizer<CoreFWResource> L
+@inject ILogger<DynamicFormViewModel> Logger
+
+@{
+    // --- Parse FormDefinition JSON ---
+    JsonNode? formDefinitionNode = null;
+    bool definitionParseError = false;
+    string definitionErrorMessage = string.Empty;
+    // Tạo prefix ID duy nhất cho instance form này, giúp tránh xung đột ID khi có nhiều form trên trang
+    string instancePrefix = string.IsNullOrWhiteSpace(Model.InstanceId) ? $"dynform_{Guid.NewGuid().ToString("N").Substring(0, 8)}" : $"dynform_{Model.InstanceId}";
+    try
+    {
+        if (!string.IsNullOrWhiteSpace(Model.FormDefinition))
+        {
+            formDefinitionNode = JsonNode.Parse(Model.FormDefinition);
+        }
+        else
+        {
+            // FormDefinition là bắt buộc
+            definitionParseError = true;
+            definitionErrorMessage = L["FormDefinitionIsRequired"].Value;
+            Logger.LogWarning("FormDefinition is null or empty for InstanceId '{InstanceId}'.", Model.InstanceId ?? "N/A");
+        }
+    }
+    catch (JsonException ex)
+    {
+        definitionParseError = true;
+        definitionErrorMessage = L["ErrorParsingFormDefinitionJson", ex.Message].Value;
+        Logger.LogError(ex, "Error parsing FormDefinition JSON for InstanceId '{InstanceId}'. Content: {FormDefinitionContent}", Model.InstanceId ?? "N/A", Model.FormDefinition);
+    }
+
+    // --- Parse FormData JSON ---
+    Dictionary<string, JsonNode?> initialData = new(StringComparer.OrdinalIgnoreCase); // Key không phân biệt hoa thường
+    try
+    {
+        if (!string.IsNullOrWhiteSpace(Model.FormData))
+        {
+            var dataNode = JsonNode.Parse(Model.FormData);
+            if (dataNode is JsonObject dataObj)
+            {
+                foreach (var kvp in dataObj)
+                {
+                    // Clone để tránh việc tham chiếu bị thay đổi ngoài ý muốn nếu dataNode được dùng ở nơi khác
+                    initialData[kvp.Key] = kvp.Value?.DeepClone();
+                }
+            }
+            else
+            {
+                // Ghi log nếu FormData không phải là một object JSON hợp lệ
+                Logger.LogWarning("FormData is not a valid JSON object for InstanceId '{InstanceId}'. Content: {FormDataContent}", Model.InstanceId ?? "N/A", Model.FormData);
+            }
+        }
+    }
+    catch (JsonException ex)
+    {
+        // Chỉ log lỗi, không hiển thị ra UI trừ khi đang ở chế độ debug
+        Logger.LogError(ex, "Error parsing FormData JSON for InstanceId '{InstanceId}'. Content: {FormDataContent}", Model.InstanceId ?? "N/A", Model.FormData);
+    }
+
+    // --- Helper lấy giá trị ban đầu ---
+    string? GetInitialValueAsString(string? fieldName)
+    {
+        if (string.IsNullOrEmpty(fieldName) || !initialData.TryGetValue(fieldName, out var node) || node == null)
+            return null;
+
+        // Ưu tiên chuyển đổi các kiểu phổ biến sang chuỗi
+        if (node is JsonValue jsonValue)
+        {
+            if (jsonValue.TryGetValue<string>(out var strValue)) return strValue;
+            if (jsonValue.TryGetValue<bool>(out var boolValue)) return boolValue.ToString().ToLowerInvariant(); // "true" / "false"
+            if (jsonValue.TryGetValue<DateTime>(out var dtValue)) return dtValue.ToString("o"); // ISO 8601 format, thích hợp cho input datetime
+            if (jsonValue.TryGetValue<DateTimeOffset>(out var dtoValue)) return dtoValue.ToString("o");
+            if (jsonValue.TryGetValue<Guid>(out var guidValue)) return guidValue.ToString();
+            // Các kiểu số: dùng ToString() với InvariantCulture để đảm bảo dấu thập phân là '.'
+            if (jsonValue.TryGetValue<decimal>(out var decValue)) return decValue.ToString(System.Globalization.CultureInfo.InvariantCulture);
+            if (jsonValue.TryGetValue<double>(out var dblValue)) return dblValue.ToString(System.Globalization.CultureInfo.InvariantCulture);
+            if (jsonValue.TryGetValue<long>(out var lngValue)) return lngValue.ToString(System.Globalization.CultureInfo.InvariantCulture);
+            if (jsonValue.TryGetValue<int>(out var intValue)) return intValue.ToString(System.Globalization.CultureInfo.InvariantCulture);
+        }
+        // Nếu là kiểu phức tạp (object, array) hoặc không xác định, trả về dạng JSON của nó
+        return node.ToJsonString();
+    }
+
+    bool GetInitialValueAsBool(string? fieldName)
+    {
+        if (string.IsNullOrEmpty(fieldName) || !initialData.TryGetValue(fieldName, out var node) || node == null)
+            return false;
+        if (node is JsonValue jsonValue && jsonValue.TryGetValue<bool>(out var boolValue))
+            return boolValue;
+        // Cho phép giá trị chuỗi "true" (không phân biệt hoa thường) được coi là true
+        if (node is JsonValue jsonValueStr && jsonValueStr.TryGetValue<string>(out var strValue))
+            return strValue.Equals("true", StringComparison.OrdinalIgnoreCase);
+        // Cho phép giá trị số 1 được coi là true
+        long longValue = 0;
+        if (node is JsonValue jsonValueNum && (jsonValueNum.TryGetValue<int>(out var intValue) || jsonValueNum.TryGetValue<long>(out longValue)))
+            return intValue == 1 || longValue == 1;
+
+        return false; // Mặc định là false nếu không parse được
+    }
+
+}
+
+@if (definitionParseError)
+{
+    <abp-alert alert-type="Danger" title="@L["Error"].Value">@definitionErrorMessage</abp-alert>
+}
+else if (formDefinitionNode?["fields"] is JsonArray fields && fields.Count > 0)
+{
+    @* Option: Hiển thị tên form nếu có *@
+    @if (!string.IsNullOrWhiteSpace(Model.FormName))
+    {
+        <h6 class="dynamic-form-name">@Model.FormName</h6>
+    }
+    <abp-row class="dynamic-form-container">
+        @{
+            int fieldIndex = 0;
+        }
+        @foreach (var fieldNode in fields)
+        {
+            if (fieldNode is JsonObject field)
+            {
+                // --- Lấy thuộc tính field từ JSON ---
+                var fieldName = field["name"]?.GetValue<string>();
+                if (string.IsNullOrWhiteSpace(fieldName))
+                {
+                    Logger.LogWarning("Skipping field with empty or missing 'name' in FormDefinition for InstanceId '{InstanceId}'.", Model.InstanceId ?? "N/A");
+                    continue; // Bỏ qua field không có tên hợp lệ
+                }
+
+                var fieldLabelKey = field["label"]?.GetValue<string>() ?? fieldName; // Dùng name nếu label thiếu
+                var fieldType = field["type"]?.GetValue<string>()?.ToLowerInvariant() ?? "text";
+                var isRequired = field["required"]?.GetValue<bool>() ?? false;
+                var placeholderKey = field["placeholder"]?.GetValue<string>();
+                var descriptionKey = field["description"]?.GetValue<string>();
+                var readonlyFlag = field["readonly"]?.GetValue<bool>() ?? false; // || Model.IsReadonly; // Option: Kết hợp cờ readonly của field và của toàn form
+                // Lấy độ rộng cột từ JSON, mặc định là 6 nếu không có hoặc không hợp lệ
+                ColumnSize columnSize = ColumnSize.Auto;
+                var fieldColumnSpan = field["columnSpan"]?.GetValue<int>() ?? 6;
+                if (fieldColumnSpan < 1 || fieldColumnSpan > 12) { columnSize = ColumnSize._6; }
+
+                // --- Lấy giá trị ban đầu ---
+                var initialValueStr = GetInitialValueAsString(fieldName);
+
+                // --- Chuẩn bị attribute ---
+                var requiredAttr = isRequired ? "required" : null;
+                var requiredSpan = isRequired ? Html.Raw("<span class='text-danger ms-1'>*</span>") : Html.Raw("");
+                // Làm sạch tên field để dùng trong thuộc tính HTML (loại bỏ ký tự không hợp lệ)
+                var safeFieldName = System.Text.RegularExpressions.Regex.Replace(fieldName, @"[^a-zA-Z0-9_.-]", "_");
+                // Thay đổi prefix name để linh hoạt hơn khi binding phía server
+                var inputName = $"DynamicFormData[{safeFieldName}]";
+                // Tạo ID duy nhất và ổn định sử dụng prefix đã tạo từ InstanceId
+                var inputId = $"{instancePrefix}_{safeFieldName}";
+                var readonlyAttr = readonlyFlag ? "readonly" : null;
+                // Disabled thường áp dụng cho select, checkbox, radio khi readonly
+                var disabledAttr = readonlyFlag && (fieldType == "select" || fieldType == "checkbox" || fieldType == "radio") ? "disabled" : null;
+
+                // --- Render theo cột ---
+                <abp-column size-md="@columnSize">
+                    <div class="mb-3 dynamic-form-field" data-field-type="@fieldType">
+                        <label class="form-label" for="@inputId">@L[fieldLabelKey] @requiredSpan</label>
+
+                        @switch (fieldType)
+                        {
+                            case "textarea":
+                                <textarea class="form-control form-control-sm" name="@inputName" id="@inputId" placeholder="@(placeholderKey == null ? null : L[placeholderKey])" required="@requiredAttr" data-field-name="@fieldName" readonly="@readonlyAttr">@initialValueStr</textarea>
+                                break;
+                            case "select":
+                                <select class="form-select form-select-sm" name="@inputName" id="@inputId" required="@requiredAttr" data-field-name="@fieldName" disabled="@disabledAttr">
+                                    @* Thêm option trống nếu không bắt buộc hoặc có placeholder *@
+                                    @if (!isRequired || placeholderKey != null)
+                                    {
+                                        <option value="">@(placeholderKey == null ? L["Select"] : L[placeholderKey])</option>
+                                    }
+                                    @if (field["options"] is JsonArray options)
+                                    {
+                                        foreach (var optionNode in options)
+                                        {
+                                            if (optionNode is JsonObject option)
+                                            {
+                                                var optValue = option["value"]?.GetValue<string>();
+                                                var optTextKey = option["text"]?.GetValue<string>() ?? optValue; // Dùng value nếu text thiếu
+                                                if (optValue == null || optTextKey == null) continue; // Bỏ qua option không hợp lệ
+                                                var selected = !string.IsNullOrEmpty(optValue) && optValue.Equals(initialValueStr, StringComparison.OrdinalIgnoreCase) ? "selected" : null;
+                                                <option value="@optValue" selected="@selected">@L[optTextKey]</option>
+                                            }
+                                        }
+                                    }
+                                </select>
+                                break;
+                            case "date":
+                                // Định dạng value cho input type="date" là "yyyy-MM-dd"
+                                var dateValue = string.Empty;
+                                if (DateTime.TryParse(initialValueStr, null, System.Globalization.DateTimeStyles.RoundtripKind, out var dt)) dateValue = dt.ToString("yyyy-MM-dd");
+                                <input type="date" class="form-control form-control-sm" name="@inputName" id="@inputId" required="@requiredAttr" value="@dateValue" data-field-name="@fieldName" readonly="@readonlyAttr" />
+                                break;
+                            case "datetime-local":
+                                // Định dạng value cho input type="datetime-local" là "yyyy-MM-ddTHH:mm" (hoặc thêm :ss nếu cần)
+                                var dateTimeLocalValue = string.Empty;
+                                if (DateTime.TryParse(initialValueStr, null, System.Globalization.DateTimeStyles.RoundtripKind, out var dtl)) dateTimeLocalValue = dtl.ToString("yyyy-MM-ddTHH:mm");
+                                <input type="datetime-local" class="form-control form-control-sm" name="@inputName" id="@inputId" required="@requiredAttr" value="@dateTimeLocalValue" data-field-name="@fieldName" readonly="@readonlyAttr" />
+                                break;
+                            case "checkbox":
+                                var isChecked = GetInitialValueAsBool(fieldName);
+                                <div class="form-check mt-1">
+                                    @* Thêm margin top nhỏ cho đẹp hơn *@
+                                    @* Input ẩn phải đặt trước checkbox để hoạt động đúng với model binding *@
+                                    <input type="hidden" name="@inputName" value="false" />
+                                    <input type="checkbox" class="form-check-input" name="@inputName" id="@inputId" value="true" required="@requiredAttr" data-field-name="@fieldName" checked="@isChecked" disabled="@disabledAttr" />
+                                    @* Không cần label ở đây vì đã có label chung ở trên *@
+                                </div>
+                                break;
+                            case "radio":
+                                @if (field["options"] is JsonArray radioOptions)
+                                {
+                                    <div id="@inputId" class="dynamic-radio-group mt-1">
+                                        @* Container cho radio group *@
+                                        @foreach (var optionNode in radioOptions)
+                                        {
+                                            if (optionNode is JsonObject option)
+                                            {
+                                                var optValue = option["value"]?.GetValue<string>();
+                                                var optTextKey = option["text"]?.GetValue<string>() ?? optValue;
+                                                if (optValue == null || optTextKey == null) continue;
+                                                // Tạo ID duy nhất cho từng radio button, làm sạch value để dùng trong ID
+                                                var safeOptValue = System.Text.RegularExpressions.Regex.Replace(optValue, @"[^a-zA-Z0-9_-]", "_");
+                                                var radioId = $"{inputId}_{safeOptValue}";
+                                                var selected = !string.IsNullOrEmpty(optValue) && optValue.Equals(initialValueStr, StringComparison.OrdinalIgnoreCase) ? "checked" : null;
+                                                <div class="form-check form-check-inline">
+                                                    <input class="form-check-input" type="radio" name="@inputName" id="@radioId" value="@optValue" required="@requiredAttr" data-field-name="@fieldName" checked="@selected" disabled="@disabledAttr">
+                                                    <label class="form-check-label" for="@radioId">@L[optTextKey]</label>
+                                                </div>
+                                            }
+                                        }
+                                    </div>
+                                }
+                                else
+                                {
+                                    <div class="text-danger small">@L["RadioOptionsMissing"]</div>
+                                }
+                                break;
+                            // Các kiểu input HTML5 khác
+                            case "number":
+                            case "email":
+                            case "tel":
+                            case "url":
+                            case "month":
+                            case "week":
+                            case "time":
+                            case "color":
+                            case "range": // Cân nhắc thêm min, max, step từ JSON nếu cần
+                                <input type="@fieldType" class="form-control form-control-sm" name="@inputName" id="@inputId" placeholder="@(placeholderKey == null ? null : L[placeholderKey])" required="@requiredAttr" value="@initialValueStr" data-field-name="@fieldName" readonly="@readonlyAttr" />
+                                break;
+                            case "text": // Mặc định là text
+                            default:
+                                <input type="text" class="form-control form-control-sm" name="@inputName" id="@inputId" placeholder="@(placeholderKey == null ? null : L[placeholderKey])" required="@requiredAttr" value="@initialValueStr" data-field-name="@fieldName" readonly="@readonlyAttr" />
+                                break;
+                        }
+                        @if (!string.IsNullOrEmpty(descriptionKey))
+                        {
+                            <div class="form-text small text-muted mt-1">@L[descriptionKey]</div>
+                        }
+                    </div>
+                </abp-column>
+                fieldIndex++;
+            }
+        }
+    </abp-row>
+}
+else if (!definitionParseError)
+{
+    // Hiển thị thông báo nếu FormDefinition hợp lệ nhưng không có field nào
+    <abp-alert alert-type="Info">@L["NoFieldsDefinedInFormDefinition"]</abp-alert>
+}

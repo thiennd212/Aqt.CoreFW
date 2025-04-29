@@ -1,0 +1,154 @@
+﻿@page "/BDocuments/CreateModal"
+@using Microsoft.AspNetCore.Mvc.Localization
+@using Volo.Abp.AspNetCore.Mvc.UI.Bootstrap.TagHelpers.Modal
+@using Aqt.CoreFW.Localization
+@using Volo.Abp.AspNetCore.Mvc.UI.Bootstrap.TagHelpers.Form
+@using Aqt.CoreFW.Web.Pages.BDocuments
+@using Aqt.CoreFW.Components
+@using Aqt.CoreFW.Web.Pages.Shared.ViewModels
+@model CreateModalModel
+@inject IHtmlLocalizer<CoreFWResource> L
+@{
+    Layout = null;
+}
+
+<abp-dynamic-form abp-model="BDocumentViewModel" asp-page="/BDocuments/CreateModal" id="CreateBDocumentForm">
+    <abp-modal size="ExtraLarge">
+        @* Tăng kích thước Modal để chứa nhiều thông tin hơn *@
+        <abp-modal-header title="@L["NewBDocument"].Value (@(Model.ProcedureName ?? string.Empty))"></abp-modal-header>
+        <abp-modal-body>
+            @* === Input ẩn quan trọng === *@
+            <input type="hidden" asp-for="BDocumentViewModel.ProcedureId" />
+
+            @* === Thông tin Chủ hồ sơ === *@
+            <h5>@L["ApplicantInformation"]</h5>
+            <abp-row>
+                <abp-column size-md="_6"> <abp-input asp-for="BDocumentViewModel.TenChuHoSo" /> </abp-column>
+                <abp-column size-md="_6"> <abp-input asp-for="BDocumentViewModel.SoDinhDanhChuHoSo" /> </abp-column>
+            </abp-row>
+            <abp-row>
+                <abp-column size-md="_6"> <abp-input asp-for="BDocumentViewModel.DiaChiChuHoSo" /> </abp-column>
+                <abp-column size-md="_6"> <abp-input asp-for="BDocumentViewModel.EmailChuHoSo" type="email" /> </abp-column>
+            </abp-row>
+            <abp-row>
+                <abp-column size-md="_6"> <abp-input asp-for="BDocumentViewModel.SoDienThoaiChuHoSo" type="tel" /> </abp-column>
+                <abp-column size-md="_6"></abp-column> @* Cột trống để căn chỉnh *@
+            </abp-row>
+            <hr />
+
+            @* === Thông tin bổ sung === *@
+            <h5>@L["AdditionalInformation"]</h5>
+            <abp-input asp-for="BDocumentViewModel.PhamViHoatDong" /> @* TextArea sẽ tự động render nếu có attribute *@
+            <abp-check asp-for="BDocumentViewModel.DangKyNhanQuaBuuDien" />
+            <hr />
+
+            @* === Phần Tờ khai - Gọi Partial View === *@
+            @if (Model.DeclarationComponentData != null)
+            {
+                <h5>@L["DeclarationForm"]: @Model.DeclarationComponentData.ComponentName</h5>
+                @* Tạo ViewModel cho Partial View *@
+                var dynamicFormModel = new DynamicFormViewModel
+                {
+                    FormDefinition = Model.DeclarationComponentData.FormDefinition ?? "{}", // Truyền Definition
+                    FormData = Model.DeclarationComponentData.FormData, // Truyền Data ban đầu (nếu có)
+                    InstanceId = $"decl_{Model.DeclarationComponentData.ProcedureComponentId}", // Tạo Instance ID duy nhất
+                    FormName = Model.DeclarationComponentData.ComponentName // Truyền tên form (tùy chọn)
+                };
+                <div id="DeclarationFormContainer_@dynamicFormModel.InstanceId" data-component-id="@Model.DeclarationComponentData.ProcedureComponentId" class="border p-3 mb-3">
+                    @* === Gọi Partial View Render Form Động === *@
+                    @await Html.PartialAsync("~/Pages/Shared/Components/DynamicFormRenderer/_DynamicFormRenderer.cshtml", dynamicFormModel)
+                </div>
+                <hr />
+                @* Input ẩn để JS lưu JSON tờ khai vào ĐÚNG item trong list ViewModel cha *@
+                @* Tên input cần khớp với cách server bind List<BDocumentDataViewModel> *@
+                <input type="hidden" name="BDocumentViewModel.ComponentDataList[@Model.DeclarationComponentIndex].FormData" id="hiddenFormData_@dynamicFormModel.InstanceId" />
+                @* Các input ẩn khác cho item này trong list *@
+                <input type="hidden" name="BDocumentViewModel.ComponentDataList[@Model.DeclarationComponentIndex].ProcedureComponentId" value="@Model.DeclarationComponentData.ProcedureComponentId" />
+                @* FileId sẽ được tạo sau khi tờ khai được generate (nếu logic yêu cầu)*@
+                <input type="hidden" name="BDocumentViewModel.ComponentDataList[@Model.DeclarationComponentIndex].FileId" id="BDocumentViewModel_ComponentDataList_@(Model.DeclarationComponentIndex)__FileId" value="" />
+            }
+
+            @* === Bảng Hồ sơ đính kèm === *@
+            <h5>@L["AttachedDocuments"]</h5>
+            <div class="table-responsive">
+                <table class="table table-sm table-striped table-bordered" id="AttachedDocumentsTable">
+                    <thead class="table-light">
+                        <tr>
+                            <th style="width: 50px;">STT</th>
+                            <th>@L["DisplayName:BDocumentData.Component"]</th>
+                            <th>@L["DisplayName:BDocumentData.AttachedFile"]</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @if (Model.AttachmentComponents != null && Model.AttachmentComponents.Any())
+                        {
+                            int attachmentIndex = 0; // Index riêng cho các attachment loại File
+                            for (int i = 0; i < Model.AttachmentComponents.Count; i++)
+                            {
+                                var comp = Model.AttachmentComponents[i];
+                                var dataIndex = Model.GetComponentDataIndex(comp.Id); // Tìm index trong BDocumentViewModel.ComponentDataList
+                                if (dataIndex < 0) continue; // Bỏ qua nếu không tìm thấy (lỗi logic)
+
+                                // Chỉ hiển thị các component loại FILE trong bảng này
+                                if (comp.Type == ComponentType.File)
+                                {
+                                    <tr>
+                                        <td class="text-center">@(++attachmentIndex)</td>
+                                        <td>
+                                            @*@comp.Name @(comp.IsRequired ? Html.Raw("<span class='text-danger ms-1'>*</span>") : Html.Raw(""))*@
+                                            @if (!string.IsNullOrEmpty(comp.Description))
+                                            {
+                                                <small class="d-block text-muted fst-italic">@L[comp.Description]</small>
+                                            } @* Localize Description *@
+                                            @* Input ẩn để đảm bảo item này được gửi lên server *@
+                                            <input type="hidden" name="BDocumentViewModel.ComponentDataList[@dataIndex].ProcedureComponentId" value="@comp.Id" />
+                                            <input type="hidden" name="BDocumentViewModel.ComponentDataList[@dataIndex].FormData" value="" /> @* FormData rỗng cho loại File *@
+                                        </td>
+                                        <td>
+                                            @* Container cho Upload Control *@
+                                            <div class="input-group input-group-sm mb-1">
+                                                <input type="file" class="form-control file-upload-input" id="fileInput_@comp.Id"
+                                                       data-target-hidden="#BDocumentViewModel_ComponentDataList_@(dataIndex)__FileId"
+                                                       data-target-info="#fileInfo_@comp.Id"
+                                                       aria-label="@L["UploadFileFor", comp.Name]" />
+                                            </div>
+                                            @* Div hiển thị thông tin file đã upload/đang upload/lỗi *@
+                                            <div id="fileInfo_@comp.Id" class="mt-1 file-upload-info small"></div>
+                                            @* Input ẩn để lưu FileId sau khi upload thành công *@
+                                            <input type="hidden" name="BDocumentViewModel.ComponentDataList[@dataIndex].FileId" id="BDocumentViewModel_ComponentDataList_@(dataIndex)__FileId" value="" />
+                                            @* Link tải file mẫu (nếu có) *@
+                                            @if (!string.IsNullOrEmpty(comp.TempPath))
+                                            {
+                                                <div class="mt-1 small">
+                                                    <a href="#" class="download-template" data-path="@comp.TempPath" title="@L["DownloadTemplateTooltip"]">
+                                                        <i class="fas fa-download me-1"></i>@L["DownloadTemplate"]
+                                                    </a>
+                                                </div>
+                                            }
+                                        </td>
+                                    </tr>
+                                }
+                                else if (comp.Type == ComponentType.Form)
+                                {
+                                    // Component loại Form đã được render ở trên, không cần hiển thị trong bảng này
+                                    // Nhưng vẫn cần input ẩn để đảm bảo ProcedureComponentId được gửi đi
+                                    <input type="hidden" name="BDocumentViewModel.ComponentDataList[@dataIndex].ProcedureComponentId" value="@comp.Id" />
+                                    // FormData và FileId đã có input ẩn ở phần render Tờ khai
+                                }
+                            }
+                        }
+                        else
+                        {
+                            <tr><td colspan="3" class="text-center text-muted">@L["NoAttachmentComponentsConfigured"]</td></tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+            <div class="form-text text-danger small mt-2">@L["RequiredField"] (*)</div>
+
+        </abp-modal-body>
+        <abp-modal-footer buttons="@(AbpModalButtons.Cancel | AbpModalButtons.Save)"></abp-modal-footer>
+    </abp-modal>
+</abp-dynamic-form>
+
+<abp-script src="/Pages/BDocuments/createModal.js" />

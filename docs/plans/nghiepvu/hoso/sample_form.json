@@ -1,0 +1,129 @@
+{
+    "fields": [
+      {
+        "name": "TenGiaoDichTiengViet",
+        "label": "DisplayName:BDocumentDeclaration.TenGiaoDichTiengViet",
+        "type": "text",
+        "required": true,
+        "placeholder": "Placeholder:EnterVietnameseTransactionName"
+      },
+      {
+        "name": "TenGiaoDichTiengAnh",
+        "label": "DisplayName:BDocumentDeclaration.TenGiaoDichTiengAnh",
+        "type": "text",
+        "required": true,
+        "placeholder": "Placeholder:EnterEnglishTransactionName"
+      },
+      {
+        "name": "SoGiayPhep",
+        "label": "DisplayName:BDocumentDeclaration.SoGiayPhep",
+        "type": "text",
+        "required": true,
+        "placeholder": "Placeholder:EnterLicenseNumber"
+      },
+      {
+        "name": "NgayCapGiayPhep",
+        "label": "DisplayName:BDocumentDeclaration.NgayCapGiayPhep",
+        "type": "date",
+        "required": true
+      },
+      {
+        "name": "NoiCapGiayPhep",
+        "label": "DisplayName:BDocumentDeclaration.NoiCapGiayPhep",
+        "type": "text",
+        "required": true,
+        "placeholder": "Placeholder:EnterIssuingAuthority"
+      },
+      {
+        "name": "DiaChiTruSoChinh",
+        "label": "DisplayName:BDocumentDeclaration.DiaChiTruSoChinh",
+        "type": "textarea",
+        "required": true,
+        "placeholder": "Placeholder:EnterHeadOfficeAddress"
+      },
+      {
+        "name": "DienThoai",
+        "label": "DisplayName:BDocumentDeclaration.DienThoai",
+        "type": "tel",
+        "required": true,
+        "placeholder": "Placeholder:EnterPhoneNumber"
+      },
+      {
+        "name": "Fax",
+        "label": "DisplayName:BDocumentDeclaration.Fax",
+        "type": "text",
+        "required": false,
+        "placeholder": "Placeholder:EnterFaxNumber"
+      },
+      {
+        "name": "Email",
+        "label": "DisplayName:BDocumentDeclaration.Email",
+        "type": "email",
+        "required": true,
+        "placeholder": "Placeholder:EnterEmailAddress"
+      },
+      {
+        "name": "Website",
+        "label": "DisplayName:BDocumentDeclaration.Website",
+        "type": "url",
+        "required": false,
+        "placeholder": "Placeholder:EnterWebsiteUrl"
+      },
+      {
+        "name": "VonDieuLe",
+        "label": "DisplayName:BDocumentDeclaration.VonDieuLe",
+        "type": "number", 
+        "required": true,
+        "placeholder": "Placeholder:EnterCharterCapital",
+        "description": "Description:SpecifyCurrencyUnit" 
+      },
+      {
+        "name": "NguoiDaiDienTheoPhapLuat",
+        "label": "DisplayName:BDocumentDeclaration.NguoiDaiDienTheoPhapLuat",
+        "type": "text",
+        "required": true,
+        "placeholder": "Placeholder:EnterLegalRepresentativeName"
+      },
+      {
+        "name": "ChucDanh",
+        "label": "DisplayName:BDocumentDeclaration.ChucDanh",
+        "type": "text",
+        "required": true,
+        "placeholder": "Placeholder:EnterJobTitle"
+      },
+      {
+        "name": "SoDinhDanhNguoiDaiDien",
+        "label": "DisplayName:BDocumentDeclaration.SoDinhDanhNguoiDaiDien",
+        "type": "text",
+        "required": true,
+        "placeholder": "Placeholder:EnterIdNumber"
+      },
+      {
+        "name": "NgayCapSoDinhDanh",
+        "label": "DisplayName:BDocumentDeclaration.NgayCapSoDinhDanh",
+        "type": "date",
+        "required": true
+      },
+      {
+        "name": "NoiCapSoDinhDanh",
+        "label": "DisplayName:BDocumentDeclaration.NoiCapSoDinhDanh",
+        "type": "text",
+        "required": true,
+        "placeholder": "Placeholder:EnterIdIssuingPlace"
+      },
+      {
+        "name": "DiaChiThuongTruNguoiDaiDien",
+        "label": "DisplayName:BDocumentDeclaration.DiaChiThuongTruNguoiDaiDien",
+        "type": "textarea",
+        "required": true,
+        "placeholder": "Placeholder:EnterPermanentAddress"
+      },
+      {
+        "name": "DiaChiLienHeNguoiDaiDien",
+        "label": "DisplayName:BDocumentDeclaration.DiaChiLienHeNguoiDaiDien",
+        "type": "textarea",
+        "required": true,
+        "placeholder": "Placeholder:EnterContactAddress"
+      }
+    ]
+  }

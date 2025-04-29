@@ -159,7 +159,19 @@ public static class CoreFWPermissions
         public const string Create = Default + ".Create";
         public const string Update = Default + ".Update";
         public const string Delete = Default + ".Delete";
-        public const string ManageProcedureLinks = Default + ".ManageProcedureLinks"; // Quyền quản lý liên kết
+        public const string ManageProcedureLinks = Default + ".ManageProcedureLinks"; // Quyền quản lý liên kết Procedure
         public const string Export = Default + ".Export"; // Quyền xuất Excel (Optional)
+    }
+
+    // Permissions for BDocument Management
+    public static class BDocuments
+    {
+        public const string Default = GroupName + ".BDocuments"; // View permission
+        public const string Create = Default + ".Create";
+        public const string Update = Default + ".Update"; // Update main BDocument info only
+        public const string Delete = Default + ".Delete";
+        public const string ManageComponents = Default + ".ManageComponents"; // Add/Update/Remove BDocumentData
+        public const string GenerateDeclarationFile = Default + ".GenerateDeclarationFile"; // Trigger file generation
+        public const string Export = Default + ".Export";
     }
 }

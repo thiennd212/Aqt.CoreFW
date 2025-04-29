@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Dynamic.Core; // Required for OrderBy with string
@@ -124,5 +124,21 @@ public class WorkflowStatusRepository :
     {
         var queryable = await base.GetQueryableAsync();
         return queryable.AsNoTracking(); // Apply AsNoTracking for read operations by default in this repo
+    }
+
+    /// <summary>
+    /// Fetches a list of WorkflowStatus entities by their IDs.
+    /// </summary>
+    /// <param name="ids"></param>
+    /// <param name="cancellationToken"></param>
+    /// <returns></returns>
+    /// <exception cref="NotImplementedException"></exception>
+    public async Task<List<WorkflowStatus>> GetListByIdsAsync(List<Guid> ids, CancellationToken cancellationToken = default)
+    {
+        var dbSet = await GetDbSetAsync();
+        // Fetch the list of WorkflowStatus entities by their IDs
+        return await dbSet
+            .Where(ws => ids.Contains(ws.Id))
+            .ToListAsync(GetCancellationToken(cancellationToken));
     }
 }

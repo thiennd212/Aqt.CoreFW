@@ -8,7 +8,8 @@ using Aqt.CoreFW.Web.Pages.Components.ViewModels; // ViewModel
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Volo.Abp.AspNetCore.Mvc.UI.RazorPages;
-using Aqt.CoreFW.Components; // Enum
+using Aqt.CoreFW.Components;
+using EasyAbp.FileManagement.Files; // Enum
 
 namespace Aqt.CoreFW.Web.Pages.Components;
 
@@ -19,13 +20,16 @@ public class CreateModalModel : AbpPageModel
 
     private readonly IProcedureComponentAppService _componentAppService;
     private readonly IProcedureAppService _procedureAppService; // Để lấy lookup Procedures
+    private readonly IFileAppService _fileAppService; // Để lấy lookup Files
 
     public CreateModalModel(
         IProcedureComponentAppService componentAppService,
-        IProcedureAppService procedureAppService)
+        IProcedureAppService procedureAppService,
+        IFileAppService fileAppService)
     {
         _componentAppService = componentAppService;
         _procedureAppService = procedureAppService;
+        _fileAppService = fileAppService;
     }
 
     public async Task OnGetAsync()

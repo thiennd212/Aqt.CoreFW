@@ -48,6 +48,7 @@ public class ProcedureComponentViewModel
 
     [Display(Name = "DisplayName:Component.TempPath")]
     [StringLength(ComponentConsts.MaxTempPathLength)]
+    [DynamicFormIgnore]
     public string? TempPath { get; set; }
 
     [Required] // Luôn yêu cầu có danh sách, dù là rỗng

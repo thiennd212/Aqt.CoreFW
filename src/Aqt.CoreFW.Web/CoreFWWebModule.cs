@@ -189,7 +189,8 @@ public class CoreFWWebModule : AbpModule
 
                 container.AllowOnlyConfiguredFileExtensions = true;
                 container.FileExtensionsConfiguration.Add(".jpg", true);
-                container.FileExtensionsConfiguration.Add(".PNG", true);
+                container.FileExtensionsConfiguration.Add(".png", true);
+                container.FileExtensionsConfiguration.Add(".gif", true);
                 container.FileExtensionsConfiguration.Add(".doc", true);
                 container.FileExtensionsConfiguration.Add(".docx", true);
                 container.FileExtensionsConfiguration.Add(".xls", true);
@@ -228,12 +229,21 @@ public class CoreFWWebModule : AbpModule
             options.StyleBundles.Configure(
                 LeptonXLiteThemeBundles.Styles.Global,
                 bundle =>
-                {
-                    bundle.AddFiles("/global-scripts.js");
+                {                    
                     bundle.AddFiles("/libs/select2/theme/select2-bootstrap-5-theme.css");
+                    bundle.AddFiles("/libs/bootstrap-fileinput/css/fileinput.css");
                     bundle.AddFiles("/global-styles.css");
                 }
             );
+
+            options.ScriptBundles.Configure(
+                LeptonXLiteThemeBundles.Scripts.Global,
+                bundle =>
+                {
+                    bundle.AddFiles("/libs/bootstrap-fileinput/js/fileinput.js");
+                    bundle.AddFiles("/global-scripts.js");
+                }
+            );            
         });
     }
 

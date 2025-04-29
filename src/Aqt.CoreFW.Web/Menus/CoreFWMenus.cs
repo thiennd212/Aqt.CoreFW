@@ -22,4 +22,5 @@ public class CoreFWMenus
     public const string DataImportants = Prefix + ".DataImportants";
     public const string Procedures = Prefix + ".Procedures";
     public const string Components = Prefix + ".Components";
+    public const string BDocuments = Prefix + ".BDocuments";
 }

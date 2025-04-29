@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Threading.Tasks;
 using Aqt.CoreFW.Application.Contracts.Components.Dtos; // Namespace chứa DTOs
 using Aqt.CoreFW.Application.Contracts.Shared.Lookups; // Namespace chứa LookupDto
@@ -28,8 +28,16 @@ public interface IProcedureComponentAppService :
     /// </summary>
     Task<IRemoteStreamContent> GetListAsExcelAsync(GetProcedureComponentsInput input);
 
+    /// <summary>
+    /// GetListByProcedureAsync
+    /// </summary>
+    /// <param name="procedureId"></param>
+    /// <param name="type"></param>
+    /// <returns></returns>
+    Task<ListResultDto<ProcedureComponentDto>> GetListByProcedureAsync(Guid procedureId, ComponentType? type = null);
+
     // Ghi chú: Việc cập nhật liên kết Procedure-Component được xử lý thông qua
     // trường ProcedureIds trong CreateUpdateProcedureComponentDto khi gọi phương thức
     // CreateAsync hoặc UpdateAsync (từ ICrudAppService).
     // Không cần phương thức riêng biệt ở đây trừ khi có logic đặc biệt.
-} 
+}

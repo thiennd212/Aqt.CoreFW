@@ -180,6 +180,19 @@ public class CoreFWMenuContributor : IMenuContributor
              );
         }
 
+        if (await context.IsGrantedAsync(CoreFWPermissions.BDocuments.Default))
+        {
+            context.Menu.AddItem(
+                 new ApplicationMenuItem(
+                     CoreFWMenus.BDocuments,        // Tên định danh menu
+                     l["Menu:BDocuments"],         // Key localization cho tên hiển thị
+                     "/BDocuments",                // Đường dẫn Razor Page
+                     icon: "fas fa-folder-open",   // Icon Font Awesome
+                     order: 15                      // Thứ tự hiển thị (sau Home, Administration...)
+                 ).RequirePermissions(CoreFWPermissions.BDocuments.Default) // Yêu cầu quyền này để thấy menu
+             );
+        }
+
         var catalogManagementMenu = new ApplicationMenuItem(
                    CoreFWMenus.CatalogManagement,
                    l["Menu:CatalogManagement"], // Key localization cho "Catalog Management"

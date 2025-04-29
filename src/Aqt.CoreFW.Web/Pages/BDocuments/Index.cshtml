@@ -1,0 +1,106 @@
+﻿@page
+@using Aqt.CoreFW.Permissions
+@using Microsoft.AspNetCore.Authorization
+@using Volo.Abp.AspNetCore.Mvc.UI.Layout
+@using Aqt.CoreFW.Web.Pages.BDocuments
+@using Aqt.CoreFW.Localization
+@using Microsoft.Extensions.Localization
+@using Aqt.CoreFW.Web.Menus
+@using Microsoft.AspNetCore.Mvc.Rendering
+@model IndexModel
+@inject IStringLocalizer<CoreFWResource> L
+@inject IAuthorizationService AuthorizationService
+@inject IPageLayout PageLayout
+@{
+    PageLayout.Content.Title = L["BDocuments"].Value;
+    PageLayout.Content.MenuItemName = CoreFWMenus.BDocuments;
+}
+
+@section scripts {
+    <script>
+        // Truyền quyền từ server sang JS để điều khiển UI động
+        const permissions = {
+            canCreate: @Html.Raw(ViewData["CanCreate"]),
+            canEdit:   @Html.Raw(ViewData["CanEdit"]),
+            canDelete: @Html.Raw(ViewData["CanDelete"]),
+            canExport: @Html.Raw(ViewData["CanExport"])
+        };
+    </script>
+    <abp-script src="/Pages/BDocuments/index.js" />
+}
+
+@section content_toolbar {
+    <div class="input-group input-group-sm w-auto me-2">
+        @* Nhóm dropdown chọn thủ tục và nút New *@
+        <label class="input-group-text visually-hidden" for="ProcedureSelectionForCreate">@L["SelectProcedure"]</label> @* Ẩn label nếu không cần thiết *@
+        <select id="ProcedureSelectionForCreate" class="form-select" aria-label="@L["SelectProcedureToCreate"]">
+            <option value="" selected>@L["SelectProcedureToCreate"]...</option> @* Placeholder rõ ràng hơn *@
+            @if (Model.AvailableProcedures != null)
+            {
+                @foreach (var item in Model.AvailableProcedures)
+                {
+                    <option value="@item.Value">@item.Text</option>
+                }
+            }
+        </select>
+        @* Nút New chỉ bật khi có quyền và đã chọn thủ tục (JS xử lý) *@
+        <abp-button id="NewBDocumentButton" text="@L["New"].Value" icon="plus" button-type="Primary" size="Small" disabled="@(!(bool?)ViewData["CanCreate"])" />
+    </div>
+
+    @if ((bool?)ViewData["CanExport"] == true)
+    {
+        <abp-button id="ExportExcelButton" text="@L["ExportToExcel"].Value" icon="file-excel" button-type="Success" size="Small" class="ms-auto" />
+    }
+}
+
+<abp-card>
+    <abp-card-header>
+        <abp-row>
+            <abp-column size-md="_6"> <h5>@L["BDocuments"]</h5> </abp-column>
+            @* Có thể thêm các nút khác ở đây nếu cần *@
+            <abp-column size-md="_6" class="text-end"></abp-column>
+        </abp-row>
+    </abp-card-header>
+    <abp-card-body>
+        @* === Filters === *@
+        <form class="form-inline">
+            @* Bọc filter trong form để xử lý Enter *@
+            <abp-row class="mb-3 gx-2">
+                @* gx-2 để giảm khoảng cách ngang *@
+                <abp-column size-md="_3">
+                    <input type="text" id="SearchFilter" class="form-control form-control-sm" placeholder="@L["SearchPlaceholderBDocument"] (...)" />
+                </abp-column>
+                <abp-column size-md="_3">
+                    <select id="ProcedureFilter" class="form-select form-select-sm" aria-label="@L["FilterByProcedure"]">
+                        <option value="" selected>@L["All"] (@L["DisplayName:BDocument.ProcedureId"])</option>
+                        @if (Model.AvailableProcedures != null)
+                        {
+                            @foreach (var item in Model.AvailableProcedures)
+                            {
+                                <option value="@item.Value">@item.Text</option>
+                            }
+                        }
+                    </select>
+                </abp-column>
+                <abp-column size-md="_3">
+                    <select id="StatusFilter" class="form-select form-select-sm" aria-label="@L["FilterByStatus"]">
+                        <option value="" selected>@L["All"] (@L["DisplayName:BDocument.TrangThaiHoSoId"])</option>
+                        @if (Model.AvailableStatuses != null)
+                        {
+                            @foreach (var item in Model.AvailableStatuses)
+                            {
+                                <option value="@item.Value">@item.Text</option>
+                            }
+                        }
+                    </select>
+                </abp-column>
+                <abp-column size-md="_3" class="text-end">
+                    <abp-button id="SearchButton" text="@L["Search"].Value" icon="search" button-type="Info" size="Small" />
+                </abp-column>
+            </abp-row>
+        </form>
+
+        @* === DataTable === *@
+        <abp-table striped-rows="true" id="BDocumentTable" class="nowrap"></abp-table>
+    </abp-card-body>
+</abp-card>

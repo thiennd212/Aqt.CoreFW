@@ -154,4 +154,19 @@ public class ProcedureRepository :
             // Filter theo Status nếu status có giá trị
             .WhereIf(status.HasValue, p => p.Status == status!.Value);
     }
+
+    /// <summary>
+    /// Gets a list of Procedures by their unique identifiers.
+    /// </summary>
+    /// <param name="ids"></param>
+    /// <param name="cancellationToken"></param>
+    /// <returns></returns>
+    /// <exception cref="NotImplementedException"></exception>
+    public async Task<List<Procedure>> GetListByIdsAsync(List<Guid> ids, CancellationToken cancellationToken = default)
+    {
+        var dbSet = await GetDbSetAsync();
+        var query = dbSet.AsNoTracking()
+            .Where(p => ids.Contains(p.Id)); // Lọc theo danh sách Ids
+        return await query.ToListAsync(GetCancellationToken(cancellationToken));
+    }
 }
