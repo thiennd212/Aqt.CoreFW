@@ -20,10 +20,8 @@
     <script>
         // Truyền quyền từ server sang JS để điều khiển UI động
         const permissions = {
-            canCreate: @Html.Raw(ViewData["CanCreate"]),
             canEdit:   @Html.Raw(ViewData["CanEdit"]),
-            canDelete: @Html.Raw(ViewData["CanDelete"]),
-            canExport: @Html.Raw(ViewData["CanExport"])
+            canDelete: @Html.Raw(ViewData["CanDelete"])
         };
     </script>
     <abp-script src="/Pages/BDocuments/index.js" />
@@ -44,10 +42,13 @@
             }
         </select>
         @* Nút New chỉ bật khi có quyền và đã chọn thủ tục (JS xử lý) *@
-        <abp-button id="NewBDocumentButton" text="@L["New"].Value" icon="plus" button-type="Primary" size="Small" disabled="@(!(bool?)ViewData["CanCreate"])" />
+    @if (await AuthorizationService.IsGrantedAsync(CoreFWPermissions.BDocuments.Create)) // Updated permission
+    {
+        <abp-button id="NewBDocumentButton" text="@L["New"].Value" icon="plus" button-type="Primary" size="Small" />
+    }
     </div>
 
-    @if ((bool?)ViewData["CanExport"] == true)
+    @if (await AuthorizationService.IsGrantedAsync(CoreFWPermissions.BDocuments.Export)) // Updated permission
     {
         <abp-button id="ExportExcelButton" text="@L["ExportToExcel"].Value" icon="file-excel" button-type="Success" size="Small" class="ms-auto" />
     }

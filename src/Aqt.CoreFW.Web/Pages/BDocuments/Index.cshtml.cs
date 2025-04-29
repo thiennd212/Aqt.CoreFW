@@ -44,10 +44,8 @@ public class IndexModel : AbpPageModel // Kế thừa từ AbpPageModel để c�
         await LoadLookupsAsync();
 
         // Kiểm tra quyền và lưu vào ViewData để JavaScript sử dụng
-        ViewData["CanCreate"] = await _authorizationService.IsGrantedAsync(CoreFWPermissions.BDocuments.Create);
-        ViewData["CanEdit"] = await _authorizationService.IsGrantedAsync(CoreFWPermissions.BDocuments.Update);
-        ViewData["CanDelete"] = await _authorizationService.IsGrantedAsync(CoreFWPermissions.BDocuments.Delete);
-        ViewData["CanExport"] = await _authorizationService.IsGrantedAsync(CoreFWPermissions.BDocuments.Export);
+        ViewData["CanEdit"] = (await _authorizationService.IsGrantedAsync(CoreFWPermissions.BDocuments.Update)).ToString().ToLowerInvariant(); ;
+        ViewData["CanDelete"] = (await _authorizationService.IsGrantedAsync(CoreFWPermissions.BDocuments.Delete)).ToString().ToLowerInvariant(); ;
     }
 
     // Hàm helper để load dữ liệu lookup từ App Services

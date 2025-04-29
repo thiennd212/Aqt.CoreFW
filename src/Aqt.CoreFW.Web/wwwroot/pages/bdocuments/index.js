@@ -115,10 +115,9 @@
 
     // Xử lý khi người dùng chọn một Thủ tục trong dropdown để tạo mới
     $('#ProcedureSelectionForCreate').on('change', function () {
-        let selectedProcedureId = $(this).val();
-        let canCreate = permissions.canCreate; // Lấy quyền tạo từ biến JS đã truyền
+        let selectedProcedureId = $(this).val();        
         // Bật/tắt nút "Thêm mới" dựa vào việc đã chọn thủ tục và có quyền tạo hay không
-        $('#NewBDocumentButton').prop('disabled', !selectedProcedureId || !canCreate);
+        $('#NewBDocumentButton').prop('disabled', !selectedProcedureId);
     });
 
     // Xử lý khi nhấn nút "Thêm mới"
