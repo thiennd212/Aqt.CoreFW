@@ -91,47 +91,33 @@ public class CoreFWWebAutoMapperProfile : Profile
 
         // --- BEGIN BDocument Mappings ---
 
-        // ViewModel -> Create Input DTO
-        CreateMap<BDocumentViewModel, CreateBDocumentInputDto>()
-            // ComponentDataList trong ViewModel chứa BDocumentDataViewModel
-            // CreateBDocumentInputDto.ComponentData chứa CreateBDocumentComponentDataInputDto
-            // AutoMapper sẽ tự map list dựa trên mapping của item (được định nghĩa bên dưới)
-            .ForMember(dest => dest.ComponentData, opt => opt.MapFrom(src => src.ComponentDataList));
+        // ViewModel -> Create/Update DTO
+        CreateMap<BDocumentViewModel, CreateUpdateBDocumentDto>()
+            // Map danh sách DataList<ViewModel> sang DocumentData<DTO>
+            // Dựa vào mapping BDocumentDataViewModel -> CreateUpdateBDocumentDataDto bên dưới
+            .ForMember(dest => dest.DocumentData, opt => opt.MapFrom(src => src.DataList));
+        // AutoMapper sẽ tự map các trường cơ bản khác nếu tên trùng khớp (ApplicantName, etc.)
 
         // ViewModel -> Update Input DTO (Chỉ map trường thông tin chính của BDocument)
-        CreateMap<BDocumentViewModel, UpdateBDocumentInputDto>();
-        // Update DTO không chứa ComponentDataList, chỉ map các trường cơ bản
+        // CreateMap<BDocumentViewModel, CreateUpdateBDocumentDto>(); // XÓA BỎ MAPPING DƯ THỪA NÀY
 
         // Detail DTO (BDocumentDto) -> ViewModel (BDocumentViewModel)
         CreateMap<BDocumentDto, BDocumentViewModel>()
             // Map tên và màu từ các đối tượng lồng nhau
-            .ForMember(dest => dest.TrangThaiHoSoName, opt => opt.MapFrom(src => src.TrangThaiHoSo != null ? src.TrangThaiHoSo.Name : null))
-            .ForMember(dest => dest.TrangThaiHoSoColorCode, opt => opt.MapFrom(src => src.TrangThaiHoSo != null ? src.TrangThaiHoSo.ColorCode : null))
-            .ForMember(dest => dest.ProcedureName, opt => opt.MapFrom(src => src.Procedure != null ? src.Procedure.Name : null))
+            .ForMember(dest => dest.WorkflowStatusName, opt => opt.MapFrom(src => src.WorkflowStatusName))
+            .ForMember(dest => dest.WorkflowStatusColorCode, opt => opt.MapFrom(src => src.WorkflowStatusColorCode))
+            .ForMember(dest => dest.ProcedureName, opt => opt.MapFrom(src => src.ProcedureName))
             // Bỏ qua các trường Tờ khai đã bị loại bỏ khỏi ViewModel
             // Map danh sách BDocumentDataDto sang BDocumentDataViewModel
-            .ForMember(dest => dest.ComponentDataList, opt => opt.MapFrom(src => src.DocumentData));
+            .ForMember(dest => dest.DataList, opt => opt.MapFrom(src => src.DocumentData));
+            //.ForMember(dest => dest.FormData, opt => opt.MapFrom(src => src.InputData));
 
-        // --- END BDocument Mappings ---
-
-
-        // --- BEGIN BDocumentData Mappings ---
-
-        // DTO (BDocumentDataDto) -> ViewModel (BDocumentDataViewModel)
-        CreateMap<BDocumentDataDto, BDocumentDataViewModel>()
-             // Map thông tin file từ FileInfoDto lồng nhau
-             .ForMember(dest => dest.FileName, opt => opt.MapFrom(src => src.FileInfo != null ? src.FileInfo.FileName : null))
-             .ForMember(dest => dest.FileSize, opt => opt.MapFrom(src => src.FileInfo != null ? src.FileInfo.ByteSize : (long?)null))
-            // .ForMember(dest => dest.FileContentType, opt => opt.MapFrom(src => src.FileInfo != null ? src.FileInfo.FileContentType : null))
-             // FormDefinition sẽ được load từ AppService khi gọi OnGetAsync của CreateModal, không map ở đây
-             .ForMember(dest => dest.FormDefinition, opt => opt.Ignore())
-             // Map dữ liệu JSON đã lưu từ DTO sang ViewModel
-             .ForMember(dest => dest.FormData, opt => opt.MapFrom(src => src.FormData));
-
-        // ViewModel (BDocumentDataViewModel) -> Create Input DTO Component (CreateBDocumentComponentDataInputDto)
-        // Dùng khi map từ BDocumentViewModel sang CreateBDocumentInputDto
-        CreateMap<BDocumentDataViewModel, CreateBDocumentComponentDataInputDto>();
-        // AutoMapper sẽ tự động map các trường trùng tên: ProcedureComponentId, FormData, FileId
+        // ViewModel (BDocumentDataViewModel) -> Create/Update DTO Component (CreateUpdateBDocumentDataDto)
+        // Dùng khi map từ BDocumentViewModel.DataList sang CreateUpdateBDocumentDto.DocumentData
+        CreateMap<BDocumentDataViewModel, CreateUpdateBDocumentDataDto>()
+             // Map tường minh FormData (ViewModel) sang InputData (DTO)
+             .ForMember(dest => dest.InputData, opt => opt.MapFrom(src => src.FormData));
+             // AutoMapper sẽ tự động map các trường trùng tên khác: ProcedureComponentId, FileId
 
         // --- END BDocumentData Mappings ---
 

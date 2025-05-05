@@ -1,13 +1,16 @@
+using Aqt.CoreFW.Components;
 using System;
-using Aqt.CoreFW.Components; // Để lấy Enum Type nếu cần
-using Volo.Abp.Application.Dtos;
 
-namespace Aqt.CoreFW.Application.Contracts.Shared.Lookups; // Namespace dùng chung
+namespace Aqt.CoreFW.Application.Contracts.Shared.Lookups;
 
-// Dùng cho việc lookup ProcedureComponents dạng danh sách phẳng (flat list)
-public class ProcedureComponentLookupDto : EntityDto<Guid>
+/// <summary>
+/// DTO dùng cho việc lookup ProcedureComponent, bao gồm các thông tin cơ bản.
+/// </summary>
+public class ProcedureComponentLookupDto
 {
+    public Guid Id { get; set; }
+    public string Code { get; set; } = string.Empty;
     public string Name { get; set; } = string.Empty;
-    public string Code { get; set; } = string.Empty; // Thêm Code để dễ nhận biết
-    public ComponentType Type { get; set; } // Thêm Type để có thể lọc ở client nếu cần
+    public ComponentType Type { get; set; }
+    // Thêm các thuộc tính khác nếu cần cho việc lookup
 } 

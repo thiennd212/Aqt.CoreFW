@@ -41,9 +41,9 @@ public class BDocumentToExcelMappingAction
         destination.ProcedureName = procedure?.Name ?? string.Empty;
 
         // Fetch Status Name
-        if (source.TrangThaiHoSoId.HasValue)
+        if (source.WorkflowStatusId.HasValue)
         {
-            var status = await _statusRepository.FindAsync(source.TrangThaiHoSoId.Value);
+            var status = await _statusRepository.FindAsync(source.WorkflowStatusId.Value);
             destination.StatusName = status?.Name ?? string.Empty;
         }
         else
@@ -52,13 +52,13 @@ public class BDocumentToExcelMappingAction
         }
 
         // Map new fields
-        destination.PhamViHoatDong = source.PhamViHoatDong;
-        destination.DangKyNhanQuaBuuDien = source.DangKyNhanQuaBuuDien ? "Yes" : "No"; // Format boolean
+        destination.ScopeOfActivity = source.ScopeOfActivity;
+        destination.ReceiveByPost = source.ReceiveByPost ? "Yes" : "No"; // Format boolean
 
         // Map dates (already mapped by name convention, but can be explicit if needed)
-        destination.NgayNop = source.NgayNop;
-        destination.NgayTiepNhan = source.NgayTiepNhan;
-        destination.NgayHenTra = source.NgayHenTra;
-        destination.NgayTraKetQua = source.NgayTraKetQua;
+        destination.SubmissionDate = source.SubmissionDate;
+        destination.ReceptionDate = source.ReceptionDate;
+        destination.AppointmentDate = source.AppointmentDate;
+        destination.ResultDate = source.ResultDate;
     }
 }

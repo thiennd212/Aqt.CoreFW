@@ -142,7 +142,7 @@ else if (formDefinitionNode?["fields"] is JsonArray fields && fields.Count > 0)
                 var descriptionKey = field["description"]?.GetValue<string>();
                 var readonlyFlag = field["readonly"]?.GetValue<bool>() ?? false; // || Model.IsReadonly; // Option: Kết hợp cờ readonly của field và của toàn form
                 // Lấy độ rộng cột từ JSON, mặc định là 6 nếu không có hoặc không hợp lệ
-                ColumnSize columnSize = ColumnSize.Auto;
+                ColumnSize columnSize = ColumnSize._6;
                 var fieldColumnSpan = field["columnSpan"]?.GetValue<int>() ?? 6;
                 if (fieldColumnSpan < 1 || fieldColumnSpan > 12) { columnSize = ColumnSize._6; }
 

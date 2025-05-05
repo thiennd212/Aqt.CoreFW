@@ -17,6 +17,8 @@ using System.Linq;
 using System.Threading.Tasks;
 using Volo.Abp; // UserFriendlyException
 using Volo.Abp.AspNetCore.Mvc.UI.RazorPages;
+using Volo.Abp.Content;
+using Volo.Abp.Users;
 using Volo.Abp.Validation; // AbpValidationException, IValidationErrorHandler
 
 namespace Aqt.CoreFW.Web.Pages.BDocuments;
@@ -28,11 +30,11 @@ public class CreateModalModel : AbpPageModel // Kế thừa AbpPageModel
     [BindProperty]
     public BDocumentViewModel BDocumentViewModel { get; set; } = new();
 
+    private Guid? OwnerUserId { get; set; }
+
     // Dữ liệu chỉ đọc, dùng để render View và Partial View
-    public List<ProcedureComponentDto> AttachmentComponents { get; private set; } = new(); // Danh sách components của Procedure
-    public BDocumentDataViewModel? DeclarationComponentData { get; private set; } // ViewModel riêng cho Partial View Tờ khai
+    public List<ProcedureComponentDto> ProcedureComponents { get; private set; } = new(); // Danh sách components của Procedure
     public string ProcedureName { get; private set; } = string.Empty; // Tên thủ tục để hiển thị
-    public int DeclarationComponentIndex { get; private set; } = -1; // Index của Tờ khai trong ComponentDataList
 
     // Inject các services cần thiết
     private readonly IBDocumentAppService _bDocumentAppService;
@@ -44,12 +46,14 @@ public class CreateModalModel : AbpPageModel // Kế thừa AbpPageModel
         IBDocumentAppService bDocumentAppService,
         IProcedureAppService procedureAppService,
         IProcedureComponentAppService componentAppService,
-        IFileAppService fileAppService)
+        IFileAppService fileAppService,
+        ICurrentUser currentUser)
     {
         _bDocumentAppService = bDocumentAppService;
         _procedureAppService = procedureAppService;
         _componentAppService = componentAppService;
         _fileAppService = fileAppService;
+        OwnerUserId = currentUser.GetId();
     }
 
     // Xử lý khi mở Modal (GET)
@@ -70,10 +74,7 @@ public class CreateModalModel : AbpPageModel // Kế thừa AbpPageModel
             await ReloadDataForViewAsync(procedureId);
 
             // Khởi tạo ComponentDataList trong ViewModel chính dựa trên các components của procedure
-            InitializeComponentDataList(AttachmentComponents);
-
-            // Tìm và chuẩn bị dữ liệu cho Partial View Tờ khai
-            PrepareDeclarationComponentData();
+            InitializeComponentDataList(ProcedureComponents);
         }
         catch (Exception ex)
         {
@@ -90,10 +91,6 @@ public class CreateModalModel : AbpPageModel // Kế thừa AbpPageModel
     {
         try
         {
-            // 1. Lấy JSON Tờ khai từ hidden input (được cập nhật bởi JavaScript)
-            // và gán vào đúng vị trí trong ComponentDataList
-            AssignDeclarationJsonFromForm();
-
             // 2. Validate Server-side (Kiểm tra các trường bắt buộc, file đính kèm...)
             await ValidateServerSideAsync();
 
@@ -103,12 +100,11 @@ public class CreateModalModel : AbpPageModel // Kế thừa AbpPageModel
                 Logger.LogWarning("Create BDocument failed due to validation errors. ProcedureId: {ProcedureId}", BDocumentViewModel.ProcedureId);
                 // Load lại dữ liệu cần thiết cho View (như FormDefinition) để hiển thị lại modal với lỗi
                 await ReloadDataForViewAsync(BDocumentViewModel.ProcedureId);
-                PrepareDeclarationComponentData(); // Chuẩn bị lại data cho partial view tờ khai
                 return Page(); // Trả về Page để hiển thị lại Modal với lỗi validation
             }
 
             // 3. Map ViewModel sang Create Input DTO
-            var createDto = ObjectMapper.Map<BDocumentViewModel, CreateBDocumentInputDto>(BDocumentViewModel);
+            var createDto = ObjectMapper.Map<BDocumentViewModel, CreateUpdateBDocumentDto>(BDocumentViewModel);
 
             // 4. Gọi AppService để tạo BDocument
             await _bDocumentAppService.CreateAsync(createDto);
@@ -121,7 +117,6 @@ public class CreateModalModel : AbpPageModel // Kế thừa AbpPageModel
             // Xử lý lỗi validation từ ABP Framework
             Logger.LogWarning(validationException, "ABP Validation error during BDocument creation.");
             await ReloadDataForViewAsync(BDocumentViewModel.ProcedureId);
-            PrepareDeclarationComponentData();
             return Page();
         }
         catch (UserFriendlyException userEx) // Bắt lỗi thân thiện với người dùng
@@ -129,7 +124,6 @@ public class CreateModalModel : AbpPageModel // Kế thừa AbpPageModel
             Logger.LogWarning(userEx, "User friendly error during BDocument creation.");
             ModelState.AddModelError("", userEx.Message); // Hiển thị lỗi cho người dùng
             await ReloadDataForViewAsync(BDocumentViewModel.ProcedureId);
-            PrepareDeclarationComponentData();
             return Page();
         }
         catch (Exception ex)
@@ -138,7 +132,6 @@ public class CreateModalModel : AbpPageModel // Kế thừa AbpPageModel
             Logger.LogError(ex, "Error creating BDocument for ProcedureId {ProcedureId}.", BDocumentViewModel.ProcedureId);
             ModelState.AddModelError("", L["ErrorCreatingDocument"]); // Thông báo lỗi chung
             await ReloadDataForViewAsync(BDocumentViewModel.ProcedureId);
-            PrepareDeclarationComponentData();
             return Page();
         }
     }
@@ -147,9 +140,9 @@ public class CreateModalModel : AbpPageModel // Kế thừa AbpPageModel
 
     // Handler Upload File (AJAX từ createModal.js)
     [HttpPost] // Chỉ định phương thức POST
-    [Route("api/app/file/upload")] // Định nghĩa route rõ ràng cho API upload
-    [IgnoreAntiforgeryToken] // Bỏ qua Antiforgery nếu JS gửi token qua header
-    public async Task<JsonResult> OnPostUploadFileAsync(IFormFile file, Guid? parentId = null) // Đổi tên để rõ ràng là API
+    // [Route("api/app/file/upload")] // <<< XÓA HOẶC COMMENT DÒNG NÀY
+    [IgnoreAntiforgeryToken] // Giữ lại để bỏ qua Antiforgery
+    public async Task<JsonResult> OnPostUploadFileAsync(IFormFile file, Guid? parentId = null)
     {
         if (file == null)
         {
@@ -159,15 +152,18 @@ public class CreateModalModel : AbpPageModel // Kế thừa AbpPageModel
         Logger.LogInformation("Attempting to upload file: {FileName}, Size: {FileSize}", file.FileName, file.Length);
         try
         {
-            var createDto = new CreateFileInput
+            var dto = new CreateFileWithStreamInput
             {
-                FileContainerName = BDocumentConsts.FileContainerName, // Sử dụng Container Name từ Consts
-                FileName = file.FileName,
-                ParentId = parentId, // Thường không cần ParentId khi upload ban đầu
-                FileType = FileType.RegularFile,
-                Content = await file.GetAllBytesAsync()
+                FileContainerName = BDocumentConsts.FileContainerName,
+                OwnerUserId = OwnerUserId,
+                ParentId = parentId,
             };
-            var result = await _fileAppService.CreateAsync(createDto);
+            dto.Content = new RemoteStreamContent(
+                    stream: file.OpenReadStream(),
+                    fileName: file.FileName,
+                    contentType: file.ContentType);
+
+            var result = await _fileAppService.CreateWithStreamAsync(dto);
             Logger.LogInformation("File uploaded successfully: {FileName}, FileId: {FileId}", result.FileInfo.FileName, result.FileInfo.Id);
             // Map sang DTO của Application Contracts để trả về các thông tin cần thiết cho JS
             var resultDto = result.FileInfo;// ObjectMapper.Map<EasyAbp.FileManagement.Files.Dtos.FileInfoDto, Aqt.CoreFW.Application.Contracts.Files.FileInfoDto>(result);
@@ -209,43 +205,6 @@ public class CreateModalModel : AbpPageModel // Kế thừa AbpPageModel
 
     // === Các phương thức Helper ===
 
-    // Lấy index của Component trong list ComponentDataList (để binding đúng)
-    public int GetComponentDataIndex(Guid componentId)
-    {
-        if (BDocumentViewModel?.ComponentDataList == null) return -1;
-        // Tìm index dựa trên ProcedureComponentId
-        return BDocumentViewModel.ComponentDataList.FindIndex(d => d.ProcedureComponentId == componentId);
-    }
-
-    // Gán JSON từ Request.Form vào đúng item Tờ khai trong ComponentDataList
-    private void AssignDeclarationJsonFromForm()
-    {
-        if (DeclarationComponentIndex >= 0 && BDocumentViewModel.ComponentDataList?.Count > DeclarationComponentIndex)
-        {
-            // Lấy giá trị JSON từ hidden input (tên phải khớp với id trong CreateModal.cshtml)
-            var instanceId = $"decl_{BDocumentViewModel.ComponentDataList[DeclarationComponentIndex].ProcedureComponentId}";
-            var hiddenInputName = $"hiddenFormData_{instanceId}"; // Nên truyền tên này từ JS hoặc có quy ước cố định hơn
-            // Thay vào đó, dùng index để lấy tên input chuẩn:
-            var inputName = $"BDocumentViewModel.ComponentDataList[{DeclarationComponentIndex}].FormData";
-            var declarationJsonFromForm = Request.Form[inputName].FirstOrDefault();
-
-            // Cập nhật FormData trong ViewModel
-            BDocumentViewModel.ComponentDataList[DeclarationComponentIndex].FormData = declarationJsonFromForm;
-            Logger.LogDebug("Assigned Declaration JSON from form to ComponentDataList index {Index}: {JsonData}", DeclarationComponentIndex, declarationJsonFromForm);
-        }
-        else
-        {
-            // Ghi log nếu không tìm thấy index của tờ khai mà vẫn nhận được JSON (bất thường)
-            var hiddenInputId = DeclarationComponentData != null ? $"hiddenFormData_decl_{DeclarationComponentData.ProcedureComponentId}" : "unknown";
-            var declarationJsonFromForm = Request.Form[hiddenInputId].FirstOrDefault(); // Thử lấy bằng ID cũ
-            if (!string.IsNullOrWhiteSpace(declarationJsonFromForm))
-            {
-                Logger.LogWarning("Received declaration JSON from hidden input '{HiddenInputId}' but couldn't find the corresponding component data index ({Index}).", hiddenInputId, DeclarationComponentIndex);
-            }
-        }
-    }
-
-
     // Validate dữ liệu phía server trước khi tạo
     private async Task ValidateServerSideAsync()
     {
@@ -267,16 +226,16 @@ public class CreateModalModel : AbpPageModel // Kế thừa AbpPageModel
         }
 
         // Duyệt qua danh sách component data đã được bind từ form
-        if (BDocumentViewModel.ComponentDataList == null || !BDocumentViewModel.ComponentDataList.Any())
+        if (BDocumentViewModel.DataList == null || !BDocumentViewModel.DataList.Any())
         {
             Logger.LogWarning("ComponentDataList is null or empty during validation.");
             // Có thể thêm lỗi nếu procedure yêu cầu component mà list lại rỗng
             return;
         }
 
-        for (int i = 0; i < BDocumentViewModel.ComponentDataList.Count; i++)
+        for (int i = 0; i < BDocumentViewModel.DataList.Count; i++)
         {
-            var dataVm = BDocumentViewModel.ComponentDataList[i];
+            var dataVm = BDocumentViewModel.DataList[i];
             // Tìm định nghĩa tương ứng
             var definition = definitions.FirstOrDefault(d => d.Id == dataVm.ProcedureComponentId);
             if (definition == null)
@@ -338,8 +297,33 @@ public class CreateModalModel : AbpPageModel // Kế thừa AbpPageModel
 
             // Lấy lại danh sách components
             var definitions = await _componentAppService.GetListByProcedureAsync(procedureId);
-            AttachmentComponents = (List<ProcedureComponentDto>)definitions.Items;
-            Logger.LogDebug("Reloaded {Count} component definitions for ProcedureId {ProcedureId}", AttachmentComponents.Count, procedureId);
+            ProcedureComponents = (List<ProcedureComponentDto>)definitions.Items;
+
+            // Quan trọng: Gán lại FormDefinition và các thông tin hiển thị khác
+            // cho các item trong BDocumentViewModel.DataList đã được bind từ lần submit lỗi trước.
+            if (BDocumentViewModel?.DataList != null)
+            {
+                foreach(var dataItem in BDocumentViewModel.DataList)
+                {
+                    // Tìm definition tương ứng trong danh sách vừa load lại
+                    var definition = ProcedureComponents.Find(d => d.Id == dataItem.ProcedureComponentId);
+                    if(definition != null)
+                    {
+                        // Cập nhật thông tin hiển thị và definition
+                        dataItem.ComponentName = definition.Name;
+                        dataItem.ComponentType = definition.Type;
+                        dataItem.Description = definition.Description;
+                        dataItem.IsRequired = false;
+                        dataItem.TempPath = definition.TempPath;
+                        if(definition.Type == ComponentType.Form)
+                        { 
+                           dataItem.FormDefinition = definition.FormDefinition; // Cần để render lại form 
+                        }
+                        // Giữ nguyên dataItem.FormData và dataItem.FileId đã được bind
+                    }
+                }
+            }
+            Logger.LogDebug("Reloaded {Count} component definitions and updated ViewModel DataList for ProcedureId {ProcedureId}", ProcedureComponents.Count, procedureId);
         }
         catch (Exception ex)
         {
@@ -352,54 +336,25 @@ public class CreateModalModel : AbpPageModel // Kế thừa AbpPageModel
     // Khởi tạo ComponentDataList trong ViewModel chính
     private void InitializeComponentDataList(List<ProcedureComponentDto> components)
     {
-        BDocumentViewModel.ComponentDataList = new List<BDocumentDataViewModel>();
+        BDocumentViewModel.DataList = new List<BDocumentDataViewModel>();
         if (components == null) return;
 
         foreach (var comp in components)
         {
-            BDocumentViewModel.ComponentDataList.Add(new BDocumentDataViewModel
+            BDocumentViewModel.DataList.Add(new BDocumentDataViewModel
             {
+                // Gán các giá trị ban đầu cần thiết cho View
                 ProcedureComponentId = comp.Id,
-                // Các thông tin khác sẽ được bind từ form hoặc load sau
+                ComponentName = comp.Name,
+                ComponentType = comp.Type,
+                Description = comp.Description,
+                IsRequired = false,
+                TempPath = comp.TempPath,
+                FormDefinition = comp.Type == ComponentType.Form ? comp.FormDefinition : null // Chỉ gán definition cho form
+                // FormData và FileId sẽ được bind từ form khi submit
             });
         }
-        Logger.LogDebug("Initialized ComponentDataList with {Count} items based on procedure components.", BDocumentViewModel.ComponentDataList.Count);
-    }
-
-    // Tìm Component loại Form và chuẩn bị ViewModel cho Partial View
-    private void PrepareDeclarationComponentData()
-    {
-        DeclarationComponentIndex = -1;
-        DeclarationComponentData = null;
-        if (BDocumentViewModel.ComponentDataList == null || AttachmentComponents == null) return;
-
-        for (int i = 0; i < BDocumentViewModel.ComponentDataList.Count; i++)
-        {
-            var dataVm = BDocumentViewModel.ComponentDataList[i];
-            var definition = AttachmentComponents.Find(c => c.Id == dataVm.ProcedureComponentId);
-
-            if (definition?.Type == ComponentType.Form)
-            {
-                DeclarationComponentIndex = i;
-                // Gán lại các thông tin cần thiết cho ViewModel của Partial View
-                dataVm.ComponentName = definition.Name;
-                dataVm.ComponentCode = definition.Code;
-                dataVm.ComponentType = definition.Type;
-                dataVm.Description = definition.Description;
-                //dataVm.IsRequired = definition.IsRequired;
-                dataVm.TempPath = definition.TempPath;
-                dataVm.FormDefinition = definition.FormDefinition; // Quan trọng: Cần FormDefinition để render lại
-                                                                   // FormData đã được giữ lại trong dataVm từ lần bind trước hoặc AssignDeclarationJsonFromForm
-
-                DeclarationComponentData = dataVm; // Gán ViewModel đã chuẩn bị cho Partial View
-                Logger.LogDebug("Prepared DeclarationComponentData for Partial View. Index: {Index}, ComponentId: {ComponentId}", i, dataVm.ProcedureComponentId);
-                break; // Giả sử chỉ có 1 Tờ khai
-            }
-        }
-        if (DeclarationComponentIndex == -1)
-        {
-            Logger.LogDebug("No Form Component found for this procedure.");
-        }
+        Logger.LogDebug("Initialized ComponentDataList with {Count} items based on procedure components.", BDocumentViewModel.DataList.Count);
     }
 
     // Optional: Helper để validate nội dung JSON

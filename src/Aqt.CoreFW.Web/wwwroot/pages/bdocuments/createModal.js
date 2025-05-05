@@ -8,9 +8,7 @@
 
     // Tham chiếu đến form và các container quan trọng
     var form = $('#CreateBDocumentForm'); // ID của form trong CreateModal.cshtml
-    var declarationContainer = form.find('[id^="DeclarationFormContainer_"]'); // Tìm container form động (ID bắt đầu bằng...)
-    // Tìm input ẩn chứa JSON của form động dựa vào ID của container
-    var declarationFormDataInput = $('#' + declarationContainer.attr('id').replace('DeclarationFormContainer_', 'hiddenFormData_'));
+    var declarationContainer = form.find('[id^="DynamicFormContainer_form_"]'); // Tìm container form động
     var attachedDocsTableBody = form.find('#AttachedDocumentsTable tbody');
 
     // Tham chiếu đến File App Service proxy (đảm bảo tên proxy đúng)
@@ -48,7 +46,7 @@
 
                 // Gọi API Upload bằng AJAX
                 $.ajax({
-                    url: abp.appPath + 'api/app/file/upload', // Endpoint API upload
+                    url: abp.appPath + 'BDocuments/CreateModal?handler=UploadFile', // SỬ DỤNG URL HANDLER
                     type: 'POST',
                     data: formData,
                     processData: false, // Không xử lý data
@@ -61,10 +59,10 @@
                         if (result && result.id) { // Upload thành công và trả về ID file
                             $hiddenInput.val(result.id); // Gán FileId vào hidden input
                             // Hiển thị thông tin file và nút xóa
-                            var fileSizeDisplay = result.length ? abp.utils.byteSize(result.length) : '';
+                            var fileSizeDisplay = result.byteSize ? app.formatByteSize(result.byteSize) : '';
                             $infoDiv.html(
                                 `<i class="fas fa-check-circle text-success me-1"></i> ${result.fileName} (${fileSizeDisplay}) ` +
-                                `<button type="button" class="btn btn-xs btn-outline-danger remove-file ms-1" data-file-id="${result.id}" data-target-hidden="${targetHiddenId}" data-target-input="#${$fileInput.attr('id')}" title="${l('DeleteFile')}"><i class="fas fa-times"></i></button>`
+                                `<button type="button" class="btn btn-sm btn-outline-danger remove-uploaded-file-btn ms-1" data-file-id="${result.id}" data-target-hidden="${targetHiddenId}" data-target-input="#${$fileInput.attr('id')}" title="${l('DeleteFile')}"><i class="fas fa-times"></i></button>`
                             );
                             initializeRemoveFileButtons($infoDiv); // Gắn sự kiện cho nút xóa mới
                         } else { // Có lỗi trả về từ server (dù request thành công)
@@ -142,45 +140,67 @@
     // --- Dynamic Form Data Collection ---
     function collectDynamicFormData() {
         var formData = {};
-        // Chỉ tìm các control bên trong container của form động
-        declarationContainer.find('[data-field-name]').each(function () {
-            var $input = $(this);
-            var fieldName = $input.data('field-name');
-            if (!fieldName) return; // Bỏ qua nếu thiếu data-field-name
-
-            var value;
-            var inputType = $input.attr('type');
-            var tagName = $input.prop('tagName').toLowerCase();
-
-            if (tagName === 'textarea' || tagName === 'select') {
-                value = $input.val();
-            } else if (inputType === 'checkbox') {
-                // Luôn lấy giá trị boolean true/false cho checkbox
-                value = $input.is(':checked');
-            } else if (inputType === 'radio') {
-                // Chỉ lấy giá trị của radio được check trong group có cùng name
-                if ($input.is(':checked')) {
-                    value = $input.val();
-                    // Gán trực tiếp vào formData vì mỗi group chỉ có 1 giá trị được chọn
-                    formData[fieldName] = value;
-                }
-                // Với radio, không cần gán `value` chung ở cuối, nên return sớm
+        // Tìm TẤT CẢ các container form động được render
+        form.find('.dynamic-form-instance').each(function() {
+            var $container = $(this);
+            var index = $container.data('index'); // Lấy index từ data-attribute
+            // Lấy instanceId từ ID của container để tìm input ẩn
+            var instanceId = $container.attr('id')?.replace('DynamicFormContainer_', '');
+            if (!instanceId) {
+                console.warn(`Form container at index ${index} is missing a valid ID.`);
                 return;
-            } else { // Các loại input khác (text, date, number, etc.)
-                value = $input.val();
+            }
+            var hiddenInputId = '#hiddenFormData_' + instanceId; // Tìm ID của input ẩn tương ứng
+            var $hiddenInput = $(hiddenInputId);
+            if ($hiddenInput.length === 0) {
+                 console.warn(`Hidden input not found for form container with index ${index}. Selector: ${hiddenInputId}`);
+                 return; // Bỏ qua form này nếu không tìm thấy input ẩn
             }
 
-            // Gán giá trị vào object formData (trừ radio đã được xử lý)
-            if (inputType !== 'radio') {
-                formData[fieldName] = value;
-            }
+            var currentFormFields = {}; // Dữ liệu chỉ cho form này
+            // --- SỬA LỖI Ở ĐÂY: Tìm input bên trong $container hiện tại --- 
+            $container.find('[data-field-name]').each(function () {
+                var $input = $(this);
+                var fieldName = $input.data('field-name');
+                if (!fieldName) return; // Bỏ qua nếu thiếu data-field-name
+
+                var value;
+                var inputType = $input.attr('type');
+                var tagName = $input.prop('tagName').toLowerCase();
+
+                if (tagName === 'textarea' || tagName === 'select') {
+                    value = $input.val();
+                } else if (inputType === 'checkbox') {
+                    // Luôn lấy giá trị boolean true/false cho checkbox
+                    value = $input.is(':checked');
+                } else if (inputType === 'radio') {
+                    // Chỉ lấy giá trị của radio được check trong group có cùng name
+                    if ($input.is(':checked')) {
+                        value = $input.val();
+                        // Gán trực tiếp vào formData vì mỗi group chỉ có 1 giá trị được chọn
+                        currentFormFields[fieldName] = value;
+                    }
+                    // Với radio, không cần gán `value` chung ở cuối, nên return sớm
+                    return;
+                } else { // Các loại input khác (text, date, number, etc.)
+                    value = $input.val();
+                }
+
+                // Gán giá trị vào object formData (trừ radio đã được xử lý)
+                if (inputType !== 'radio') {
+                    currentFormFields[fieldName] = value;
+                }
+            });
+
+            // Gán object formData vào formData chung
+            let jsonStringForm = JSON.stringify(currentFormFields);
+            $hiddenInput.val(jsonStringForm);
+            formData[instanceId] = currentFormFields;
         });
 
         // Chuyển object thành chuỗi JSON
-        var jsonString = JSON.stringify(formData);
-        // Gán chuỗi JSON vào hidden input tương ứng
-        declarationFormDataInput.val(jsonString);
-        console.log("Collected Declaration JSON:", jsonString); // Log để debug
+        let jsonString = JSON.stringify(formData);
+        $("#BDocumentViewModel_HiddenDataFormInput").val(jsonString);
         return jsonString; // Trả về chuỗi JSON (tùy chọn)
     }
 
@@ -199,25 +219,26 @@
         }
 
         // Bắt sự kiện thay đổi trên các control của form động để cập nhật JSON
-        // Điều này hữu ích nếu có logic phụ thuộc vào giá trị form động ngay trên client
-        // Nếu không, có thể bỏ qua và chỉ gọi collectDeclarationFormData() khi submit
+        // Chỉ gắn event nếu container tồn tại
         if (declarationContainer.length > 0) {
             declarationContainer.on('change input', '[data-field-name]', function () {
-                // Có thể gọi collectDeclarationFormData() ở đây nếu cần cập nhật liên tục
+                // Có thể gọi collectDynamicFormData() ở đây nếu cần cập nhật liên tục
                 // Hoặc thực hiện các logic client-side khác dựa trên thay đổi
                 console.log(`Field '${$(this).data('field-name')}' changed.`);
+                // Ví dụ: Tự động gọi lại nếu cần cập nhật ngay
+                // collectDynamicFormData();
             });
         } else {
-            console.warn("Declaration form container not found.");
+            console.warn("Declaration form container not found, skipping change event binding.");
         }
 
 
         // Đảm bảo JSON được thu thập LẦN CUỐI CÙNG ngay trước khi form submit
         form.on('submit', function (e) {
-            // Chỉ thu thập nếu có container form động
-            if (declarationContainer.length > 0 && declarationFormDataInput.length > 0) {
+            // Chỉ thu thập nếu cả container và input ẩn đều tồn tại
+            if (declarationContainer.length > 0) {
                 console.log("Collecting final declaration JSON before submit...");
-                collectDeclarationFormData();
+                collectDynamicFormData();
             } else {
                 console.log("No declaration form to collect data from.");
             }

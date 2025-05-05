@@ -1,4 +1,4 @@
-    using Aqt.CoreFW.Components; // Namespace chứa ComponentConsts và Enums
+﻿    using Aqt.CoreFW.Components; // Namespace chứa ComponentConsts và Enums
     using Aqt.CoreFW.Domain.Components.Entities; // Component Entity
     // using Aqt.CoreFW.Domain.Procedures.Entities; // Không cần trực tiếp ở đây nếu không config FK từ đây
     using Aqt.CoreFW.Domain.Shared; // Namespace chứa CoreFWConsts
@@ -54,11 +54,12 @@
             // Cấu hình cho FormDefinition - có thể cần kiểu dữ liệu lớn
             builder.Property(x => x.FormDefinition)
                 .HasColumnName(nameof(ProcedureComponent.FormDefinition))
-                .IsRequired(false); // Nullable
-                // .HasColumnType("nvarchar(max)"); // Bỏ comment nếu dùng SQL Server và cần nvarchar(max)
-                // .HasColumnType("text"); // Bỏ comment nếu dùng PostgreSQL/MySQL và cần text
+                .IsRequired(false) // Nullable
+                .HasColumnType("NCLOB"); // Bỏ comment nếu dùng Oracle
+                                         // .HasColumnType("nvarchar(max)"); // Bỏ comment nếu dùng SQL Server và cần nvarchar(max)
+                                         // .HasColumnType("text"); // Bỏ comment nếu dùng PostgreSQL/MySQL và cần text
 
-            builder.Property(x => x.TempPath)
+        builder.Property(x => x.TempPath)
                 .HasMaxLength(ComponentConsts.MaxTempPathLength)
                 .HasColumnName(nameof(ProcedureComponent.TempPath))
                 .IsRequired(false); // Nullable

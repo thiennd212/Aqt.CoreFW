@@ -1,6 +1,8 @@
-using System;
+﻿using System;
 using System.Threading.Tasks;
 using Aqt.CoreFW.Application.Contracts.BDocuments.Dtos; // Namespace chứa DTOs
+using Aqt.CoreFW.Application.Contracts.Shared.Lookups; // Namespace cho ProcedureLookupDto
+using Aqt.CoreFW.BDocuments.Dtos;
 using EasyAbp.FileManagement.Files.Dtos; // Sử dụng FileInfoDto từ FileManagement
 using Volo.Abp.Application.Dtos;
 using Volo.Abp.Application.Services;
@@ -15,13 +17,13 @@ public interface IBDocumentAppService : IApplicationService
     /// dữ liệu component ban đầu (bao gồm JSON tờ khai và FileId).
     /// Trạng thái ban đầu là null.
     /// </summary>
-    Task<BDocumentDto> CreateAsync(CreateBDocumentInputDto input);
+    Task<BDocumentDto> CreateAsync(CreateUpdateBDocumentDto input);
 
     /// <summary>
     /// Cập nhật thông tin chính của BDocument (chủ hồ sơ, phạm vi...).
     /// KHÔNG cập nhật component data qua phương thức này.
     /// </summary>
-    Task<BDocumentDto> UpdateAsync(Guid id, UpdateBDocumentInputDto input);
+    Task<BDocumentDto> UpdateAsync(Guid id, CreateUpdateBDocumentDto input);
 
     /// <summary>
     /// Lấy thông tin chi tiết của BDocument, bao gồm cả dữ liệu component.
@@ -68,4 +70,11 @@ public interface IBDocumentAppService : IApplicationService
     /// (Optional) Xuất danh sách BDocuments ra file Excel dựa trên bộ lọc.
     /// </summary>
     Task<IRemoteStreamContent> GetListAsExcelAsync(GetBDocumentsInput input);
+
+    /// <summary>
+    /// Lấy danh sách các Thủ tục (Procedures) dưới dạng lookup (Id, Name).
+    /// Dùng để hiển thị trong dropdown hoặc các lựa chọn khác trên UI.
+    /// </summary>
+    /// <returns>Danh sách các ProcedureLookupDto.</returns>
+    Task<ListResultDto<ProcedureLookupDto>> GetProcedureLookupAsync();
 } 

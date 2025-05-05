@@ -66,7 +66,7 @@
                                     // Chỉ hiển thị nếu có quyền Delete
                                     visible: permissions.canDelete,
                                     // Hiển thị thông báo xác nhận trước khi xóa
-                                    confirmMessage: (data) => l('AreYouSureToDeleteBDocument', data.record.maHoSo || data.record.id),
+                                    confirmMessage: (data) => l('AreYouSureToDeleteBDocument', data.record.documentCode || data.record.id),
                                     // Hành động khi click: Gọi API Delete và reload bảng
                                     action: (data) => {
                                         bDocumentService.delete(data.record.id)
@@ -82,14 +82,14 @@
                         width: "100px" // Giảm độ rộng cột Actions
                     },
                     // Các cột dữ liệu khác
-                    { title: l('DisplayName:BDocument.MaHoSo'), data: "maHoSo", width: "150px" },
-                    { title: l('DisplayName:BDocument.TenChuHoSo'), data: "tenChuHoSo" },
+                    { title: l('DisplayName:BDocument.Code'), data: "code", width: "150px" },
+                    { title: l('DisplayName:BDocument.ApplicantName'), data: "applicantName" },
                     { title: l('DisplayName:BDocument.ProcedureId'), data: "procedureName", width: "250px" }, // Hiển thị tên Procedure
                     {
-                        title: l('DisplayName:BDocument.TrangThaiHoSoId'), data: "trangThaiHoSoName", width: "150px",
+                        title: l('DisplayName:BDocument.WorkflowStatusId'), data: "workflowStatusName", width: "150px",
                         // Render badge màu cho trạng thái
                         render: (data, type, row) => {
-                            let color = row.trangThaiHoSoColorCode || 'secondary'; // Lấy mã màu, mặc định là secondary
+                            let color = row.workflowStatusColorCode || 'secondary'; // Đổi tên: trangThaiHoSoColorCode -> workflowStatusColorCode
                             let name = data || l('NotSet'); // Tên trạng thái hoặc 'Chưa đặt'
                             return `<span class="badge bg-${color}">${name}</span>`;
                         }
@@ -158,20 +158,20 @@
             let columnIndex = sortInfo[0];
             let sortDirection = sortInfo[1];
             // Map index cột sang tên trường để sort (cần khớp với backend)
-            let sortableMap = { 1: 'maHoSo', 2: 'tenChuHoSo', 3: 'procedureId', 4: 'trangThaiHoSoId', 5: 'creationTime' };
+            let sortableMap = { 1: 'documentCode', 2: 'applicantName', 3: 'procedureId', 4: 'workflowStatusId', 5: 'creationTime' };
             let columnName = sortableMap[columnIndex];
             if (columnName) sorting = `${columnName} ${sortDirection}`;
         }
 
         // Tạo URLSearchParams để truyền filter và sorting
         let params = new URLSearchParams();
-        if (filterInput.filter) params.append('FilterText', filterInput.filter); // Đổi tên param cho khớp API
+        if (filterInput.filter) params.append('Filter', filterInput.filter); // Đổi tên: FilterText -> Filter (theo kế hoạch)
         if (filterInput.procedureId) params.append('ProcedureId', filterInput.procedureId);
-        if (filterInput.statusId) params.append('TrangThaiHoSoId', filterInput.statusId); // Đổi tên param cho khớp API
+        if (filterInput.statusId) params.append('StatusId', filterInput.statusId); // Đổi tên: TrangThaiHoSoId -> StatusId (theo kế hoạch)
         if (sorting) params.append('Sorting', sorting);
 
         // Endpoint API để export (Cần tạo ở Application và HttpApi layers)
-        let exportUrl = abp.appPath + 'api/app/b-document/as-excel-file?' + params.toString(); // API trả về File Content
+        let exportUrl = abp.appPath + 'api/app/b-document/as-excel?' + params.toString(); // Đổi endpoint (theo kế hoạch)
         // Chuyển hướng trình duyệt đến URL để tải file
         location.href = exportUrl;
     });

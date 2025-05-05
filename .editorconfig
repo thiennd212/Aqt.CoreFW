@@ -91,3 +91,5 @@ dotnet_diagnostic.S1135.severity = none
 dotnet_diagnostic.MVC1002.severity = none
 # MVC1001: Filters cannot be applied to page handler methods
 dotnet_diagnostic.MVC1001.severity = none
+# S6667: Logging in a catch clause should pass the caught exception as a parameter.
+dotnet_diagnostic.S6667.severity = none

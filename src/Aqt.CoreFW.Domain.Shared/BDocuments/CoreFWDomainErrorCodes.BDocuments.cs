@@ -15,9 +15,14 @@ public static partial class CoreFWDomainErrorCodes
     public const string CannotUpdateDocumentInCurrentStatus = "CoreFW:BDocuments:00136";
     public const string CannotDeleteDocumentInCurrentStatus = "CoreFW:BDocuments:00137";
     public const string FileManagementInteractionFailed = "CoreFW:BDocuments:00138";
-    public const string DeclarationFormComponentNotFound = "CoreFW:BDocuments:00139"; // Khi không tìm thấy component Tờ khai
-    public const string FormDataGenerationFailed = "CoreFW:BDocuments:00140"; // Lỗi khi tạo JSON từ form động
-    public const string DeclarationFileGenerationFailed = "CoreFW:BDocuments:00141"; // Lỗi khi tạo file từ tờ khai
-    public const string InvalidFormDataForDeclaration = "CoreFW:BDocuments:00142"; // Dữ liệu JSON của tờ khai không hợp lệ
+    public const string DeclarationFormComponentNotFound = "CoreFW:BDocuments:00139";
+    public const string InputDataGenerationFailed = "CoreFW:BDocuments:00140";
+    public const string DeclarationFileGenerationFailed = "CoreFW:BDocuments:00141";
+    public const string InvalidInputDataForDeclaration = "CoreFW:BDocuments:00142";
+    public const string CannotAssociateFileWithFormComponent = "CoreFW:BDocuments:00143";
+    public const string CannotSaveFormDataForFileComponent = "CoreFW:BDocuments:00144";
+    public const string ProcedureComponentNotFound = "CoreFW:BDocuments:00145";
+    public const string ProcedureComponentNotLinked = "CoreFW:BDocuments:00146";
+    public const string CannotUpdateComponentDataInCurrentStatus = "CoreFW:BDocuments:00147";
     // Thêm các mã lỗi khác nếu cần
 } 

@@ -10,124 +10,130 @@ using Volo.Abp.EntityFrameworkCore.Modeling;
 namespace Aqt.CoreFW.EntityFrameworkCore.EntityTypeConfigurations.BDocuments;
 
 /// <summary>
-/// Configures the database mapping for the <see cref="BDocument"/> entity.
+/// Cấu hình ánh xạ cơ sở dữ liệu cho thực thể <see cref="BDocument"/>.
 /// </summary>
 public class BDocumentConfiguration : IEntityTypeConfiguration<BDocument>
 {
     public void Configure(EntityTypeBuilder<BDocument> builder)
     {
-        // Sử dụng DbTablePrefix và DbSchema từ CoreFWConsts
+        // Tên bảng và schema
         builder.ToTable(CoreFWConsts.DbTablePrefix + "BDocuments", CoreFWConsts.DbSchema);
 
-        builder.ConfigureByConvention(); // Áp dụng quy ước FullAuditedAggregateRoot
+        // Áp dụng các quy ước chuẩn cho FullAuditedAggregateRoot
+        builder.ConfigureByConvention();
 
         builder.HasKey(x => x.Id);
 
-        // --- Property Configurations ---
+        // --- Cấu hình thuộc tính --- 
         builder.Property(x => x.ProcedureId)
             .IsRequired()
-            .HasColumnName(nameof(BDocument.ProcedureId));
+            .HasColumnName(nameof(BDocument.ProcedureId)); // Tên cột khớp tên thuộc tính
 
-        builder.Property(x => x.MaHoSo)
+        builder.Property(x => x.Code) // Đổi sang tiếng Anh
             .IsRequired()
-            .HasMaxLength(BDocumentConsts.MaxMaHoSoLength)
-            .HasColumnName(nameof(BDocument.MaHoSo));
+            .HasMaxLength(BDocumentConsts.MaxCodeLength) // Đổi sang tiếng Anh
+            .HasColumnName(nameof(BDocument.Code)); // Đổi sang tiếng Anh
 
-        builder.Property(x => x.TenChuHoSo)
+        builder.Property(x => x.ApplicantName) // Đổi sang tiếng Anh
             .IsRequired()
-            .HasMaxLength(BDocumentConsts.MaxTenChuHoSoLength)
-            .HasColumnName(nameof(BDocument.TenChuHoSo));
+            .HasMaxLength(BDocumentConsts.MaxApplicantNameLength) // Đổi sang tiếng Anh
+            .HasColumnName(nameof(BDocument.ApplicantName)); // Đổi sang tiếng Anh
 
-        builder.Property(x => x.SoDinhDanhChuHoSo)
-            .HasMaxLength(BDocumentConsts.MaxSoDinhDanhChuHoSoLength)
-            .HasColumnName(nameof(BDocument.SoDinhDanhChuHoSo));
+        builder.Property(x => x.ApplicantIdentityNumber) // Đổi sang tiếng Anh
+            .HasMaxLength(BDocumentConsts.MaxApplicantIdentityNumberLength) // Đổi sang tiếng Anh
+            .HasColumnName(nameof(BDocument.ApplicantIdentityNumber)); // Đổi sang tiếng Anh
 
-        builder.Property(x => x.DiaChiChuHoSo)
-            .HasMaxLength(BDocumentConsts.MaxDiaChiChuHoSoLength)
-            .HasColumnName(nameof(BDocument.DiaChiChuHoSo));
+        builder.Property(x => x.ApplicantAddress) // Đổi sang tiếng Anh
+            .HasMaxLength(BDocumentConsts.MaxApplicantAddressLength) // Đổi sang tiếng Anh
+            .HasColumnName(nameof(BDocument.ApplicantAddress)); // Đổi sang tiếng Anh
 
-        builder.Property(x => x.EmailChuHoSo)
-            .HasMaxLength(BDocumentConsts.MaxEmailChuHoSoLength)
-            .HasColumnName(nameof(BDocument.EmailChuHoSo));
+        builder.Property(x => x.ApplicantEmail) // Đổi sang tiếng Anh
+            .HasMaxLength(BDocumentConsts.MaxApplicantEmailLength) // Đổi sang tiếng Anh
+            .HasColumnName(nameof(BDocument.ApplicantEmail)); // Đổi sang tiếng Anh
 
-        builder.Property(x => x.SoDienThoaiChuHoSo)
-            .HasMaxLength(BDocumentConsts.MaxSoDienThoaiChuHoSoLength)
-            .HasColumnName(nameof(BDocument.SoDienThoaiChuHoSo));
+        builder.Property(x => x.ApplicantPhoneNumber) // Đổi sang tiếng Anh
+            .HasMaxLength(BDocumentConsts.MaxApplicantPhoneNumberLength) // Đổi sang tiếng Anh
+            .HasColumnName(nameof(BDocument.ApplicantPhoneNumber)); // Đổi sang tiếng Anh
 
-        // Cấu hình trường mới
-        builder.Property(x => x.PhamViHoatDong)
-            .HasColumnName(nameof(BDocument.PhamViHoatDong))
-            .HasColumnType("NCLOB") // Hoặc "text" tùy DB
-            .IsRequired(false); // Nullable
+        // Cấu hình trường mới: Phạm vi hoạt động
+        builder.Property(x => x.ScopeOfActivity) // Đổi sang tiếng Anh
+            .HasColumnName(nameof(BDocument.ScopeOfActivity)) // Đổi sang tiếng Anh
+            //.HasColumnType("NCLOB") // Bỏ comment - Kiểu dữ liệu lớn cho Oracle
+            .IsRequired(false); // Cho phép null
 
-        builder.Property(x => x.DangKyNhanQuaBuuDien)
-            .IsRequired() // bool không nullable
-            .HasColumnName(nameof(BDocument.DangKyNhanQuaBuuDien));
+        // Cấu hình trường mới: Đăng ký nhận qua bưu điện
+        builder.Property(x => x.ReceiveByPost) // Đổi sang tiếng Anh
+            .IsRequired() // Kiểu bool không cho phép null
+            .HasColumnName(nameof(BDocument.ReceiveByPost)); // Đổi sang tiếng Anh
 
-        // TrangThaiHoSoId là nullable Guid?
-        builder.Property(x => x.TrangThaiHoSoId)
-            .HasColumnName(nameof(BDocument.TrangThaiHoSoId))
-            .IsRequired(false); // Nullable
+        // Cấu hình trường mới: Trạng thái quy trình
+        builder.Property(x => x.WorkflowStatusId) // Đổi sang tiếng Anh
+            .HasColumnName(nameof(BDocument.WorkflowStatusId)) // Đổi sang tiếng Anh
+            .IsRequired(false); // Cho phép null
 
-        builder.Property(x => x.NgayNop).HasColumnName(nameof(BDocument.NgayNop));
-        builder.Property(x => x.NgayTiepNhan).HasColumnName(nameof(BDocument.NgayTiepNhan));
-        builder.Property(x => x.NgayHenTra).HasColumnName(nameof(BDocument.NgayHenTra));
-        builder.Property(x => x.NgayTraKetQua).HasColumnName(nameof(BDocument.NgayTraKetQua));
+        // Cấu hình các trường ngày tháng
+        builder.Property(x => x.SubmissionDate).HasColumnName(nameof(BDocument.SubmissionDate)); // Đổi sang tiếng Anh
+        builder.Property(x => x.ReceptionDate).HasColumnName(nameof(BDocument.ReceptionDate)); // Đổi sang tiếng Anh
+        builder.Property(x => x.AppointmentDate).HasColumnName(nameof(BDocument.AppointmentDate)); // Đổi sang tiếng Anh
+        builder.Property(x => x.ResultDate).HasColumnName(nameof(BDocument.ResultDate)); // Đổi sang tiếng Anh
 
-        builder.Property(x => x.LyDoTuChoiHoacBoSung)
-            .HasMaxLength(BDocumentConsts.MaxLyDoTuChoiHoacBoSungLength)
-            .HasColumnName(nameof(BDocument.LyDoTuChoiHoacBoSung));
+        // Cấu hình trường lý do từ chối/bổ sung
+        builder.Property(x => x.RejectionOrAdditionReason) // Đổi sang tiếng Anh
+            .HasMaxLength(BDocumentConsts.MaxRejectionOrAdditionReasonLength) // Đổi sang tiếng Anh
+            .HasColumnName(nameof(BDocument.RejectionOrAdditionReason)); // Đổi sang tiếng Anh
 
-        // --- Relationships ---
+        // Configure ExtraProperties JSON mapping if needed (already handled by ConfigureByConvention usually)
+        // builder.Property(x => x.ExtraProperties).HasJsonConversion();
 
-        // Relationship với Procedure
+        // --- Cấu hình quan hệ --- 
+
+        // Quan hệ với Procedure (Thủ tục)
         builder.HasOne(d => d.Procedure)
-               .WithMany() // Procedure không có navigation property ngược lại
+               .WithMany() // Procedure không cần navigation property ngược lại
                .HasForeignKey(d => d.ProcedureId)
                .IsRequired()
                .OnDelete(DeleteBehavior.Restrict); // Ngăn xóa Procedure nếu có BDocument liên quan
 
-        // Relationship với WorkflowStatus
-        builder.HasOne(d => d.TrangThaiHoSo)
-               .WithMany() // WorkflowStatus không có navigation property ngược lại
-               .HasForeignKey(d => d.TrangThaiHoSoId)
-               .IsRequired(false) // FK is nullable
+        // Quan hệ với WorkflowStatus (Trạng thái quy trình)
+        builder.HasOne(d => d.WorkflowStatus) // Đổi sang tiếng Anh
+               .WithMany() // WorkflowStatus không cần navigation property ngược lại
+               .HasForeignKey(d => d.WorkflowStatusId) // Đổi sang tiếng Anh
+               .IsRequired(false) // Khóa ngoại có thể null
                .OnDelete(DeleteBehavior.Restrict); // Ngăn xóa Status nếu có BDocument liên quan
 
-        // Relationship với BDocumentData
+        // Quan hệ với BDocumentData (Dữ liệu chi tiết hồ sơ)
         builder.HasMany(d => d.DocumentData)
                .WithOne() // Không cần navigation property ngược từ BDocumentData
                .HasForeignKey(dd => dd.BDocumentId)
                .IsRequired()
-               .OnDelete(DeleteBehavior.Cascade); // Xóa data khi xóa document
+               .OnDelete(DeleteBehavior.Cascade); // Xóa data khi xóa document chính
 
+        // --- Cấu hình chỉ mục (Indexes) --- 
 
-        // --- Indexes ---
-
-        // Index cho MaHoSo (Unique)
-        builder.HasIndex(x => x.MaHoSo)
+        // Chỉ mục cho Code (đảm bảo duy nhất)
+        builder.HasIndex(x => x.Code) // Đổi sang tiếng Anh
                .IsUnique()
-               .HasDatabaseName($"IX_{CoreFWConsts.DbTablePrefix}BDocuments_MaHoSo");
+               .HasDatabaseName($"IX_{CoreFWConsts.DbTablePrefix}BDocuments_Code"); // Cập nhật tên index
 
-        // Indexes cho khóa ngoại và trường hay lọc
+        // Chỉ mục cho các khóa ngoại và trường hay lọc
         builder.HasIndex(x => x.ProcedureId)
                .HasDatabaseName($"IX_{CoreFWConsts.DbTablePrefix}BDocuments_ProcedureId");
 
-        builder.HasIndex(x => x.TrangThaiHoSoId)
-               .HasDatabaseName($"IX_{CoreFWConsts.DbTablePrefix}BDocuments_TrangThaiHoSoId");
+        builder.HasIndex(x => x.WorkflowStatusId) // Đổi sang tiếng Anh
+               .HasDatabaseName($"IX_{CoreFWConsts.DbTablePrefix}BDocuments_WorkflowStatusId"); // Cập nhật tên index
 
-        builder.HasIndex(x => x.TenChuHoSo)
-               .HasDatabaseName($"IX_{CoreFWConsts.DbTablePrefix}BDocuments_TenChuHoSo");
+        builder.HasIndex(x => x.ApplicantName) // Đổi sang tiếng Anh
+               .HasDatabaseName($"IX_{CoreFWConsts.DbTablePrefix}BDocuments_ApplicantName"); // Cập nhật tên index
 
         builder.HasIndex(x => x.CreationTime)
                .HasDatabaseName($"IX_{CoreFWConsts.DbTablePrefix}BDocuments_CreationTime");
 
-        // Index tổng hợp cho các bộ lọc thường dùng
-        builder.HasIndex(x => new { x.ProcedureId, x.TrangThaiHoSoId, x.CreationTime })
-              .HasDatabaseName($"IX_{CoreFWConsts.DbTablePrefix}BDocuments_Proc_Status_Created");
+        // Chỉ mục tổng hợp cho các bộ lọc thường dùng
+        builder.HasIndex(x => new { x.ProcedureId, x.WorkflowStatusId, x.CreationTime }) // Đổi sang tiếng Anh
+              .HasDatabaseName($"IX_{CoreFWConsts.DbTablePrefix}BDocuments_Proc_Status_Created"); // Cập nhật tên index
 
-        // Thêm index cho trường mới nếu cần lọc nhiều
-        builder.HasIndex(x => x.DangKyNhanQuaBuuDien)
-               .HasDatabaseName($"IX_{CoreFWConsts.DbTablePrefix}BDocuments_DangKyBuuDien");
+        // Chỉ mục cho trường mới nếu cần lọc nhiều
+        builder.HasIndex(x => x.ReceiveByPost) // Đổi sang tiếng Anh
+               .HasDatabaseName($"IX_{CoreFWConsts.DbTablePrefix}BDocuments_ReceiveByPost"); // Cập nhật tên index
     }
 }

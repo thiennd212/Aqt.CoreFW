@@ -1,18 +1,14 @@
-﻿using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Aqt.CoreFW.Application.Contracts.Procedures;
-using Aqt.CoreFW.Application.Contracts.Procedures.Dtos; // Thêm DTO Namespace
+﻿using Aqt.CoreFW.Application.Contracts.Procedures;
 using Aqt.CoreFW.Application.Contracts.Shared.Lookups;
 using Aqt.CoreFW.Application.Contracts.WorkflowStatuses;
 using Aqt.CoreFW.Application.Contracts.WorkflowStatuses.Dtos; // Thêm DTO Namespace
 using Aqt.CoreFW.Permissions; // Import Permissions
-using AutoMapper.Internal.Mappers; // Không cần using này
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.Extensions.Logging; // Thêm Logger
+using System.Collections.Generic;
+using System.Threading.Tasks;
 using Volo.Abp.AspNetCore.Mvc.UI.RazorPages;
-using Volo.Abp.ObjectMapping;
 
 namespace Aqt.CoreFW.Web.Pages.BDocuments;
 
@@ -44,8 +40,8 @@ public class IndexModel : AbpPageModel // Kế thừa từ AbpPageModel để c�
         await LoadLookupsAsync();
 
         // Kiểm tra quyền và lưu vào ViewData để JavaScript sử dụng
-        ViewData["CanEdit"] = (await _authorizationService.IsGrantedAsync(CoreFWPermissions.BDocuments.Update)).ToString().ToLowerInvariant(); ;
-        ViewData["CanDelete"] = (await _authorizationService.IsGrantedAsync(CoreFWPermissions.BDocuments.Delete)).ToString().ToLowerInvariant(); ;
+        ViewData["CanEdit"] = (await _authorizationService.IsGrantedAsync(CoreFWPermissions.BDocuments.Update)).ToString().ToLowerInvariant();
+        ViewData["CanDelete"] = (await _authorizationService.IsGrantedAsync(CoreFWPermissions.BDocuments.Delete)).ToString().ToLowerInvariant();
     }
 
     // Hàm helper để load dữ liệu lookup từ App Services

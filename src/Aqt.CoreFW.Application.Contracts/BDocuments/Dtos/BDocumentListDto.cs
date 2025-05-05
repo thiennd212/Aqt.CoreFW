@@ -5,21 +5,24 @@ namespace Aqt.CoreFW.Application.Contracts.BDocuments.Dtos;
 
 /// <summary>
 /// DTO simplified for listing BDocuments.
+/// DTO đơn giản hóa cho việc liệt kê BDocuments.
 /// </summary>
+// Có thể kế thừa từ AuditedEntityDto nếu cần CreationTime, hoặc thêm thủ công
 public class BDocumentListDto : EntityDto<Guid>
 {
-    public string MaHoSo { get; set; } = string.Empty;
-    public string TenChuHoSo { get; set; } = string.Empty;
+    public string Code { get; set; } = string.Empty; // Đã đổi tên
+    public string ApplicantName { get; set; } = string.Empty; // Đã đổi tên
 
     public Guid ProcedureId { get; set; }
-    public string ProcedureName { get; set; } = string.Empty; // Tên thủ tục
+    public string? ProcedureName { get; set; } // Cho phép null
 
-    public Guid? TrangThaiHoSoId { get; set; } // Nullable
-    public string TrangThaiHoSoName { get; set; } = string.Empty; // Tên trạng thái (có thể là "Chưa có")
-    public string? TrangThaiHoSoColorCode { get; set; } // Màu trạng thái
+    public Guid? WorkflowStatusId { get; set; } // Đã đổi tên, nullable
+    public string? WorkflowStatusName { get; set; } // Đã đổi tên, cho phép null
+    public string? WorkflowStatusColorCode { get; set; } // Đã đổi tên, cho phép null
 
-    public DateTime CreationTime { get; set; } // Ngày tạo (hoặc NgayNop nếu dùng)
+    // Ngày tạo hoặc ngày nộp tùy theo yêu cầu hiển thị/sắp xếp
+    public DateTime CreationTime { get; set; } // Kế thừa từ Audited...Dto hoặc thêm thủ công
+    public DateTime? SubmissionDate { get; set; } // Hoặc dùng ngày nộp
 
-    // Có thể thêm cột khác nếu cần, ví dụ:
-    // public bool DangKyNhanQuaBuuDien { get; set;}
+    // Thêm các cột khác nếu cần
 } 

@@ -18,3 +18,10 @@
     .vakata-context.jstree-contextmenu, .vakata-context.jstree-contextmenu ul {
         background: #f5f5f5 !important;
     }
+.remove-uploaded-file-btn {
+    font-size: 0.75rem;
+    line-height: 1px;
+    border-radius: 3px;
+    padding: 1.5px;
+    border: none;
+}

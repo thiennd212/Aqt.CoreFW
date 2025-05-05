@@ -201,6 +201,34 @@ public class CoreFWWebModule : AbpModule
 
                 container.GetDownloadInfoTimesLimitEachUserPerMinute = 10;
             });
+            options.Containers.Configure<DocumentFileContainer>(container =>
+            {
+                // private container never be used by non-owner users (except user who has the "File.Manage" permission).
+                container.FileContainerType = FileContainerType.Public;
+                container.AbpBlobContainerName = BlobContainerNameAttribute.GetContainerName<LocalFileSystemBlobContainer>();
+                container.AbpBlobDirectorySeparator = "/";
+
+                container.RetainUnusedBlobs = false;
+                container.EnableAutoRename = true;
+
+                container.MaxByteSizeForEachFile = 5 * 1024 * 1024;
+                container.MaxByteSizeForEachUpload = 10 * 1024 * 1024;
+                container.MaxFileQuantityForEachUpload = 2;
+
+                container.AllowOnlyConfiguredFileExtensions = true;
+                container.FileExtensionsConfiguration.Add(".jpg", true);
+                container.FileExtensionsConfiguration.Add(".png", true);
+                container.FileExtensionsConfiguration.Add(".gif", true);
+                container.FileExtensionsConfiguration.Add(".doc", true);
+                container.FileExtensionsConfiguration.Add(".docx", true);
+                container.FileExtensionsConfiguration.Add(".xls", true);
+                container.FileExtensionsConfiguration.Add(".xlsx", true);
+                container.FileExtensionsConfiguration.Add(".pdf", true);
+                // container.FileExtensionsConfiguration.Add(".tar.gz", true);
+                // container.FileExtensionsConfiguration.Add(".exe", false);
+
+                container.GetDownloadInfoTimesLimitEachUserPerMinute = 10;
+            });
         });
 
 

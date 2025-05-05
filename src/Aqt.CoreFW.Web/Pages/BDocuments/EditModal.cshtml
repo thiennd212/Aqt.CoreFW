@@ -19,28 +19,26 @@
             <input type="hidden" asp-for="BDocumentViewModel.Id" />
 
             @* Các trường thông tin không cho sửa trực tiếp ở đây *@
-            <abp-input asp-for="BDocumentViewModel.MaHoSo" readonly="true" />
+            <abp-input asp-for="BDocumentViewModel.Code" readonly="true" />
             <abp-input asp-for="BDocumentViewModel.ProcedureName" readonly="true" label="@L["DisplayName:BDocument.ProcedureId"].Value" />
-            <abp-input asp-for="BDocumentViewModel.TrangThaiHoSoName" readonly="true" label="@L["DisplayName:BDocument.TrangThaiHoSoId"].Value" />
+            <abp-input asp-for="BDocumentViewModel.WorkflowStatusName" readonly="true" label="@L["DisplayName:BDocument.WorkflowStatusId"].Value" />
             <hr />
 
             <h5>@L["ApplicantInformation"]</h5>
-            <abp-input asp-for="BDocumentViewModel.TenChuHoSo" />
-            <abp-input asp-for="BDocumentViewModel.SoDinhDanhChuHoSo" />
-            <abp-input asp-for="BDocumentViewModel.DiaChiChuHoSo" />
-            <abp-input asp-for="BDocumentViewModel.EmailChuHoSo" type="email" />
-            <abp-input asp-for="BDocumentViewModel.SoDienThoaiChuHoSo" type="tel" />
+            <abp-input asp-for="BDocumentViewModel.ApplicantName" />
+            <abp-input asp-for="BDocumentViewModel.ApplicantIdentityNumber" />
+            <abp-input asp-for="BDocumentViewModel.ApplicantAddress" />
+            <abp-input asp-for="BDocumentViewModel.ApplicantEmail" type="email" />
+            <abp-input asp-for="BDocumentViewModel.ApplicantPhoneNumber" type="tel" />
             <hr />
 
             <h5>@L["AdditionalInformation"]</h5>
-            <abp-input asp-for="BDocumentViewModel.PhamViHoatDong" /> @* TextArea *@
-            <abp-check asp-for="BDocumentViewModel.DangKyNhanQuaBuuDien" /> @* Checkbox *@
+            <abp-input asp-for="BDocumentViewModel.ScopeOfActivity" />
+            <abp-check asp-for="BDocumentViewModel.ReceiveByPost" />
 
-            @* Không hiển thị/sửa ComponentDataList ở đây *@
+            @* Không hiển thị/sửa DataList (trước là ComponentDataList) ở đây *@
 
         </abp-modal-body>
         <abp-modal-footer buttons="@(AbpModalButtons.Cancel | AbpModalButtons.Save)"></abp-modal-footer>
     </abp-modal>
 </abp-dynamic-form>
-
-<abp-script src="/Pages/BDocuments/editModal.js" />

@@ -56,8 +56,8 @@ public class CoreFWDbContext :
     public DbSet<Procedure> Procedures { get; set; }
     public DbSet<ProcedureComponent> ProcedureComponents { get; set; }
     public DbSet<ProcedureComponentLink> ProcedureComponentLinks { get; set; }
-    public DbSet<BDocument> BDocuments { get; set; }
-    public DbSet<BDocumentData> BDocumentData { get; set; }
+    //public DbSet<BDocument> BDocuments { get; set; }
+    //public DbSet<BDocumentData> BDocumentData { get; set; }
 
     #region Entities from the modules
 

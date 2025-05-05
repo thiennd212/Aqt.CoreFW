@@ -70,7 +70,7 @@ public class EditModalModel : AbpPageModel
 
             // Map từ ViewModel sang Update Input DTO
             // Chỉ map các trường cần cập nhật (AutoMapper đã cấu hình chỉ map trường chính)
-            var updateDto = ObjectMapper.Map<BDocumentViewModel, UpdateBDocumentInputDto>(BDocumentViewModel);
+            var updateDto = ObjectMapper.Map<BDocumentViewModel, CreateUpdateBDocumentDto>(BDocumentViewModel);
 
             // Gọi AppService để cập nhật BDocument
             await _bDocumentAppService.UpdateAsync(Id, updateDto);

@@ -39,33 +39,33 @@ public class BDocumentRepository :
             query = query.Include(d => d.DocumentData);
             // Optionally include Procedure and Status if needed for specific operations,
             // but be mindful of performance impacts. Consider separate methods if frequently needed.
-            // query = query.Include(d => d.Procedure);
-            // query = query.Include(d => d.TrangThaiHoSo);
+            query = query.Include(d => d.Procedure);
+            // query = query.Include(d => d.WorkflowStatus);
         }
         return query;
     }
 
-    public async Task<BDocument?> FindByMaHoSoAsync(
-        [NotNull] string maHoSo,
+    public async Task<BDocument?> FindByCodeAsync(
+        [NotNull] string code,
         bool includeDetails = false,
         CancellationToken cancellationToken = default)
     {
-        Check.NotNullOrWhiteSpace(maHoSo, nameof(maHoSo));
+        Check.NotNullOrWhiteSpace(code, nameof(code));
 
         var query = await GetQueryableWithDetailsAsync(includeDetails);
         return await query.AsNoTracking() // Use AsNoTracking for read-only operations
-                          .FirstOrDefaultAsync(p => p.MaHoSo == maHoSo, GetCancellationToken(cancellationToken));
+                          .FirstOrDefaultAsync(p => p.Code == code, GetCancellationToken(cancellationToken));
     }
 
-    public async Task<bool> MaHoSoExistsAsync(
-        [NotNull] string maHoSo,
+    public async Task<bool> CodeExistsAsync(
+        [NotNull] string code,
         Guid? excludeId = null,
         CancellationToken cancellationToken = default)
     {
-        Check.NotNullOrWhiteSpace(maHoSo, nameof(maHoSo));
+        Check.NotNullOrWhiteSpace(code, nameof(code));
 
         var dbSet = await GetDbSetAsync();
-        var query = dbSet.AsNoTracking().Where(p => p.MaHoSo == maHoSo);
+        var query = dbSet.AsNoTracking().Where(p => p.Code == code);
 
         if (excludeId.HasValue)
         {
@@ -78,17 +78,16 @@ public class BDocumentRepository :
     public async Task<List<BDocument>> GetListAsync(
         string? filterText = null,
         Guid? procedureId = null,
-        Guid? trangThaiHoSoId = null,
-        DateTime? ngayNopFrom = null,
-        DateTime? ngayNopTo = null,
-        bool? dangKyNhanQuaBuuDien = null, // Thêm filter nếu có trong interface
+        Guid? workflowStatusId = null,
+        DateTime? submissionDateFrom = null,
+        DateTime? submissionDateTo = null,
         string? sorting = null,
         int maxResultCount = int.MaxValue,
         int skipCount = 0,
-        bool includeDetails = false, // Controlled inclusion of details
+        bool includeDetails = false,
         CancellationToken cancellationToken = default)
     {
-        var query = await GetListQueryInternalAsync(filterText, procedureId, trangThaiHoSoId, ngayNopFrom, ngayNopTo, dangKyNhanQuaBuuDien, includeDetails);
+        var query = await GetListQueryInternalAsync(filterText, procedureId, workflowStatusId, submissionDateFrom, submissionDateTo, includeDetails);
 
         // Apply sorting. Default sort if not specified.
         query = query.OrderBy(sorting.IsNullOrWhiteSpace() ?
@@ -102,14 +101,13 @@ public class BDocumentRepository :
     public async Task<long> GetCountAsync(
         string? filterText = null,
         Guid? procedureId = null,
-        Guid? trangThaiHoSoId = null,
-        DateTime? ngayNopFrom = null,
-        DateTime? ngayNopTo = null,
-        bool? dangKyNhanQuaBuuDien = null, // Thêm filter nếu có trong interface
+        Guid? workflowStatusId = null,
+        DateTime? submissionDateFrom = null,
+        DateTime? submissionDateTo = null,
         CancellationToken cancellationToken = default)
     {
         // Details are not needed for count
-        var query = await GetListQueryInternalAsync(filterText, procedureId, trangThaiHoSoId, ngayNopFrom, ngayNopTo, dangKyNhanQuaBuuDien, includeDetails: false);
+        var query = await GetListQueryInternalAsync(filterText, procedureId, workflowStatusId, submissionDateFrom, submissionDateTo, includeDetails: false);
         return await query.LongCountAsync(GetCancellationToken(cancellationToken));
     }
 
@@ -129,10 +127,9 @@ public class BDocumentRepository :
     private async Task<IQueryable<BDocument>> GetListQueryInternalAsync(
          string? filterText = null,
          Guid? procedureId = null,
-         Guid? trangThaiHoSoId = null,
-         DateTime? ngayNopFrom = null,
-         DateTime? ngayNopTo = null,
-         bool? dangKyNhanQuaBuuDien = null, // Thêm filter nếu có
+         Guid? workflowStatusId = null,
+         DateTime? submissionDateFrom = null,
+         DateTime? submissionDateTo = null,
          bool includeDetails = false)
     {
         var query = await GetQueryableWithDetailsAsync(includeDetails);
@@ -140,16 +137,15 @@ public class BDocumentRepository :
         // Apply filters using WhereIf for conditional filtering
         query = query.AsNoTracking() // Use AsNoTracking for list queries
              .WhereIf(!filterText.IsNullOrWhiteSpace(), p =>
-                 (p.MaHoSo != null && p.MaHoSo.Contains(filterText!)) || // Search MaHoSo
-                 (p.TenChuHoSo != null && p.TenChuHoSo.Contains(filterText!)) || // Search TenChuHoSo
-                 (p.SoDinhDanhChuHoSo != null && p.SoDinhDanhChuHoSo.Contains(filterText!)) || // Search SoDinhDanh (nếu cần)
-                 (p.EmailChuHoSo != null && p.EmailChuHoSo.Contains(filterText!)) || // Search Email (nếu cần)
-                 (p.SoDienThoaiChuHoSo != null && p.SoDienThoaiChuHoSo.Contains(filterText!))) // Search Phone (nếu cần)
+                 (p.Code != null && p.Code.Contains(filterText!)) || // Search Code
+                 (p.ApplicantName != null && p.ApplicantName.Contains(filterText!)) || // Search ApplicantName
+                 (p.ApplicantIdentityNumber != null && p.ApplicantIdentityNumber.Contains(filterText!)) || // Search ApplicantIdentityNumber
+                 (p.ApplicantEmail != null && p.ApplicantEmail.Contains(filterText!)) || // Search ApplicantEmail
+                 (p.ApplicantPhoneNumber != null && p.ApplicantPhoneNumber.Contains(filterText!))) // Search ApplicantPhoneNumber
              .WhereIf(procedureId.HasValue, p => p.ProcedureId == procedureId!.Value) // Filter by ProcedureId
-             .WhereIf(trangThaiHoSoId.HasValue, p => p.TrangThaiHoSoId == trangThaiHoSoId!.Value) // Filter by StatusId
-             .WhereIf(ngayNopFrom.HasValue, p => p.NgayNop.HasValue && p.NgayNop.Value.Date >= ngayNopFrom.Value.Date) // Filter by NgayNop Start Date
-             .WhereIf(ngayNopTo.HasValue, p => p.NgayNop.HasValue && p.NgayNop.Value.Date <= ngayNopTo.Value.Date) // Filter by NgayNop End Date
-             .WhereIf(dangKyNhanQuaBuuDien.HasValue, p => p.DangKyNhanQuaBuuDien == dangKyNhanQuaBuuDien.Value); // Filter by DangKyNhanQuaBuuDien
+             .WhereIf(workflowStatusId.HasValue, p => p.WorkflowStatusId == workflowStatusId!.Value) // Filter by StatusId
+             .WhereIf(submissionDateFrom.HasValue, p => p.SubmissionDate.HasValue && p.SubmissionDate.Value.Date >= submissionDateFrom.Value.Date) // Filter by SubmissionDate Start Date
+             .WhereIf(submissionDateTo.HasValue, p => p.SubmissionDate.HasValue && p.SubmissionDate.Value.Date <= submissionDateTo.Value.Date); // Filter by SubmissionDate End Date
 
         return query;
     }

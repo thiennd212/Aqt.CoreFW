@@ -13,8 +13,8 @@ using Volo.Abp.EntityFrameworkCore;
 namespace Aqt.CoreFW.Migrations
 {
     [DbContext(typeof(CoreFWDbContext))]
-    [Migration("20250425100027_Added_ProcedureComponent_Entity")]
-    partial class Added_ProcedureComponent_Entity
+    [Migration("20250505025017_Add_Component_Document_Entity")]
+    partial class Add_Component_Document_Entity
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -128,6 +128,206 @@ namespace Aqt.CoreFW.Migrations
                         .HasDatabaseName("IX_AppAccountTypes_Order_Name");
 
                     b.ToTable("AppAccountTypes", (string)null);
+                });
+
+            modelBuilder.Entity("Aqt.CoreFW.Domain.BDocuments.Entities.BDocument", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("RAW(16)");
+
+                    b.Property<string>("ApplicantAddress")
+                        .HasMaxLength(500)
+                        .HasColumnType("NVARCHAR2(500)")
+                        .HasColumnName("ApplicantAddress");
+
+                    b.Property<string>("ApplicantEmail")
+                        .HasMaxLength(100)
+                        .HasColumnType("NVARCHAR2(100)")
+                        .HasColumnName("ApplicantEmail");
+
+                    b.Property<string>("ApplicantIdentityNumber")
+                        .HasMaxLength(50)
+                        .HasColumnType("NVARCHAR2(50)")
+                        .HasColumnName("ApplicantIdentityNumber");
+
+                    b.Property<string>("ApplicantName")
+                        .IsRequired()
+                        .HasMaxLength(250)
+                        .HasColumnType("NVARCHAR2(250)")
+                        .HasColumnName("ApplicantName");
+
+                    b.Property<string>("ApplicantPhoneNumber")
+                        .HasMaxLength(20)
+                        .HasColumnType("NVARCHAR2(20)")
+                        .HasColumnName("ApplicantPhoneNumber");
+
+                    b.Property<DateTime?>("AppointmentDate")
+                        .HasColumnType("TIMESTAMP(7)")
+                        .HasColumnName("AppointmentDate");
+
+                    b.Property<string>("Code")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("NVARCHAR2(50)")
+                        .HasColumnName("Code");
+
+                    b.Property<string>("ConcurrencyStamp")
+                        .IsConcurrencyToken()
+                        .IsRequired()
+                        .HasMaxLength(40)
+                        .HasColumnType("NVARCHAR2(40)")
+                        .HasColumnName("ConcurrencyStamp");
+
+                    b.Property<DateTime>("CreationTime")
+                        .HasColumnType("TIMESTAMP(7)")
+                        .HasColumnName("CreationTime");
+
+                    b.Property<Guid?>("CreatorId")
+                        .HasColumnType("RAW(16)")
+                        .HasColumnName("CreatorId");
+
+                    b.Property<Guid?>("DeleterId")
+                        .HasColumnType("RAW(16)")
+                        .HasColumnName("DeleterId");
+
+                    b.Property<DateTime?>("DeletionTime")
+                        .HasColumnType("TIMESTAMP(7)")
+                        .HasColumnName("DeletionTime");
+
+                    b.Property<string>("ExtraProperties")
+                        .IsRequired()
+                        .HasColumnType("NVARCHAR2(2000)")
+                        .HasColumnName("ExtraProperties");
+
+                    b.Property<bool>("IsDeleted")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("BOOLEAN")
+                        .HasDefaultValue(false)
+                        .HasColumnName("IsDeleted");
+
+                    b.Property<DateTime?>("LastModificationTime")
+                        .HasColumnType("TIMESTAMP(7)")
+                        .HasColumnName("LastModificationTime");
+
+                    b.Property<Guid?>("LastModifierId")
+                        .HasColumnType("RAW(16)")
+                        .HasColumnName("LastModifierId");
+
+                    b.Property<Guid>("ProcedureId")
+                        .HasColumnType("RAW(16)")
+                        .HasColumnName("ProcedureId");
+
+                    b.Property<bool>("ReceiveByPost")
+                        .HasColumnType("BOOLEAN")
+                        .HasColumnName("ReceiveByPost");
+
+                    b.Property<DateTime?>("ReceptionDate")
+                        .HasColumnType("TIMESTAMP(7)")
+                        .HasColumnName("ReceptionDate");
+
+                    b.Property<string>("RejectionOrAdditionReason")
+                        .HasMaxLength(1000)
+                        .HasColumnType("NVARCHAR2(1000)")
+                        .HasColumnName("RejectionOrAdditionReason");
+
+                    b.Property<DateTime?>("ResultDate")
+                        .HasColumnType("TIMESTAMP(7)")
+                        .HasColumnName("ResultDate");
+
+                    b.Property<string>("ScopeOfActivity")
+                        .HasColumnType("NVARCHAR2(2000)")
+                        .HasColumnName("ScopeOfActivity");
+
+                    b.Property<DateTime?>("SubmissionDate")
+                        .HasColumnType("TIMESTAMP(7)")
+                        .HasColumnName("SubmissionDate");
+
+                    b.Property<Guid?>("WorkflowStatusId")
+                        .HasColumnType("RAW(16)")
+                        .HasColumnName("WorkflowStatusId");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ApplicantName")
+                        .HasDatabaseName("IX_AppBDocuments_ApplicantName");
+
+                    b.HasIndex("Code")
+                        .IsUnique()
+                        .HasDatabaseName("IX_AppBDocuments_Code");
+
+                    b.HasIndex("CreationTime")
+                        .HasDatabaseName("IX_AppBDocuments_CreationTime");
+
+                    b.HasIndex("ProcedureId")
+                        .HasDatabaseName("IX_AppBDocuments_ProcedureId");
+
+                    b.HasIndex("ReceiveByPost")
+                        .HasDatabaseName("IX_AppBDocuments_ReceiveByPost");
+
+                    b.HasIndex("WorkflowStatusId")
+                        .HasDatabaseName("IX_AppBDocuments_WorkflowStatusId");
+
+                    b.HasIndex("ProcedureId", "WorkflowStatusId", "CreationTime")
+                        .HasDatabaseName("IX_AppBDocuments_Proc_Status_Created");
+
+                    b.ToTable("AppBDocuments", (string)null);
+                });
+
+            modelBuilder.Entity("Aqt.CoreFW.Domain.BDocuments.Entities.BDocumentData", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("RAW(16)");
+
+                    b.Property<Guid>("BDocumentId")
+                        .HasColumnType("RAW(16)")
+                        .HasColumnName("BDocumentId");
+
+                    b.Property<DateTime>("CreationTime")
+                        .HasColumnType("TIMESTAMP(7)")
+                        .HasColumnName("CreationTime");
+
+                    b.Property<Guid?>("CreatorId")
+                        .HasColumnType("RAW(16)")
+                        .HasColumnName("CreatorId");
+
+                    b.Property<Guid?>("FileId")
+                        .HasColumnType("RAW(16)")
+                        .HasColumnName("FileId");
+
+                    b.Property<string>("InputData")
+                        .HasColumnType("NCLOB")
+                        .HasColumnName("InputData");
+
+                    b.Property<DateTime?>("LastModificationTime")
+                        .HasColumnType("TIMESTAMP(7)")
+                        .HasColumnName("LastModificationTime");
+
+                    b.Property<Guid?>("LastModifierId")
+                        .HasColumnType("RAW(16)")
+                        .HasColumnName("LastModifierId");
+
+                    b.Property<Guid>("ProcedureComponentId")
+                        .HasColumnType("RAW(16)")
+                        .HasColumnName("ProcedureComponentId");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("BDocumentId")
+                        .HasDatabaseName("IX_AppBDocumentData_BDocumentId");
+
+                    b.HasIndex("FileId")
+                        .HasDatabaseName("IX_AppBDocumentData_FileId");
+
+                    b.HasIndex("ProcedureComponentId")
+                        .HasDatabaseName("IX_AppBDocumentData_ProcedureComponentId");
+
+                    b.HasIndex("BDocumentId", "ProcedureComponentId")
+                        .IsUnique()
+                        .HasDatabaseName("IX_AppBDocumentData_Doc_Comp");
+
+                    b.ToTable("AppBDocumentData", (string)null);
                 });
 
             modelBuilder.Entity("Aqt.CoreFW.Domain.Communes.Entities.Commune", b =>
@@ -295,7 +495,7 @@ namespace Aqt.CoreFW.Migrations
                         .HasColumnName("ExtraProperties");
 
                     b.Property<string>("FormDefinition")
-                        .HasColumnType("NVARCHAR2(2000)")
+                        .HasColumnType("NCLOB")
                         .HasColumnName("FormDefinition");
 
                     b.Property<bool>("IsDeleted")
@@ -3419,6 +3619,33 @@ namespace Aqt.CoreFW.Migrations
                     b.ToTable("AbpTenantConnectionStrings", (string)null);
                 });
 
+            modelBuilder.Entity("Aqt.CoreFW.Domain.BDocuments.Entities.BDocument", b =>
+                {
+                    b.HasOne("Aqt.CoreFW.Domain.Procedures.Entities.Procedure", "Procedure")
+                        .WithMany()
+                        .HasForeignKey("ProcedureId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("Aqt.CoreFW.Domain.WorkflowStatuses.Entities.WorkflowStatus", "WorkflowStatus")
+                        .WithMany()
+                        .HasForeignKey("WorkflowStatusId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.Navigation("Procedure");
+
+                    b.Navigation("WorkflowStatus");
+                });
+
+            modelBuilder.Entity("Aqt.CoreFW.Domain.BDocuments.Entities.BDocumentData", b =>
+                {
+                    b.HasOne("Aqt.CoreFW.Domain.BDocuments.Entities.BDocument", null)
+                        .WithMany("DocumentData")
+                        .HasForeignKey("BDocumentId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
             modelBuilder.Entity("Aqt.CoreFW.Domain.Communes.Entities.Commune", b =>
                 {
                     b.HasOne("Aqt.CoreFW.Domain.Districts.Entities.District", null)
@@ -3635,6 +3862,11 @@ namespace Aqt.CoreFW.Migrations
                         .HasForeignKey("TenantId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+                });
+
+            modelBuilder.Entity("Aqt.CoreFW.Domain.BDocuments.Entities.BDocument", b =>
+                {
+                    b.Navigation("DocumentData");
                 });
 
             modelBuilder.Entity("Aqt.CoreFW.Domain.Components.Entities.ProcedureComponent", b =>

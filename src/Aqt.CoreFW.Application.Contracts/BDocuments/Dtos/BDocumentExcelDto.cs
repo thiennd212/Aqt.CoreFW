@@ -9,44 +9,42 @@ namespace Aqt.CoreFW.Application.Contracts.BDocuments.Dtos;
 public class BDocumentExcelDto
 {
     [ExcelColumnName("Mã Hồ sơ")]
-    public string MaHoSo { get; set; } = string.Empty;
+    public string Code { get; set; } = string.Empty;
 
     [ExcelColumnName("Tên Chủ hồ sơ")]
-    public string TenChuHoSo { get; set; } = string.Empty;
+    public string ApplicantName { get; set; } = string.Empty;
 
     [ExcelColumnName("Thủ tục")]
-    public string ProcedureName { get; set; } = string.Empty; // Tên thủ tục
+    public string ProcedureName { get; set; } = string.Empty;
 
     [ExcelColumnName("Trạng thái")]
-    public string StatusName { get; set; } = string.Empty; // Tên trạng thái
+    public string StatusName { get; set; } = string.Empty;
 
-    // Bỏ các trường Tờ khai
+    [ExcelColumnName("Phạm vi hoạt động")]
+    public string? ScopeOfActivity { get; set; }
 
-    [ExcelColumnName("Phạm vi hoạt động")] // MỚI
-    public string? PhamViHoatDong { get; set; }
-
-    [ExcelColumnName("Đăng ký nhận qua BĐ")] // MỚI
-    public string DangKyNhanQuaBuuDien { get; set; } = string.Empty; // Map sang Yes/No
+    [ExcelColumnName("Đăng ký nhận qua BĐ")]
+    public string ReceiveByPost { get; set; } = string.Empty;
 
     [ExcelColumnName("Ngày nộp")]
     [ExcelFormat("yyyy-MM-dd HH:mm:ss")]
-    public DateTime? NgayNop { get; set; }
+    public DateTime? SubmissionDate { get; set; }
 
     [ExcelColumnName("Ngày tiếp nhận")]
     [ExcelFormat("yyyy-MM-dd HH:mm:ss")]
-    public DateTime? NgayTiepNhan { get; set; }
+    public DateTime? ReceptionDate { get; set; }
 
     [ExcelColumnName("Ngày hẹn trả")]
     [ExcelFormat("yyyy-MM-dd HH:mm:ss")]
-    public DateTime? NgayHenTra { get; set; }
+    public DateTime? AppointmentDate { get; set; }
 
     [ExcelColumnName("Ngày trả kết quả")]
     [ExcelFormat("yyyy-MM-dd HH:mm:ss")]
-    public DateTime? NgayTraKetQua { get; set; }
+    public DateTime? ResultDate { get; set; }
 
     [ExcelIgnore]
     public Guid ProcedureId { get; set; }
 
     [ExcelIgnore]
-    public Guid? TrangThaiHoSoId { get; set; }
+    public Guid? WorkflowStatusId { get; set; }
 } 

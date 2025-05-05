@@ -7,99 +7,109 @@ using Volo.Abp.AspNetCore.Mvc.UI.Bootstrap.TagHelpers.Form; // Namespace cho [Re
 
 namespace Aqt.CoreFW.Web.Pages.BDocuments.ViewModels;
 
+/// <summary>
+/// ViewModel cho trang tạo/sửa Hồ sơ (BDocument).
+/// Chứa các thông tin cần thiết cho giao diện người dùng.
+/// </summary>
 public class BDocumentViewModel
 {
     [HiddenInput]
     [DynamicFormIgnore]
     public Guid? Id { get; set; } // Nullable khi tạo mới
 
-    // --- Thông tin từ Procedure và Status (Chỉ đọc trên ViewModel) ---
+    [HiddenInput]
     [DynamicFormIgnore]
-    public string? ProcedureName { get; set; }
+    public string HiddenDataFormInput { get; set; } = string.Empty; // Dữ liệu JSON cho form động (được bind từ hidden input)
+
+    // --- Thông tin từ Procedure và WorkflowStatus (Chỉ đọc trên ViewModel, được map từ DTO) ---
     [DynamicFormIgnore]
-    public string? TrangThaiHoSoName { get; set; }
+    public string? ProcedureName { get; set; } // Tên thủ tục
+
     [DynamicFormIgnore]
-    public string? TrangThaiHoSoColorCode { get; set; } // Để hiển thị badge màu
+    public string? WorkflowStatusName { get; set; } // Tên trạng thái
+
+    [DynamicFormIgnore]
+    public string? WorkflowStatusColorCode { get; set; } // Mã màu của trạng thái để hiển thị badge
 
     // --- Thông tin chính (Dùng để tạo/sửa) ---
     [Required]
-    [HiddenInput] // ProcedureId được truyền vào khi mở modal Create, không cần người dùng chọn
+    [HiddenInput] // ProcedureId thường được truyền vào khi mở modal Create, không cần người dùng chọn
     [DynamicFormIgnore]
     public Guid ProcedureId { get; set; }
 
-    // MaHoSo thường được sinh tự động hoặc chỉ hiển thị khi sửa
-    [Display(Name = "DisplayName:BDocument.MaHoSo")]
+    // Code (Mã hồ sơ) thường được sinh tự động hoặc chỉ hiển thị khi sửa
+    [Display(Name = "DisplayName:BDocument.Code")] // Cập nhật key localization
     [ReadOnlyInput] // Đánh dấu chỉ đọc trên UI
+    [StringLength(BDocumentConsts.MaxCodeLength)] // Sử dụng hằng số đã đổi tên
     [DynamicFormIgnore]
-    public string MaHoSo { get; set; } = string.Empty;
+    public string Code { get; set; } = string.Empty; // Đổi tên: MaHoSo -> Code
 
     [Required(AllowEmptyStrings = false, ErrorMessage = "Validation:Mandatory")]
-    [StringLength(BDocumentConsts.MaxTenChuHoSoLength)]
-    [Display(Name = "DisplayName:BDocument.TenChuHoSo")]
+    [StringLength(BDocumentConsts.MaxApplicantNameLength)] // Sử dụng hằng số đã đổi tên
+    [Display(Name = "DisplayName:BDocument.ApplicantName")] // Cập nhật key localization
     [DynamicFormIgnore]
-    public string TenChuHoSo { get; set; } = string.Empty;
+    public string ApplicantName { get; set; } = string.Empty; // Đổi tên: TenChuHoSo -> ApplicantName
 
-    [StringLength(BDocumentConsts.MaxSoDinhDanhChuHoSoLength)]
-    [Display(Name = "DisplayName:BDocument.SoDinhDanhChuHoSo")]
+    [StringLength(BDocumentConsts.MaxApplicantIdentityNumberLength)] // Sử dụng hằng số đã đổi tên
+    [Display(Name = "DisplayName:BDocument.ApplicantIdentityNumber")] // Cập nhật key localization
     [DynamicFormIgnore]
-    public string? SoDinhDanhChuHoSo { get; set; }
+    public string? ApplicantIdentityNumber { get; set; } // Đổi tên: SoDinhDanhChuHoSo -> ApplicantIdentityNumber
 
-    [StringLength(BDocumentConsts.MaxDiaChiChuHoSoLength)]
-    [Display(Name = "DisplayName:BDocument.DiaChiChuHoSo")]
+    [StringLength(BDocumentConsts.MaxApplicantAddressLength)] // Sử dụng hằng số đã đổi tên
+    [Display(Name = "DisplayName:BDocument.ApplicantAddress")] // Cập nhật key localization
     [DynamicFormIgnore]
-    public string? DiaChiChuHoSo { get; set; }
+    public string? ApplicantAddress { get; set; } // Đổi tên: DiaChiChuHoSo -> ApplicantAddress
 
     [EmailAddress(ErrorMessage = "Validation:InvalidEmail")]
-    [StringLength(BDocumentConsts.MaxEmailChuHoSoLength)]
-    [Display(Name = "DisplayName:BDocument.EmailChuHoSo")]
+    [StringLength(BDocumentConsts.MaxApplicantEmailLength)] // Sử dụng hằng số đã đổi tên
+    [Display(Name = "DisplayName:BDocument.ApplicantEmail")] // Cập nhật key localization
     [DynamicFormIgnore]
-    public string? EmailChuHoSo { get; set; }
+    public string? ApplicantEmail { get; set; } // Đổi tên: EmailChuHoSo -> ApplicantEmail
 
     [Phone(ErrorMessage = "Validation:InvalidPhone")]
-    [StringLength(BDocumentConsts.MaxSoDienThoaiChuHoSoLength)]
-    [Display(Name = "DisplayName:BDocument.SoDienThoaiChuHoSo")]
+    [StringLength(BDocumentConsts.MaxApplicantPhoneNumberLength)] // Sử dụng hằng số đã đổi tên
+    [Display(Name = "DisplayName:BDocument.ApplicantPhoneNumber")] // Cập nhật key localization
     [DynamicFormIgnore]
-    public string? SoDienThoaiChuHoSo { get; set; }
+    public string? ApplicantPhoneNumber { get; set; } // Đổi tên: SoDienThoaiChuHoSo -> ApplicantPhoneNumber
 
     // --- Thông tin bổ sung ---
-    [Display(Name = "DisplayName:BDocument.PhamViHoatDong")]
+    [Display(Name = "DisplayName:BDocument.ScopeOfActivity")] // Cập nhật key localization
     [TextArea(Rows = 3)] // Gợi ý hiển thị textarea
     [DynamicFormIgnore]
-    public string? PhamViHoatDong { get; set; } // Trường mới
+    public string? ScopeOfActivity { get; set; } // Đổi tên: PhamViHoatDong -> ScopeOfActivity
 
-    [Display(Name = "DisplayName:BDocument.DangKyNhanQuaBuuDien")]
+    [Display(Name = "DisplayName:BDocument.ReceiveByPost")] // Cập nhật key localization
     [DynamicFormIgnore]
-    public bool DangKyNhanQuaBuuDien { get; set; } // Trường mới
+    public bool ReceiveByPost { get; set; } // Đổi tên: DangKyNhanQuaBuuDien -> ReceiveByPost
 
     // --- Danh sách dữ liệu Component ---
-    // Chứa dữ liệu cho cả Tờ khai (FormData JSON) và File đính kèm (FileId)
-    // Tên property "ComponentDataList" cần khớp với cấu hình AutoMapper và cách binding từ form
+    // Chứa dữ liệu chi tiết cho từng thành phần (dạng form hoặc file)
     [DynamicFormIgnore]
-    public List<BDocumentDataViewModel> ComponentDataList { get; set; } = new List<BDocumentDataViewModel>();
+    public List<BDocumentDataViewModel> DataList { get; set; } = new List<BDocumentDataViewModel>(); // Đổi tên: ComponentDataList -> DataList
 
-    // --- Thông tin ngày tháng (Chỉ đọc trên ViewModel) ---
-    [Display(Name = "DisplayName:BDocument.NgayNop")]
+    // --- Thông tin ngày tháng (Chỉ đọc trên ViewModel, được map từ DTO) ---
+    [Display(Name = "DisplayName:BDocument.SubmissionDate")] // Cập nhật key localization
     [DataType(DataType.DateTime)]
     [DynamicFormIgnore]
-    public DateTime? NgayNop { get; set; }
+    public DateTime? SubmissionDate { get; set; } // Đổi tên: NgayNop -> SubmissionDate
 
-    [Display(Name = "DisplayName:BDocument.NgayTiepNhan")]
+    [Display(Name = "DisplayName:BDocument.ReceptionDate")] // Cập nhật key localization
     [DataType(DataType.DateTime)]
     [DynamicFormIgnore]
-    public DateTime? NgayTiepNhan { get; set; }
+    public DateTime? ReceptionDate { get; set; } // Đổi tên: NgayTiepNhan -> ReceptionDate
 
-    [Display(Name = "DisplayName:BDocument.NgayHenTra")]
+    [Display(Name = "DisplayName:BDocument.AppointmentDate")] // Cập nhật key localization
     [DataType(DataType.DateTime)]
     [DynamicFormIgnore]
-    public DateTime? NgayHenTra { get; set; }
+    public DateTime? AppointmentDate { get; set; } // Đổi tên: NgayHenTra -> AppointmentDate
 
-    [Display(Name = "DisplayName:BDocument.NgayTraKetQua")]
+    [Display(Name = "DisplayName:BDocument.ResultDate")] // Cập nhật key localization
     [DataType(DataType.DateTime)]
     [DynamicFormIgnore]
-    public DateTime? NgayTraKetQua { get; set; }
+    public DateTime? ResultDate { get; set; } // Đổi tên: NgayTraKetQua -> ResultDate
 
-    [Display(Name = "DisplayName:BDocument.LyDoTuChoiHoacBoSung")]
-    [ReadOnlyInput] // Chỉ hiển thị, không cho sửa ở form Tạo/Sửa thông thường
+    [Display(Name = "DisplayName:BDocument.RejectionOrSupplementReason")] // Cập nhật key localization
+    [ReadOnlyInput] // Chỉ hiển thị
     [DynamicFormIgnore]
-    public string? LyDoTuChoiHoacBoSung { get; set; }
+    public string? RejectionOrSupplementReason { get; set; } // Đổi tên: LyDoTuChoiHoacBoSung -> RejectionOrSupplementReason
 }

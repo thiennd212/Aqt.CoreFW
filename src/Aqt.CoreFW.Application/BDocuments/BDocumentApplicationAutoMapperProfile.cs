@@ -1,10 +1,17 @@
 ﻿using Aqt.CoreFW.Application.Contracts.BDocuments.Dtos; // DTOs
+// using Aqt.CoreFW.Application.Contracts.Common.Dtos; // Tạm comment, chờ xác định đúng namespace/tạo file
+// using Aqt.CoreFW.Application.Contracts.Components.Dtos; // Tạm comment
+using Aqt.CoreFW.Application.Contracts.Shared.Lookups; // Sử dụng namespace mới cho Lookups
 using Aqt.CoreFW.Domain.BDocuments.Entities; // Entities
+using Aqt.CoreFW.Domain.Components.Entities;
+using Aqt.CoreFW.Domain.Procedures.Entities;
+using Aqt.CoreFW.Domain.WorkflowStatuses.Entities;
 using AutoMapper;
 using EasyAbp.FileManagement.Files; // File Entity from FileManagement
 using EasyAbp.FileManagement.Files.Dtos; // FileInfoDto from FileManagement
+using System;
 
-namespace Aqt.CoreFW.Application.BDocuments;
+namespace Aqt.CoreFW.Application.BDocuments; // Đổi namespace cho phù hợp
 
 public class BDocumentApplicationAutoMapperProfile : Profile
 {
@@ -12,49 +19,41 @@ public class BDocumentApplicationAutoMapperProfile : Profile
     {
         // --- BDocument Mappings ---
         CreateMap<BDocument, BDocumentDto>()
-             .ForMember(dest => dest.Procedure, opt => opt.Ignore()) // Enrich later in AppService
-             .ForMember(dest => dest.TrangThaiHoSo, opt => opt.Ignore()); // Enrich later in AppService
+             .ForMember(dest => dest.ProcedureName, opt => opt.MapFrom(src => src.Procedure != null ? src.Procedure.Name : null))
+             .ForMember(dest => dest.WorkflowStatusName, opt => opt.MapFrom(src => src.WorkflowStatus != null ? src.WorkflowStatus.Name : null))
+             .ForMember(dest => dest.WorkflowStatusColorCode, opt => opt.MapFrom(src => src.WorkflowStatus != null ? src.WorkflowStatus.ColorCode : null));
 
         CreateMap<BDocument, BDocumentListDto>()
-             .ForMember(dest => dest.ProcedureName, opt => opt.Ignore()) // Enrich later in AppService
-             .ForMember(dest => dest.TrangThaiHoSoName, opt => opt.Ignore()) // Enrich later in AppService
-             .ForMember(dest => dest.TrangThaiHoSoColorCode, opt => opt.Ignore()); // Enrich later in AppService
+             .ForMember(dest => dest.ProcedureName, opt => opt.MapFrom(src => src.Procedure != null ? src.Procedure.Name : null))
+             .ForMember(dest => dest.WorkflowStatusName, opt => opt.MapFrom(src => src.WorkflowStatus != null ? src.WorkflowStatus.Name : null))
+             .ForMember(dest => dest.WorkflowStatusColorCode, opt => opt.MapFrom(src => src.WorkflowStatus != null ? src.WorkflowStatus.ColorCode : null));
 
         // --- BDocumentData Mapping ---
         CreateMap<BDocumentData, BDocumentDataDto>()
-            .ForMember(dest => dest.ComponentCode, opt => opt.Ignore()) // Enrich later in AppService
-            .ForMember(dest => dest.ComponentName, opt => opt.Ignore()) // Enrich later in AppService
-            .ForMember(dest => dest.ComponentType, opt => opt.Ignore()) // Enrich later in AppService
-            .ForMember(dest => dest.IsRequired, opt => opt.Ignore())   // Enrich later in AppService (from ProcedureComponentLink)
-            .ForMember(dest => dest.FileInfo, opt => opt.Ignore());    // Enrich later in AppService (from FileManagement)
+            .ForMember(dest => dest.ComponentCode, opt => opt.Ignore())
+            .ForMember(dest => dest.ComponentName, opt => opt.Ignore())
+            .ForMember(dest => dest.ComponentType, opt => opt.Ignore())
+            .ForMember(dest => dest.IsRequired, opt => opt.Ignore())
+            .ForMember(dest => dest.FileInfo, opt => opt.Ignore());
 
         // --- Excel Mapping ---
         CreateMap<BDocument, BDocumentExcelDto>()
-             .ForMember(dest => dest.ProcedureName, opt => opt.Ignore()) // Handle in AppService or Action
-             .ForMember(dest => dest.StatusName, opt => opt.Ignore())   // Handle in AppService or Action
-             .ForMember(dest => dest.DangKyNhanQuaBuuDien, opt => opt.MapFrom(src => src.DangKyNhanQuaBuuDien ? "Yes" : "No")); // Simple bool mapping
-                                                                                                                                // Uncomment if using BDocumentToExcelMappingAction for complex logic:
-                                                                                                                                // .AfterMap<BDocumentToExcelMappingAction>();
+             .ForMember(dest => dest.ProcedureName, opt => opt.MapFrom(src => src.Procedure != null ? src.Procedure.Name : null))
+             .ForMember(dest => dest.StatusName, opt => opt.MapFrom(src => src.WorkflowStatus != null ? src.WorkflowStatus.Name : null))
+             .ForMember(dest => dest.ReceiveByPost, opt => opt.MapFrom(src => src.ReceiveByPost ? "Yes" : "No"));
 
-        // --- File Management Mapping ---
-        // Map File Entity from FileManagement to our FileInfoDto Contract
-        // This assumes Aqt.CoreFW.Application.Contracts.Files.FileInfoDto exists and matches needed properties.
-        // If not, create a specific mapping or use FileManagement's DTO directly.
-        // CreateMap<File, Aqt.CoreFW.Application.Contracts.Files.FileInfoDto>(); // Map File Entity to our contract DTO
+        CreateMap<File, FileInfoDto>();
 
-        // Map FileInfoDto from EasyAbp.FileManagement to our contract FileInfoDto if needed
-        // CreateMap<EasyAbp.FileManagement.Files.Dtos.FileInfoDto, Aqt.CoreFW.Application.Contracts.Files.FileInfoDto>();
+        // --- Lookups ---
+        CreateMap<Procedure, LookupDto<Guid>>()
+            .ForMember(dest => dest.DisplayName, opt => opt.MapFrom(src => src.Name));
+        CreateMap<WorkflowStatus, LookupDto<Guid>>()
+             .ForMember(dest => dest.DisplayName, opt => opt.MapFrom(src => src.Name));
 
-        // Map FileInfoDto from EasyAbp directly (if BDocumentDataDto uses it)
-        // No explicit mapping needed if BDocumentDataDto directly references EasyAbp's DTO.
-        // If BDocumentDataDto uses its own FileInfoDto contract, the mapping above is required.
-        CreateMap<File, FileInfoDto>(); // Map FileManagement Entity to FileManagement DTO
-                                        // Map FileManagement DTO to our Contract DTO (if they are different)
-                                        // CreateMap<EasyAbp.FileManagement.Files.Dtos.FileInfoDto, Aqt.CoreFW.Application.Contracts.Files.FileInfoDto>();
-
+        // --- Component Lookup ---
+        CreateMap<ProcedureComponent, ProcedureComponentLookupDto>();
 
         // --- Input DTOs to Entity Mappings ---
         // NO direct mapping for Create/Update DTOs to Entities.
-        // Logic should go through the Domain Service (BDocumentManager).
     }
 }

@@ -42,26 +42,19 @@
             }
         </select>
         @* Nút New chỉ bật khi có quyền và đã chọn thủ tục (JS xử lý) *@
-    @if (await AuthorizationService.IsGrantedAsync(CoreFWPermissions.BDocuments.Create)) // Updated permission
+    @if (await AuthorizationService.IsGrantedAsync(CoreFWPermissions.BDocuments.Create)) // Giữ nguyên quyền Create
     {
-        <abp-button id="NewBDocumentButton" text="@L["New"].Value" icon="plus" button-type="Primary" size="Small" />
+            <abp-button id="NewBDocumentButton" text="@L["NewBDocument"].Value" icon="plus" button-type="Primary" size="Small" />
     }
     </div>
 
-    @if (await AuthorizationService.IsGrantedAsync(CoreFWPermissions.BDocuments.Export)) // Updated permission
+    @if (await AuthorizationService.IsGrantedAsync(CoreFWPermissions.BDocuments.Export)) // Giữ nguyên quyền Export
     {
         <abp-button id="ExportExcelButton" text="@L["ExportToExcel"].Value" icon="file-excel" button-type="Success" size="Small" class="ms-auto" />
     }
 }
 
 <abp-card>
-    <abp-card-header>
-        <abp-row>
-            <abp-column size-md="_6"> <h5>@L["BDocuments"]</h5> </abp-column>
-            @* Có thể thêm các nút khác ở đây nếu cần *@
-            <abp-column size-md="_6" class="text-end"></abp-column>
-        </abp-row>
-    </abp-card-header>
     <abp-card-body>
         @* === Filters === *@
         <form class="form-inline">
@@ -69,7 +62,7 @@
             <abp-row class="mb-3 gx-2">
                 @* gx-2 để giảm khoảng cách ngang *@
                 <abp-column size-md="_3">
-                    <input type="text" id="SearchFilter" class="form-control form-control-sm" placeholder="@L["SearchPlaceholderBDocument"] (...)" />
+                    <input type="text" id="SearchFilter" class="form-control form-control-sm" placeholder="@L["SearchPlaceholderBDocument"]" />
                 </abp-column>
                 <abp-column size-md="_3">
                     <select id="ProcedureFilter" class="form-select form-select-sm" aria-label="@L["FilterByProcedure"]">
@@ -85,7 +78,7 @@
                 </abp-column>
                 <abp-column size-md="_3">
                     <select id="StatusFilter" class="form-select form-select-sm" aria-label="@L["FilterByStatus"]">
-                        <option value="" selected>@L["All"] (@L["DisplayName:BDocument.TrangThaiHoSoId"])</option>
+                        <option value="" selected>@L["All"] (@L["DisplayName:BDocument.WorkflowStatusId"])</option>
                         @if (Model.AvailableStatuses != null)
                         {
                             @foreach (var item in Model.AvailableStatuses)
