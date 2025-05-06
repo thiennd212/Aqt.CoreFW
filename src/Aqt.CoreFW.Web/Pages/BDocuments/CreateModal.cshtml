@@ -44,7 +44,7 @@
             <hr />
 
             @* === Phần Các Form Động (Tờ khai,...) - Gọi Partial View === *@
-            <h5>@L["DynamicForms"]</h5> @* Tiêu đề chung cho các form *@
+            @* <h5>@L["DynamicForms"]</h5> *@ @* Tiêu đề chung cho các form *@
             @if (Model.BDocumentViewModel?.DataList != null)
             {
                 for (int i = 0; i < Model.BDocumentViewModel.DataList.Count; i++)
@@ -147,7 +147,7 @@
                     </tbody>
                 </table>
             </div>
-            <div class="form-text text-danger small mt-2">@L["RequiredField"] (*)</div>
+            <div class="form-text text-danger small mt-2">@L["RequiredField"]</div>
 
         </abp-modal-body>
         <abp-modal-footer buttons="@(AbpModalButtons.Cancel | AbpModalButtons.Save)"></abp-modal-footer>

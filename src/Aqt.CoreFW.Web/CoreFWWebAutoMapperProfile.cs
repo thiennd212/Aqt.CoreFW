@@ -119,6 +119,15 @@ public class CoreFWWebAutoMapperProfile : Profile
              .ForMember(dest => dest.InputData, opt => opt.MapFrom(src => src.FormData));
              // AutoMapper sẽ tự động map các trường trùng tên khác: ProcedureComponentId, FileId
 
+        // *** BEGIN ADDED MAPPING ***
+        // Detail DTO Component (BDocumentDataDto) -> ViewModel Component (BDocumentDataViewModel)
+        CreateMap<BDocumentDataDto, BDocumentDataViewModel>()
+            .ForMember(dest => dest.FormData, opt => opt.MapFrom(src => src.InputData)) // Map InputData -> FormData
+            .ForMember(dest => dest.FileName, opt => opt.MapFrom(src => src.FileInfo != null ? src.FileInfo.FileName : null)) // Map từ FileInfo
+            .ForMember(dest => dest.FileSize, opt => opt.MapFrom(src => src.FileInfo != null ? src.FileInfo.ByteSize : (long?)null)); // Map từ FileInfo
+            // AutoMapper sẽ tự map FileId, ProcedureComponentId và Id (nếu có)
+        // *** END ADDED MAPPING ***
+
         // --- END BDocumentData Mappings ---
 
 

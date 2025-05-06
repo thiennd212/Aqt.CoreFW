@@ -4,6 +4,8 @@
 @using Aqt.CoreFW.Localization
 @using Volo.Abp.AspNetCore.Mvc.UI.Bootstrap.TagHelpers.Form
 @using Aqt.CoreFW.Web.Pages.BDocuments
+@using Aqt.CoreFW.Components
+@using Aqt.CoreFW.Web.Pages.Shared.ViewModels
 @model EditModalModel
 @inject IHtmlLocalizer<CoreFWResource> L
 @{
@@ -16,27 +18,155 @@
         <abp-modal-header title="@L["EditBDocument"].Value"></abp-modal-header>
         <abp-modal-body>
             @* ID ẩn của BDocument cần sửa *@
-            <input type="hidden" asp-for="BDocumentViewModel.Id" />
+            <input type="hidden" asp-for="Id" />
+            <input type="hidden" asp-for="BDocumentViewModel.HiddenDataFormInput" />
 
-            @* Các trường thông tin không cho sửa trực tiếp ở đây *@
-            <abp-input asp-for="BDocumentViewModel.Code" readonly="true" />
-            <abp-input asp-for="BDocumentViewModel.ProcedureName" readonly="true" label="@L["DisplayName:BDocument.ProcedureId"].Value" />
-            <abp-input asp-for="BDocumentViewModel.WorkflowStatusName" readonly="true" label="@L["DisplayName:BDocument.WorkflowStatusId"].Value" />
+            @* Các trường chỉ đọc *@
+            <abp-row>
+                <abp-column size-md="_6"> <abp-input asp-for="BDocumentViewModel.Code" readonly="true" /> </abp-column>
+                <abp-column size-md="_6"> <abp-input asp-for="BDocumentViewModel.WorkflowStatusName" readonly="true" label='@L["DisplayName:BDocument.WorkflowStatusId"].Value' /> </abp-column>
+            </abp-row>
+            <abp-input asp-for="BDocumentViewModel.ProcedureName" readonly="true" label='@L["DisplayName:BDocument.ProcedureId"].Value' />
             <hr />
 
             <h5>@L["ApplicantInformation"]</h5>
-            <abp-input asp-for="BDocumentViewModel.ApplicantName" />
-            <abp-input asp-for="BDocumentViewModel.ApplicantIdentityNumber" />
-            <abp-input asp-for="BDocumentViewModel.ApplicantAddress" />
-            <abp-input asp-for="BDocumentViewModel.ApplicantEmail" type="email" />
-            <abp-input asp-for="BDocumentViewModel.ApplicantPhoneNumber" type="tel" />
+            @* Sử dụng abp-row và abp-column giống CreateModal *@
+            <abp-row>
+                <abp-column size-md="_6"> <abp-input asp-for="BDocumentViewModel.ApplicantName" /> </abp-column>
+                <abp-column size-md="_6"> <abp-input asp-for="BDocumentViewModel.ApplicantIdentityNumber" /> </abp-column>
+            </abp-row>
+            <abp-row>
+                <abp-column size-md="_6"> <abp-input asp-for="BDocumentViewModel.ApplicantAddress" /> </abp-column>
+                <abp-column size-md="_6"> <abp-input asp-for="BDocumentViewModel.ApplicantEmail" type="email" /> </abp-column>
+            </abp-row>
+            <abp-row>
+                 <abp-column size-md="_6"> <abp-input asp-for="BDocumentViewModel.ApplicantPhoneNumber" type="tel" /> </abp-column>
+                 <abp-column size-md="_6"></abp-column> @* Cột trống để căn chỉnh *@
+            </abp-row>
             <hr />
 
             <h5>@L["AdditionalInformation"]</h5>
-            <abp-input asp-for="BDocumentViewModel.ScopeOfActivity" />
-            <abp-check asp-for="BDocumentViewModel.ReceiveByPost" />
+             @* Sử dụng abp-row và abp-column giống CreateModal *@
+                 <abp-input asp-for="BDocumentViewModel.ScopeOfActivity" />
+                 <abp-input asp-for="BDocumentViewModel.ReceiveByPost" />
+            <hr />
 
-            @* Không hiển thị/sửa DataList (trước là ComponentDataList) ở đây *@
+            @* === BEGIN DYNAMIC FORMS === *@
+            @* <h5>@L["DynamicForms"]</h5> *@
+            @if (Model.BDocumentViewModel?.DataList != null)
+            {
+                for (int i = 0; i < Model.BDocumentViewModel.DataList.Count; i++)
+                {
+                    var dataItem = Model.BDocumentViewModel.DataList[i];
+                    if (dataItem.ComponentType == ComponentType.Form)
+                    {
+                        <h6 class="mt-3">@L[dataItem.ComponentName ?? "UnknownForm"] @(dataItem.IsRequired ? Html.Raw("<span class='text-danger ms-1'>*</span>") : Html.Raw(""))</h6>
+                        var dynamicFormModel = new DynamicFormViewModel
+                        {
+                            FormDefinition = dataItem.FormDefinition ?? "{}",
+                            FormData = dataItem.FormData,
+                            InstanceId = $"form_{dataItem.ProcedureComponentId}",
+                            FormName = dataItem.ComponentName
+                        };
+                        <div id="DynamicFormContainer_@dynamicFormModel.InstanceId" class="dynamic-form-instance border p-3 mb-3" data-component-id="@dataItem.ProcedureComponentId" data-index="@i">
+                            @await Html.PartialAsync("~/Pages/Shared/Components/DynamicFormRenderer/_DynamicFormRenderer.cshtml", dynamicFormModel)
+                        </div>
+                        <input type="hidden" name="BDocumentViewModel.DataList[@i].FormData" id="hiddenFormData_@dynamicFormModel.InstanceId" value='@dataItem.FormData' />
+                        <input type="hidden" name="BDocumentViewModel.DataList[@i].ProcedureComponentId" value="@dataItem.ProcedureComponentId" />
+                        <input type="hidden" name="BDocumentViewModel.DataList[@i].ComponentType" value="@dataItem.ComponentType" />
+                        <input type="hidden" name="BDocumentViewModel.DataList[@i].FileId" value="" />
+                    }
+                }
+            }
+            <hr />
+            @* === END DYNAMIC FORMS === *@
+
+            @* === BEGIN ATTACHED DOCUMENTS === *@
+            <h5>@L["AttachedDocuments"]</h5>
+            <div class="table-responsive">
+                <table class="table table-sm table-striped table-bordered" id="AttachedDocumentsTable">
+                    <thead class="table-light">
+                        <tr>
+                            <th style="width: 50px;">STT</th>
+                            <th>@L["DisplayName:BDocumentData.Component"]</th>
+                            <th>@L["DisplayName:BDocumentData.AttachedFile"]</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @if (Model.BDocumentViewModel?.DataList != null && Model.BDocumentViewModel.DataList.Any(item => item.ComponentType == ComponentType.File))
+                        {
+                            int attachmentIndex = 0;
+                            for (int i = 0; i < Model.BDocumentViewModel.DataList.Count; i++)
+                            {
+                                var dataItem = Model.BDocumentViewModel.DataList[i];
+                                if (dataItem.ComponentType == ComponentType.File)
+                                {
+                                    var hiddenFileId = $"BDocumentViewModel_DataList_{i}__FileId";
+                                    var fileInfoId = $"fileInfo_{dataItem.ProcedureComponentId}";
+                                    var fileInputId = $"fileInput_{dataItem.ProcedureComponentId}";
+                                    <tr>
+                                        <td class="text-center">@(++attachmentIndex)</td>
+                                        <td>
+                                            @L[dataItem.ComponentName ?? ""] @(dataItem.IsRequired ? Html.Raw("<span class='text-danger ms-1'>*</span>") : Html.Raw(""))
+                                            @if (!string.IsNullOrEmpty(dataItem.Description))
+                                            {
+                                                <small class="d-block text-muted fst-italic">@L[dataItem.Description]</small>
+                                            }
+                                            <input type="hidden" name="BDocumentViewModel.DataList[@i].ProcedureComponentId" value="@dataItem.ProcedureComponentId" />
+                                            <input type="hidden" name="BDocumentViewModel.DataList[@i].FormData" value="" />
+                                        </td>
+                                        <td>
+                                            <div id="@fileInfoId" class="mt-1 file-upload-info small">
+                                                @if (dataItem.FileId.HasValue && !string.IsNullOrEmpty(dataItem.FileName))
+                                                {
+                                                    var fileSizeDisplay = dataItem.FileSize.HasValue ? dataItem.FileSize.Value + " bytes" : "";
+                                                    <i class="fas fa-check-circle text-success me-1"></i> @($"{dataItem.FileName} ({fileSizeDisplay})")
+                                                    <button type="button" class="btn btn-sm btn-outline-danger remove-uploaded-file-btn ms-1" data-file-id="@dataItem.FileId"
+                                                            data-target-hidden="#@hiddenFileId"
+                                                            data-target-input="#@fileInputId"
+                                                            title="@L["DeleteFile"]">
+                                                        <i class="fas fa-times"></i>
+                                                    </button>
+                                                }
+                                                else if (!string.IsNullOrEmpty(dataItem.FileName))
+                                                {
+                                                    <i class="fas fa-exclamation-circle text-danger me-1"></i> @dataItem.FileName
+                                                }
+                                            </div>
+                                            <input type="hidden" name="BDocumentViewModel.DataList[@i].FileId" id="@hiddenFileId" value="@dataItem.FileId" />
+                                            <div class="input-group input-group-sm mb-1 mt-1">
+                                                <input type="file" class="form-control file-upload-input" id="@fileInputId"
+                                                       data-target-hidden="#@hiddenFileId"
+                                                       data-target-info="#@fileInfoId"
+                                                       aria-label="@L["UploadFileFor", dataItem.ComponentName ?? ""]" />
+                                            </div>
+                                            @* Link tải file đã upload (nếu có) *@
+                                            @if (dataItem.FileId.HasValue)
+                                            {
+                                                <div class="mt-1 small">
+                                                    @* Trỏ href đến handler mới trong PageModel *@
+                                                    <a href="@Url.Page("/BDocuments/EditModal", new { handler = "DownloadUploadedFile", fileId = dataItem.FileId.Value })"
+                                                       target="_blank" @* Mở trong tab mới để không ảnh hưởng modal *@
+                                                       class="download-uploaded-file" @* Class mới (tùy chọn) *@
+                                                       title='@L["DownloadFile"]'> @* Text và Title mới *@
+                                                        <i class="fas fa-download me-1"></i>@L["DownloadFile"]
+                                                    </a>
+                                                </div>
+                                            }
+                                        </td>
+                                    </tr>
+                                }
+                            }
+                        }
+                        else
+                        {
+                            <tr><td colspan="3" class="text-center text-muted">@L["NoAttachmentComponentsConfigured"]</td></tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+            <div class="form-text text-danger small mt-2">@L["RequiredField"]</div>
+            @* === END ATTACHED DOCUMENTS === *@
 
         </abp-modal-body>
         <abp-modal-footer buttons="@(AbpModalButtons.Cancel | AbpModalButtons.Save)"></abp-modal-footer>
